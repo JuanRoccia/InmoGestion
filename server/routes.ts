@@ -10,7 +10,7 @@ if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error('Missing required Stripe secret: STRIPE_SECRET_KEY');
 }
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2023-10-16",
+  apiVersion: "2025-08-27.basil",
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -291,11 +291,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const user = req.user;
 
     if (user.stripeSubscriptionId) {
-      const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+      const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId, {
+        expand: ['latest_invoice.payment_intent'],
+      });
+
+      const latestInvoice = subscription.latest_invoice;
+      const clientSecret = typeof latestInvoice === 'object' && latestInvoice?.payment_intent 
+        ? (typeof latestInvoice.payment_intent === 'object' ? latestInvoice.payment_intent.client_secret : null)
+        : null;
 
       res.send({
         subscriptionId: subscription.id,
-        clientSecret: subscription.latest_invoice?.payment_intent?.client_secret,
+        clientSecret,
       });
 
       return;
@@ -322,9 +329,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       await storage.updateUserStripeInfo(user.claims.sub, customer.id, subscription.id);
   
+      const latestInvoice = subscription.latest_invoice;
+      const clientSecret = typeof latestInvoice === 'object' && latestInvoice?.payment_intent 
+        ? (typeof latestInvoice.payment_intent === 'object' ? latestInvoice.payment_intent.client_secret : null)
+        : null;
+
       res.send({
         subscriptionId: subscription.id,
-        clientSecret: subscription.latest_invoice?.payment_intent?.client_secret,
+        clientSecret,
       });
     } catch (error: any) {
       return res.status(400).send({ error: { message: error.message } });

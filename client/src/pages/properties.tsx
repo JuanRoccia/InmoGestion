@@ -8,9 +8,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Properties() {
   const [filters, setFilters] = useState({
-    operationType: "",
-    locationId: "",
-    categoryId: "",
+    operationType: "all",
+    locationId: "all",
+    categoryId: "all",
     limit: 12,
     offset: 0,
   });
@@ -20,7 +20,7 @@ export default function Properties() {
     queryFn: async () => {
       const params = new URLSearchParams();
       Object.entries(filters).forEach(([key, value]) => {
-        if (value) params.append(key, value.toString());
+        if (value && value !== "all") params.append(key, value.toString());
       });
       
       const response = await fetch(`/api/properties?${params}`);

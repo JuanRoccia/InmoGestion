@@ -21,9 +21,9 @@ export default function HeroSearch() {
 
   const handleSearch = () => {
     const params = new URLSearchParams();
-    if (operationType) params.append("operationType", operationType);
-    if (propertyType) params.append("categoryId", propertyType);
-    if (location) params.append("locationId", location);
+    if (operationType && operationType !== "all") params.append("operationType", operationType);
+    if (propertyType && propertyType !== "all") params.append("categoryId", propertyType);
+    if (location && location !== "all") params.append("locationId", location);
     
     window.location.href = `/properties?${params.toString()}`;
   };
@@ -99,7 +99,7 @@ export default function HeroSearch() {
                     <SelectValue placeholder="Todas las propiedades" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas las propiedades</SelectItem>
+                    <SelectItem value="all">Todas las propiedades</SelectItem>
                     {categories.map((category: any) => (
                       <SelectItem key={category.id} value={category.id}>
                         {category.name}
@@ -118,7 +118,7 @@ export default function HeroSearch() {
                     <SelectValue placeholder="Buscar por localidad..." />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Todas las localidades</SelectItem>
+                    <SelectItem value="all">Todas las localidades</SelectItem>
                     {locations.map((loc: any) => (
                       <SelectItem key={loc.id} value={loc.id}>
                         {loc.name}

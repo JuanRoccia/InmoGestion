@@ -42,15 +42,17 @@ export default function SearchFilters({
 
   const clearFilters = () => {
     onFiltersChange({
-      operationType: "",
-      locationId: "",
-      categoryId: "",
+      operationType: "all",
+      locationId: "all",
+      categoryId: "all",
       limit: 12,
       offset: 0,
     });
   };
 
-  const hasActiveFilters = filters.operationType || filters.locationId || filters.categoryId;
+  const hasActiveFilters = (filters.operationType && filters.operationType !== "all") || 
+    (filters.locationId && filters.locationId !== "all") || 
+    (filters.categoryId && filters.categoryId !== "all");
 
   return (
     <div className="space-y-6">
@@ -126,7 +128,7 @@ export default function SearchFilters({
             <SelectValue placeholder="Todas las operaciones" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Todas las operaciones</SelectItem>
+            <SelectItem value="all">Todas las operaciones</SelectItem>
             <SelectItem value="venta">Venta</SelectItem>
             <SelectItem value="alquiler">Alquiler</SelectItem>
             <SelectItem value="temporario">Temporario</SelectItem>
@@ -144,7 +146,7 @@ export default function SearchFilters({
             <SelectValue placeholder="Todas las localidades" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Todas las localidades</SelectItem>
+            <SelectItem value="all">Todas las localidades</SelectItem>
             {locations.map((location) => (
               <SelectItem key={location.id} value={location.id}>
                 {location.name}
@@ -164,7 +166,7 @@ export default function SearchFilters({
             <SelectValue placeholder="Todos los tipos" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Todos los tipos</SelectItem>
+            <SelectItem value="all">Todos los tipos</SelectItem>
             {categories.map((category) => (
               <SelectItem key={category.id} value={category.id}>
                 {category.name}

@@ -75,6 +75,8 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
         bathrooms: data.bathrooms ? parseInt(data.bathrooms) : null,
         garages: data.garages ? parseInt(data.garages) : null,
         images: imageUrls,
+        locationId: data.locationId && data.locationId !== "none" ? data.locationId : null,
+        categoryId: data.categoryId && data.categoryId !== "none" ? data.categoryId : null,
       };
 
       if (property) {
@@ -187,7 +189,7 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">Sin categoría</SelectItem>
+                        <SelectItem value="none">Sin categoría</SelectItem>
                         {categories.map((category: any) => (
                           <SelectItem key={category.id} value={category.id}>
                             {category.name}
@@ -363,7 +365,7 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="">Sin localidad</SelectItem>
+                        <SelectItem value="none">Sin localidad</SelectItem>
                         {locations.map((location: any) => (
                           <SelectItem key={location.id} value={location.id}>
                             {location.name}

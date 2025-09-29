@@ -151,25 +151,25 @@ export class DatabaseStorage implements IStorage {
     limit?: number;
     offset?: number;
   }): Promise<Property[]> {
-    let query = db.select().from(properties).where(eq(properties.isActive, true));
+    const conditions = [eq(properties.isActive, true)];
 
     if (filters?.operationType) {
-      query = query.where(eq(properties.operationType, filters.operationType as any));
+      conditions.push(eq(properties.operationType, filters.operationType as any));
     }
     if (filters?.locationId) {
-      query = query.where(eq(properties.locationId, filters.locationId));
+      conditions.push(eq(properties.locationId, filters.locationId));
     }
     if (filters?.categoryId) {
-      query = query.where(eq(properties.categoryId, filters.categoryId));
+      conditions.push(eq(properties.categoryId, filters.categoryId));
     }
     if (filters?.agencyId) {
-      query = query.where(eq(properties.agencyId, filters.agencyId));
+      conditions.push(eq(properties.agencyId, filters.agencyId));
     }
     if (filters?.isFeatured !== undefined) {
-      query = query.where(eq(properties.isFeatured, filters.isFeatured));
+      conditions.push(eq(properties.isFeatured, filters.isFeatured));
     }
 
-    query = query.orderBy(desc(properties.createdAt));
+    let query = db.select().from(properties).where(and(...conditions)).orderBy(desc(properties.createdAt));
 
     if (filters?.limit) {
       query = query.limit(filters.limit);
@@ -205,16 +205,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getFeaturedProperties(operationType?: string, limit: number = 6): Promise<Property[]> {
-    let query = db
-      .select()
-      .from(properties)
-      .where(and(eq(properties.isActive, true), eq(properties.isFeatured, true)));
+    const conditions = [eq(properties.isActive, true), eq(properties.isFeatured, true)];
 
     if (operationType) {
-      query = query.where(eq(properties.operationType, operationType as any));
+      conditions.push(eq(properties.operationType, operationType as any));
     }
 
-    return await query.orderBy(desc(properties.createdAt)).limit(limit);
+    return await db
+      .select()
+      .from(properties)
+      .where(and(...conditions))
+      .orderBy(desc(properties.createdAt))
+      .limit(limit);
   }
 
   // Location operations
@@ -234,16 +236,16 @@ export class DatabaseStorage implements IStorage {
 
   // Banner operations
   async getActiveBanners(position?: string, size?: string): Promise<Banner[]> {
-    let query = db.select().from(banners).where(eq(banners.isActive, true));
+    const conditions = [eq(banners.isActive, true)];
 
     if (position) {
-      query = query.where(eq(banners.position, position));
+      conditions.push(eq(banners.position, position));
     }
     if (size) {
-      query = query.where(eq(banners.size, size));
+      conditions.push(eq(banners.size, size));
     }
 
-    return await query;
+    return await db.select().from(banners).where(and(...conditions));
   }
 }
 
