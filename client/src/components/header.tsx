@@ -1,7 +1,8 @@
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { User, LogOut, Building2, Settings } from "lucide-react";
+import { User, LogOut, Building2, Settings, Menu } from "lucide-react";
+import { useState, useEffect } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,107 +13,148 @@ import {
 
 export default function Header() {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
-    <header className="bg-background border-b border-border sticky top-0 z-50 glass-effect">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0">
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                InmoPortal
-              </h1>
-            </Link>
-          </div>
+    <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+      isScrolled 
+        ? 'h-20 bg-white/80 backdrop-blur-sm shadow-[0_2px_10px_rgba(0,0,0,0.2)]' 
+        : 'h-28 bg-white/70 backdrop-blur-sm shadow-[0_2px_4px_rgba(0,0,0,0.1)]'
+    }`}>
+      <div className="container relative mx-auto h-full">
+        <nav className="h-full">
+          <div className="grid grid-cols-12 items-center h-full">
+            {/* Logo */}
+            <div className="col-span-6 md:col-span-2 logo relative">
+              <Link href="/">
+                <img 
+                  alt="Busco Inmueble.click" 
+                  src="/assets/logo.png" 
+                  className={`w-auto transition-all duration-300 ${
+                    isScrolled ? 'h-12' : 'h-16'
+                  }`} 
+                />
+              </Link>
+            </div>
 
-          {/* Navigation Menu */}
-          <nav className="hidden md:flex space-x-8">
-            <Link href="/" className="nav-link text-foreground hover:text-primary px-3 py-2 text-sm font-medium">
-              Inicio
-            </Link>
-            <Link href="/properties" className="nav-link text-foreground hover:text-primary px-3 py-2 text-sm font-medium">
-              Propiedades
-            </Link>
-            <Link href="#" className="nav-link text-foreground hover:text-primary px-3 py-2 text-sm font-medium">
-              Emprendimientos
-            </Link>
-            <Link href="#" className="nav-link text-foreground hover:text-primary px-3 py-2 text-sm font-medium">
-              Inmobiliarias
-            </Link>
-            <Link href="#" className="nav-link text-foreground hover:text-primary px-3 py-2 text-sm font-medium">
-              Calculadora
-            </Link>
-            <Link href="#" className="nav-link text-foreground hover:text-primary px-3 py-2 text-sm font-medium">
-              Contacto
-            </Link>
-          </nav>
+            {/* Mobile Menu Button */}
+            <div className="col-span-6 md:col-span-2 flex justify-end items-center md:hidden">
+              <Button variant="ghost" title="Menu" className="p-2">
+                <Menu className="h-5 w-5" />
+              </Button>
+            </div>
 
-          {/* Auth Buttons */}
-          <div className="flex items-center space-x-4">
-            {isLoading ? (
-              <div className="w-8 h-8 animate-spin border-2 border-primary border-t-transparent rounded-full" />
-            ) : isAuthenticated && user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center space-x-2" data-testid="user-menu">
-                    {user.profileImageUrl ? (
-                      <img
-                        src={user.profileImageUrl}
-                        alt="Profile"
-                        className="w-8 h-8 rounded-full object-cover"
-                      />
-                    ) : (
-                      <User className="h-5 w-5" />
-                    )}
-                    <span className="hidden sm:inline">{user.firstName || user.email}</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="flex items-center w-full" data-testid="dashboard-link">
-                      <Building2 className="mr-2 h-4 w-4" />
-                      Dashboard
+            {/* Navigation Menu */}
+            <nav className="nav-principal hidden md:flex md:col-span-7 md:justify-around md:items-center">
+              {/* Column 1 */}
+              <div>
+                <ul className="nav-site">
+                  <li>
+                    <Link href="/" className="nav-link text-[#212121] hover:text-[#FF5733]">
+                      Inicio
                     </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/admin" className="flex items-center w-full" data-testid="admin-link">
-                      <Settings className="mr-2 h-4 w-4" />
-                      Administración
+                  </li>
+                  <li>
+                    <Link href="#" className="nav-link text-[#212121] hover:text-[#FF5733]">
+                      Calculadora
                     </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <a href="/api/logout" className="flex items-center w-full" data-testid="logout-link">
-                      <LogOut className="mr-2 h-4 w-4" />
-                      Cerrar sesión
+                  </li>
+                </ul>
+              </div>
+
+              {/* Column 2 */}
+              <div>
+                <ul className="nav-site">
+                  <li>
+                    <Link href="/proyectos" className="nav-link text-[#212121] hover:text-[#FF5733]">
+                      Emprendimientos
+                    </Link>
+                  </li>
+                  <li>
+                    <a 
+                      href="https://www.cmycbb.org.ar/" 
+                      target="_blank" 
+                      rel="noopener" 
+                      className="nav-link text-[#212121] hover:text-[#FF5733]"
+                    >
+                      Colegio de Martilleros
                     </a>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <>
-                <a href="/api/login" data-testid="login-button">
-                  <Button variant="ghost" className="hidden md:inline-flex">
-                    Mi cuenta
-                  </Button>
-                </a>
-                <Link href="/subscribe">
-                  <Button data-testid="register-button">
-                    Registrarse
-                  </Button>
-                </Link>
-              </>
-            )}
-            
-            {/* Mobile menu button */}
-            <Button variant="ghost" className="md:hidden p-2" data-testid="mobile-menu">
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </Button>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Column 3 */}
+              <div>
+                <ul className="nav-site">
+                  <li>
+                    <Link href="/properties" className="nav-link text-[#212121] hover:text-[#FF5733]">
+                      Propiedades
+                    </Link>
+                  </li>
+                  <li>
+                    <a 
+                      href="https://www.colescba.org.ar/portal/delegaciones/delegacion-bahia-blanca" 
+                      target="_blank" 
+                      rel="noopener" 
+                      className="nav-link text-[#212121] hover:text-[#FF5733]"
+                    >
+                      Colegio de Escribanos
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+              {/* Column 4 */}
+              <div>
+                <ul className="nav-site">
+                  <li>
+                    <Link href="/inmobiliarias" className="nav-link text-[#212121] hover:text-[#FF5733]">
+                      Inmobiliarias
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/contacto" className="nav-link text-[#212121] hover:text-[#FF5733]">
+                      Contacto
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+            </nav>
+
+            {/* Auth Buttons */}
+            <nav className="col-span-12 md:col-span-3 flex justify-center pt-3 md:pt-0 md:justify-end items-center button-actions">
+              {isLoading ? (
+                <div className="w-6 h-6 animate-spin border-2 border-[#FF5733] border-t-transparent rounded-full" />
+              ) : isAuthenticated && user ? (
+                <Button className="ml-1 bg-[#FF5733] hover:bg-[#ff6e52] text-white">
+                  Mi cuenta
+                </Button>
+              ) : (
+                <>
+                  <a href="/api/login">
+                    <Button className="bg-[#FF5733] hover:bg-[#ff6e52] text-white">
+                      Registrarse
+                    </Button>
+                  </a>
+                  <Link href="/subscribe">
+                    <Button className="ml-1 bg-[#FF5733] hover:bg-[#ff6e52] text-white">
+                      Mi cuenta
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </nav>
           </div>
-        </div>
+        </nav>
       </div>
     </header>
   );

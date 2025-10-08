@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, MapPin, Filter } from "lucide-react";
+import { Search, Filter } from "lucide-react";
 import { Link } from "wouter";
 
 export default function HeroSearch() {
@@ -24,151 +24,139 @@ export default function HeroSearch() {
     if (operationType && operationType !== "all") params.append("operationType", operationType);
     if (propertyType && propertyType !== "all") params.append("categoryId", propertyType);
     if (location && location !== "all") params.append("locationId", location);
-    
     window.location.href = `/properties?${params.toString()}`;
   };
 
   return (
-    <section className="relative py-20 px-4 sm:px-6 lg:px-8">
-      {/* Background with gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5"></div>
-      <div className="absolute inset-0" style={{
-        backgroundImage: `url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23f1f5f9" fill-opacity="0.4"><circle cx="30" cy="30" r="1.5"/></g></svg>')`,
-        backgroundSize: '60px 60px'
-      }}></div>
-      
-      <div className="relative max-w-7xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-6">
-            Viví donde siempre soñaste
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Con el respaldo de nuestro sector inmobiliario
-          </p>
-          
-          {/* Operation Type Tabs */}
-          <div className="flex justify-center mb-8">
-            <div className="inline-flex bg-muted rounded-lg p-1">
-              <button
-                className={`px-6 py-3 text-sm font-medium rounded-md transition-colors ${
-                  operationType === "venta"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-                onClick={() => setOperationType("venta")}
-                data-testid="operation-venta"
-              >
-                VENTA
-              </button>
-              <button
-                className={`px-6 py-3 text-sm font-medium rounded-md transition-colors ${
-                  operationType === "alquiler"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-                onClick={() => setOperationType("alquiler")}
-                data-testid="operation-alquiler"
-              >
-                ALQUILER
-              </button>
-              <button
-                className={`px-6 py-3 text-sm font-medium rounded-md transition-colors ${
-                  operationType === "temporario"
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-                onClick={() => setOperationType("temporario")}
-                data-testid="operation-temporario"
-              >
-                TEMPORARIO
-              </button>
-            </div>
-          </div>
+    <section className="form-filter-container">
+      {/* Call-to-Action Box */}
+      <div className="cta-box">
+        <p>
+          BuscoInmueble.click lo ayuda a buscar el inmueble que necesita ahorrándole tiempo, recibirá notificaciones en su mail y WhatsApp.
+        </p>
+        <button type="button">
+          Complete el formulario
+        </button>
+      </div>
+
+      <div className="container py-5">
+        {/* Hero Text */}
+        <div className="home-text">
+          <h2>Viví donde siempre soñaste</h2>
+          <p>Con el respaldo de nuestro sector inmobiliario.</p>
         </div>
 
-        {/* Search Form */}
-        <div className="max-w-4xl mx-auto">
-          <div className="bg-card border border-border rounded-2xl shadow-lg p-6 md:p-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Tipo de propiedad
-                </label>
-                <Select value={propertyType} onValueChange={setPropertyType}>
-                  <SelectTrigger data-testid="property-type-select">
-                    <SelectValue placeholder="Todas las propiedades" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas las propiedades</SelectItem>
-                    {categories.map((category: any) => (
-                      <SelectItem key={category.id} value={category.id}>
-                        {category.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Localidad
-                </label>
-                <Select value={location} onValueChange={setLocation}>
-                  <SelectTrigger data-testid="location-select">
-                    <SelectValue placeholder="Buscar por localidad..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Todas las localidades</SelectItem>
-                    {locations.map((loc: any) => (
-                      <SelectItem key={loc.id} value={loc.id}>
-                        {loc.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-foreground mb-2">
-                  Búsqueda avanzada
-                </label>
-                <Button 
-                  variant="outline" 
-                  className="w-full justify-start text-muted-foreground"
-                  data-testid="advanced-search"
+        {/* Form Filter */}
+        <div className="pb-4">
+          <div className="form-filter pt-2">
+            {/* Operation Type Tabs */}
+            <ul className="flex tabs gap-2 pb-0 justify-center w-full mb-4">
+              <li>
+                <button
+                  className={`uppercase px-4 py-2 rounded text-sm font-medium transition-colors ${
+                    operationType === "venta"
+                      ? "bg-[#FF5733] text-white"
+                      : "bg-white text-[#FF5733] hover:bg-gray-100"
+                  }`}
+                  onClick={() => setOperationType("venta")}
                 >
-                  <Filter className="h-4 w-4 mr-2" />
-                  Más filtros...
-                </Button>
-              </div>
-            </div>
-            
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                className="flex-1 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
-                onClick={handleSearch}
-                data-testid="search-button"
-              >
-                <Search className="h-5 w-5 mr-2" />
-                Buscar
-              </Button>
-              <Link href="/properties">
-                <Button 
-                  variant="secondary" 
-                  className="bg-secondary text-secondary-foreground hover:bg-secondary/90 font-semibold"
-                  data-testid="search-by-agency"
+                  Venta
+                </button>
+              </li>
+              <li>
+                <button
+                  className={`uppercase px-4 py-2 rounded text-sm font-medium transition-colors ${
+                    operationType === "alquiler"
+                      ? "bg-[#FF5733] text-white"
+                      : "bg-white text-[#FF5733] hover:bg-gray-100"
+                  }`}
+                  onClick={() => setOperationType("alquiler")}
                 >
-                  Buscar por inmobiliaria
-                </Button>
-              </Link>
-              <Button 
-                variant="outline" 
-                className="font-semibold"
-                data-testid="search-by-map"
-              >
-                <MapPin className="h-4 w-4 mr-2" />
-                Búsqueda por mapa
-              </Button>
+                  Alquiler
+                </button>
+              </li>
+              <li>
+                <button
+                  className={`uppercase px-4 py-2 rounded text-sm font-medium transition-colors ${
+                    operationType === "temporario"
+                      ? "bg-[#FF5733] text-white"
+                      : "bg-white text-[#FF5733] hover:bg-gray-100"
+                  }`}
+                  onClick={() => setOperationType("temporario")}
+                >
+                  Temporario
+                </button>
+              </li>
+            </ul>
+
+            {/* Form Card */}
+            <div className="card-form bg-white rounded-lg shadow-lg p-6">
+              <form onSubmit={(e) => { e.preventDefault(); handleSearch(); }}>
+                <div className="grid justify-content-evenly">
+                  {/* Property Type - col-12 md:col (flexible) */}
+                  <div className="col-12 md:col">
+                    <Select value={propertyType} onValueChange={setPropertyType}>
+                      <SelectTrigger className="w-full h-12 border border-gray-300 rounded">
+                        <SelectValue placeholder="Tipo de propiedad" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todas las propiedades</SelectItem>
+                        {categories.map((category: any) => (
+                          <SelectItem key={category.id} value={category.id}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Location - col-12 md:col-3 */}
+                  <div className="col-12 md:col-3">
+                    <Select value={location} onValueChange={setLocation}>
+                      <SelectTrigger className="w-full h-12 border border-gray-300 rounded">
+                        <SelectValue placeholder="Localidad" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todas las localidades</SelectItem>
+                        {locations.map((loc: any) => (
+                          <SelectItem key={loc.id} value={loc.id}>
+                            {loc.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Advanced Search Button - col-12 md:col-1 */}
+                  <div className="col-12 md:col-1">
+                    <Button 
+                      type="button" 
+                      className="w-full advanced-btn p-button-link p-button p-component h-12 flex flex-col items-center justify-center"
+                    >
+                      <span className="p-button-icon">
+                        <Filter className="h-4 w-4 mb-1" />
+                      </span>
+                      <span className="p-button-label">
+                        Búsqueda <br /> avanzada
+                      </span>
+                    </Button>
+                  </div>
+
+                  {/* Search Button - col-12 md:col-2 */}
+                  <div className="col-12 md:col-2">
+                    <Button 
+                      type="submit" 
+                      className="w-full submit-simple p-button p-component h-12 flex items-center justify-center gap-2"
+                      title="Buscar"
+                    >
+                      <span className="p-button-icon">
+                        <Search className="h-4 w-4" />
+                      </span>
+                      <span className="p-button-label">Buscar</span>
+                    </Button>
+                  </div>
+                </div>
+              </form>
             </div>
           </div>
         </div>
