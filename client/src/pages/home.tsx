@@ -299,10 +299,12 @@ export default function Home() {
     ownerId: string;
   }
 
-  const { data: userAgency } = useQuery<Agency[], Error, Agency | undefined>({
+  const { data: agencies = [] } = useQuery<Agency[]>({
     queryKey: ["/api/agencies"],
-    select: (agencies: Agency[]) => agencies.find(agency => agency.ownerId === user?.id),
+    enabled: !!user?.id,
   });
+
+  const userAgency = agencies.find(agency => agency.ownerId === user?.id);
 
   const { data: locations = [] } = useQuery<Location[]>({
     queryKey: ["/api/locations"],

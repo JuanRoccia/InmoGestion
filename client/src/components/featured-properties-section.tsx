@@ -55,22 +55,23 @@ export default function FeaturedPropertiesSection({
             align: "start",
             loop: false,
             slidesToScroll: 1,
+            dragFree: true,
           }}
           className="w-full relative"
         >
-          <CarouselContent className="-ml-2 md:-ml-4">
+          <CarouselContent className="-ml-3">
             {properties.map((property) => (
               <CarouselItem 
                 key={property.id} 
-                className="pl-2 md:pl-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/5 xl:basis-1/6"
+                className="pl-3 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6"
                 data-testid={`carousel-item-${property.id}`}
               >
                 <PropertyCard property={property} />
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious className="hidden md:flex -left-4 lg:-left-12" data-testid="carousel-prev-button" />
-          <CarouselNext className="hidden md:flex -right-4 lg:-right-12" data-testid="carousel-next-button" />
+          <CarouselPrevious className="hidden lg:flex -left-4 xl:-left-12" data-testid="carousel-prev-button" />
+          <CarouselNext className="hidden lg:flex -right-4 xl:-right-12" data-testid="carousel-next-button" />
         </Carousel>
       </div>
     </section>
