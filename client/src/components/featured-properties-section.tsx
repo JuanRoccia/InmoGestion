@@ -43,10 +43,12 @@ export default function FeaturedPropertiesSection({
           <h2 className="text-xl md:text-2xl font-bold text-foreground">
             {title}
           </h2>
-          <Link href={viewMoreLink}>
-            <a className="text-primary hover:text-primary/80 text-sm font-medium transition-colors" data-testid={`view-more-${title.toLowerCase().replace(/\s+/g, '-')}`}>
-              Ver más
-            </a>
+          <Link 
+            href={viewMoreLink} 
+            className="text-primary hover:text-primary/80 text-sm font-medium transition-colors" 
+            data-testid={`view-more-${title.toLowerCase().replace(/\s+/g, '-')}`}
+          >
+            Ver más
           </Link>
         </div>
 
