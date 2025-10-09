@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import Header from "@/components/header";
 import HeroSearch from "@/components/hero-search";
-import PropertyCard from "@/components/property-card";
+import FeaturedPropertiesSection from "@/components/featured-properties-section";
 import LocationGrid from "@/components/location-grid";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -33,7 +33,7 @@ interface Location {
 export default function Home() {
   const { user } = useAuth();
   
-  // Mock data for featured properties
+  // Mock data for featured properties - 6 properties per section
   const mockProperties: { 
     sale: Property[];
     rent: Property[];
@@ -78,6 +78,45 @@ export default function Home() {
         images: ["/assets/logo.png"],
         operationType: "venta",
         isFeatured: true
+      },
+      {
+        id: "7",
+        title: "Cum alias dolores magni",
+        price: "3314790",
+        currency: "$",
+        area: 464,
+        bedrooms: 1,
+        bathrooms: 1,
+        address: "Alameda de Eladio Sandoval 8",
+        images: ["/assets/logo.png"],
+        operationType: "venta",
+        isFeatured: true
+      },
+      {
+        id: "8",
+        title: "Provident necessitatibus",
+        price: "3352349",
+        currency: "$",
+        area: 395,
+        bedrooms: 3,
+        bathrooms: 2,
+        address: "Pasadizo Carina Bernal 6 Piso 9",
+        images: ["/assets/logo.png"],
+        operationType: "venta",
+        isFeatured: true
+      },
+      {
+        id: "9",
+        title: "Aut earum cumque",
+        price: "4172624",
+        currency: "$",
+        area: 153,
+        bedrooms: 4,
+        bathrooms: 1,
+        address: "C. de Maxi Araujo 247",
+        images: ["/assets/logo.png"],
+        operationType: "venta",
+        isFeatured: true
       }
     ],
     rent: [
@@ -85,10 +124,10 @@ export default function Home() {
         id: "4",
         title: "Cum alias dolores magni",
         price: "3314790",
-        currency: "USD",
+        currency: "$",
         area: 464,
         bedrooms: 1,
-        bathrooms: 3,
+        bathrooms: 1,
         address: "Alameda de Eladio Sandoval 8",
         images: ["/assets/logo.png"],
         operationType: "alquiler",
@@ -98,11 +137,63 @@ export default function Home() {
         id: "5",
         title: "Provident necessitatibus",
         price: "3352349",
-        currency: "USD",
+        currency: "$",
         area: 395,
         bedrooms: 3,
         bathrooms: 2,
         address: "Pasadizo Carina Bernal 6 Piso 9",
+        images: ["/assets/logo.png"],
+        operationType: "alquiler",
+        isFeatured: true
+      },
+      {
+        id: "10",
+        title: "Aut earum cumque",
+        price: "4172624",
+        currency: "$",
+        area: 153,
+        bedrooms: 4,
+        bathrooms: 1,
+        address: "C. de Maxi Araujo 247",
+        images: ["/assets/logo.png"],
+        operationType: "alquiler",
+        isFeatured: true
+      },
+      {
+        id: "11",
+        title: "Dignissimos voluptas",
+        price: "2850000",
+        currency: "$",
+        area: 320,
+        bedrooms: 2,
+        bathrooms: 2,
+        address: "Plaza de Ana Delgado 15",
+        images: ["/assets/logo.png"],
+        operationType: "alquiler",
+        isFeatured: true
+      },
+      {
+        id: "12",
+        title: "Excepturi mollitia",
+        price: "1950000",
+        currency: "$",
+        area: 180,
+        bedrooms: 1,
+        bathrooms: 1,
+        address: "Travesía Lucía Mora 89",
+        images: ["/assets/logo.png"],
+        operationType: "alquiler",
+        isFeatured: true
+      },
+      {
+        id: "13",
+        title: "Quaerat impedit",
+        price: "3750000",
+        currency: "$",
+        area: 420,
+        bedrooms: 3,
+        bathrooms: 3,
+        address: "Calle Mayor 234",
         images: ["/assets/logo.png"],
         operationType: "alquiler",
         isFeatured: true
@@ -113,11 +204,76 @@ export default function Home() {
         id: "6",
         title: "Aut earum cumque",
         price: "4172624",
-        currency: "USD",
+        currency: "$",
         area: 153,
         bedrooms: 4,
         bathrooms: 2,
         address: "C. de Maxi Araujo 247",
+        images: ["/assets/logo.png"],
+        operationType: "temporario",
+        isFeatured: true
+      },
+      {
+        id: "14",
+        title: "Temporario de lujo",
+        price: "5200000",
+        currency: "$",
+        area: 280,
+        bedrooms: 3,
+        bathrooms: 2,
+        address: "Avenida del Mar 456",
+        images: ["/assets/logo.png"],
+        operationType: "temporario",
+        isFeatured: true
+      },
+      {
+        id: "15",
+        title: "Casa de verano",
+        price: "3900000",
+        currency: "$",
+        area: 250,
+        bedrooms: 4,
+        bathrooms: 3,
+        address: "Costa Azul 123",
+        images: ["/assets/logo.png"],
+        operationType: "temporario",
+        isFeatured: true
+      },
+      {
+        id: "16",
+        title: "Departamento vacacional",
+        price: "2800000",
+        currency: "$",
+        area: 150,
+        bedrooms: 2,
+        bathrooms: 1,
+        address: "Paseo Marítimo 789",
+        images: ["/assets/logo.png"],
+        operationType: "temporario",
+        isFeatured: true
+      },
+      {
+        id: "17",
+        title: "Villa temporaria",
+        price: "6500000",
+        currency: "$",
+        area: 380,
+        bedrooms: 5,
+        bathrooms: 4,
+        address: "Zona Residencial Premium 12",
+        images: ["/assets/logo.png"],
+        operationType: "temporario",
+        isFeatured: true
+      },
+      {
+        id: "18",
+        title: "Chalet de temporada",
+        price: "4750000",
+        currency: "$",
+        area: 310,
+        bedrooms: 3,
+        bathrooms: 2,
+        address: "Urbanización Las Palmeras 45",
         images: ["/assets/logo.png"],
         operationType: "temporario",
         isFeatured: true
@@ -145,7 +301,7 @@ export default function Home() {
 
   const { data: userAgency } = useQuery<Agency[], Error, Agency | undefined>({
     queryKey: ["/api/agencies"],
-    select: (agencies) => agencies.find(agency => agency.ownerId === user?.id),
+    select: (agencies: Agency[]) => agencies.find(agency => agency.ownerId === user?.id),
   });
 
   const { data: locations = [] } = useQuery<Location[]>({
@@ -207,76 +363,26 @@ export default function Home() {
       <HeroSearch />
       
       {/* Featured Properties - Sale */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-12">
-            <h3 className="text-3xl font-bold text-foreground">
-              Propiedades destacadas en venta
-            </h3>
-            <Link href="/properties?operationType=venta">
-              <Button variant="ghost" className="text-primary hover:text-primary/80">
-                Ver más →
-              </Button>
-            </Link>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {featuredProperties.map((property: any) => (
-              <div key={property.id} className="col-span-1">
-                <PropertyCard property={property} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <FeaturedPropertiesSection
+        title="Propiedades destacadas en venta"
+        properties={featuredProperties}
+        viewMoreLink="/properties?operationType=venta"
+      />
 
       {/* Featured Properties - Rent */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-muted/30">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-12">
-            <h3 className="text-3xl font-bold text-foreground">
-              Propiedades destacadas en alquiler
-            </h3>
-            <Link href="/properties?operationType=alquiler">
-              <Button variant="ghost" className="text-primary hover:text-primary/80">
-                Ver más →
-              </Button>
-            </Link>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {featuredRentProperties.map((property: any) => (
-              <div key={property.id} className="col-span-1">
-                <PropertyCard property={property} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <FeaturedPropertiesSection
+        title="Propiedades destacadas en alquiler"
+        properties={featuredRentProperties}
+        viewMoreLink="/properties?operationType=alquiler"
+        bgClass="bg-muted/30"
+      />
 
       {/* Featured Properties - Temporary */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-12">
-            <h3 className="text-3xl font-bold text-foreground">
-              Propiedades destacadas temporarias
-            </h3>
-            <Link href="/properties?operationType=temporario">
-              <Button variant="ghost" className="text-primary hover:text-primary/80">
-                Ver más →
-              </Button>
-            </Link>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {featuredTemporaryProperties.map((property: any) => (
-              <div key={property.id} className="col-span-1">
-                <PropertyCard property={property} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <FeaturedPropertiesSection
+        title="Propiedades destacadas temporarias"
+        properties={featuredTemporaryProperties}
+        viewMoreLink="/properties?operationType=temporario"
+      />
 
       <LocationGrid locations={locations} />
       
