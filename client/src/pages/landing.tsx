@@ -25,6 +25,24 @@ export default function Landing() {
       <div className="pt-28">
         <HeroSearch />
 
+        {/* Buttons Section */}
+        <section className="py-8 bg-white">
+          <div className="container max-w-6xl mx-auto px-4">
+            <div className="buttons-busqueda flex justify-center gap-6">
+              <Link href="/inmobiliarias">
+                <Button className="p-button p-component bg-[#FF5733] hover:bg-[#ff6e52] text-white px-8 py-3 rounded">
+                  Buscar por inmobiliaria
+                </Button>
+              </Link>
+              <Link href="/mapa">
+                <Button className="p-button p-component bg-[#FF5733] hover:bg-[#ff6e52] text-white px-8 py-3 rounded">
+                  Búsqueda por mapa
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+
       {/* Banner superior */}
       <section className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
@@ -35,9 +53,16 @@ export default function Landing() {
       {/* Propiedades destacadas en venta */}
       <section className="py-12 px-4">
         <div className="max-w-6xl mx-auto">
-          <SectionTitle>Propiedades destacadas en venta</SectionTitle>
+          <div className="flex justify-between items-center mb-8">
+            <SectionTitle>Propiedades destacadas en venta</SectionTitle>
+            <Link href="/properties?operationType=venta">
+              <Button variant="ghost" className="text-[#FF5733] hover:text-[#ff6e52] p-0 h-auto">
+                Ver más →
+              </Button>
+            </Link>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredProperties.map((property: any) => (
+            {featuredProperties.slice(0, 6).map((property: any) => (
               <PropertyCard key={property.id} property={property} />
             ))}
           </div>
@@ -52,12 +77,19 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* Más secciones de propiedades - placeholders según screenshot */}
+      {/* Propiedades destacadas en alquiler */}
       <section className="py-12 px-4">
         <div className="max-w-6xl mx-auto">
-          <SectionTitle>Propiedades destacadas en alquiler</SectionTitle>
+          <div className="flex justify-between items-center mb-8">
+            <SectionTitle>Propiedades destacadas en alquiler</SectionTitle>
+            <Link href="/properties?operationType=alquiler">
+              <Button variant="ghost" className="text-[#FF5733] hover:text-[#ff6e52] p-0 h-auto">
+                Ver más →
+              </Button>
+            </Link>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredProperties.map((property: any) => (
+            {featuredProperties.slice(0, 6).map((property: any) => (
               <PropertyCard key={`alq-${property.id}`} property={property} />
             ))}
           </div>
@@ -74,9 +106,16 @@ export default function Landing() {
 
       <section className="py-12 px-4">
         <div className="max-w-6xl mx-auto">
-          <SectionTitle>Countries – Barrios Cerrados – Terrenos</SectionTitle>
+          <div className="flex justify-between items-center mb-8">
+            <SectionTitle>Countries – Barrios Cerrados – Terrenos</SectionTitle>
+            <Link href="/properties?category=terrenos">
+              <Button variant="ghost" className="text-[#FF5733] hover:text-[#ff6e52] p-0 h-auto">
+                Ver más →
+              </Button>
+            </Link>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredProperties.map((property: any) => (
+            {featuredProperties.slice(0, 6).map((property: any) => (
               <PropertyCard key={`lot-${property.id}`} property={property} />
             ))}
           </div>
@@ -93,9 +132,16 @@ export default function Landing() {
 
       <section className="py-12 px-4">
         <div className="max-w-6xl mx-auto">
-          <SectionTitle>Emprendimientos destacados</SectionTitle>
+          <div className="flex justify-between items-center mb-8">
+            <SectionTitle>Emprendimientos destacados</SectionTitle>
+            <Link href="/proyectos">
+              <Button variant="ghost" className="text-[#FF5733] hover:text-[#ff6e52] p-0 h-auto">
+                Ver más →
+              </Button>
+            </Link>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredProperties.map((property: any) => (
+            {featuredProperties.slice(0, 6).map((property: any) => (
               <PropertyCard key={`dev-${property.id}`} property={property} />
             ))}
           </div>
@@ -112,9 +158,16 @@ export default function Landing() {
 
       <section className="py-12 px-4">
         <div className="max-w-6xl mx-auto">
-          <SectionTitle>Alquileres temporarios</SectionTitle>
+          <div className="flex justify-between items-center mb-8">
+            <SectionTitle>Alquileres temporarios</SectionTitle>
+            <Link href="/properties?operationType=temporario">
+              <Button variant="ghost" className="text-[#FF5733] hover:text-[#ff6e52] p-0 h-auto">
+                Ver más →
+              </Button>
+            </Link>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredProperties.map((property: any) => (
+            {featuredProperties.slice(0, 6).map((property: any) => (
               <PropertyCard key={`tmp-${property.id}`} property={property} />
             ))}
           </div>

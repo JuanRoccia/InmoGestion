@@ -135,19 +135,45 @@ export default function Header() {
               {isLoading ? (
                 <div className="w-6 h-6 animate-spin border-2 border-[#FF5733] border-t-transparent rounded-full" />
               ) : isAuthenticated && user ? (
-                <Button className="ml-1 bg-[#FF5733] hover:bg-[#ff6e52] text-white">
-                  Mi cuenta
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className="ml-1 bg-[#FF5733] hover:bg-[#ff6e52] text-white" data-testid="button-account">
+                      <User className="h-4 w-4 mr-2" />
+                      Mi cuenta
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem asChild>
+                      <Link href="/agency-dashboard" className="cursor-pointer flex items-center" data-testid="link-agency-dashboard">
+                        <Building2 className="h-4 w-4 mr-2" />
+                        Panel de Agencia
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin-dashboard" className="cursor-pointer flex items-center" data-testid="link-admin-dashboard">
+                        <Settings className="h-4 w-4 mr-2" />
+                        Panel de Admin
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <a href="/api/logout" className="cursor-pointer flex items-center" data-testid="button-logout">
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Cerrar Sesión
+                      </a>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               ) : (
                 <>
                   <a href="/api/login">
-                    <Button className="bg-[#FF5733] hover:bg-[#ff6e52] text-white">
-                      Registrarse
+                    <Button className="bg-[#FF5733] hover:bg-[#ff6e52] text-white" data-testid="button-login">
+                      Iniciar Sesión
                     </Button>
                   </a>
                   <Link href="/subscribe">
-                    <Button className="ml-1 bg-[#FF5733] hover:bg-[#ff6e52] text-white">
-                      Mi cuenta
+                    <Button className="ml-1 bg-[#FF5733] hover:bg-[#ff6e52] text-white" data-testid="button-subscribe">
+                      Suscribirse
                     </Button>
                   </Link>
                 </>

@@ -30,8 +30,8 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/properties" component={Properties} />
           <Route path="/properties/:id" component={PropertyDetail} />
-          <Route path="/admin" component={AdminDashboard} />
-          <Route path="/dashboard" component={AgencyDashboard} />
+          <Route path="/admin-dashboard" component={AdminDashboard} />
+          <Route path="/agency-dashboard" component={AgencyDashboard} />
           <Route path="/subscribe" component={Subscribe} />
         </>
       )}

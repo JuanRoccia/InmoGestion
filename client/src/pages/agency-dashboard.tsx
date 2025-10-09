@@ -4,13 +4,29 @@ import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { isUnauthorizedError } from "@/lib/authUtils";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { insertAgencySchema } from "@shared/schema";
 import Header from "@/components/header";
 import PropertyForm from "@/components/property-form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Plus, Building2, Eye, Edit, Trash2 } from "lucide-react";
+
+// Use shared schema but omit fields that will be set server-side
+const agencyFormSchema = insertAgencySchema.pick({
+  name: true,
+  email: true,
+  phone: true,
+  address: true,
+  description: true,
+  website: true,
+});
 
 export default function AgencyDashboard() {
   const { toast } = useToast();
@@ -50,7 +66,8 @@ export default function AgencyDashboard() {
       await apiRequest("DELETE", `/api/properties/${propertyId}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/properties"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/properties", { agencyId: agency?.id }], refetchType: 'all' });
+      queryClient.invalidateQueries({ queryKey: ["/api/properties"], refetchType: 'all' });
       toast({
         title: "Éxito",
         description: "Propiedad eliminada correctamente",
@@ -90,7 +107,10 @@ export default function AgencyDashboard() {
   const handlePropertyFormSuccess = () => {
     setIsPropertyDialogOpen(false);
     setEditingProperty(null);
-    queryClient.invalidateQueries({ queryKey: ["/api/properties"] });
+    // Invalidate with the exact same key structure as the query
+    queryClient.invalidateQueries({ queryKey: ["/api/properties", { agencyId: agency?.id }], refetchType: 'all' });
+    queryClient.invalidateQueries({ queryKey: ["/api/properties"], refetchType: 'all' });
+    queryClient.invalidateQueries({ queryKey: ["/api/agencies"], refetchType: 'all' });
   };
 
   if (isLoading) {
@@ -105,19 +125,154 @@ export default function AgencyDashboard() {
     return null;
   }
 
+  const form = useForm({
+    resolver: zodResolver(agencyFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      phone: "",
+      address: "",
+      description: "",
+      website: "",
+    },
+  });
+
+  const createAgencyMutation = useMutation({
+    mutationFn: async (data: typeof agencyFormSchema._type) => {
+      const response = await apiRequest("POST", "/api/agencies", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/agencies"] });
+      toast({
+        title: "¡Éxito!",
+        description: "Inmobiliaria creada correctamente",
+      });
+    },
+    onError: (error: any) => {
+      if (isUnauthorizedError(error)) {
+        toast({
+          title: "Unauthorized",
+          description: "You are logged out. Logging in again...",
+          variant: "destructive",
+        });
+        setTimeout(() => {
+          window.location.href = "/api/login";
+        }, 500);
+        return;
+      }
+      toast({
+        title: "Error",
+        description: "No se pudo crear la inmobiliaria",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmitAgency = (data: typeof agencyFormSchema._type) => {
+    createAgencyMutation.mutate(data);
+  };
+
   if (!agency) {
     return (
       <div className="min-h-screen bg-background">
         <Header />
         <div className="py-8 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-2xl font-bold text-foreground mb-4">No tienes una inmobiliaria</h1>
-            <p className="text-muted-foreground mb-6">
-              Necesitas crear una inmobiliaria para acceder al dashboard
-            </p>
-            <Button onClick={() => window.location.href = "/subscribe"}>
-              Crear Inmobiliaria
-            </Button>
+          <div className="max-w-2xl mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl">Registrar Inmobiliaria</CardTitle>
+                <p className="text-muted-foreground">
+                  Completa los datos para crear tu inmobiliaria
+                </p>
+              </CardHeader>
+              <CardContent>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmitAgency)} className="space-y-6">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nombre de la Inmobiliaria</FormLabel>
+                          <FormControl>
+                            <Input {...field} data-testid="input-name" placeholder="Ej: Inmobiliaria ABC" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="email" data-testid="input-email" placeholder="Ej: contacto@inmobiliaria.com" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Teléfono</FormLabel>
+                          <FormControl>
+                            <Input {...field} data-testid="input-phone" placeholder="Ej: 2914567890" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Dirección</FormLabel>
+                          <FormControl>
+                            <Input {...field} data-testid="input-address" placeholder="Ej: Calle Principal 123" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Descripción (opcional)</FormLabel>
+                          <FormControl>
+                            <Textarea {...field} data-testid="textarea-description" placeholder="Describe tu inmobiliaria..." rows={4} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="flex gap-4">
+                      <Button 
+                        type="submit" 
+                        disabled={createAgencyMutation.isPending}
+                        data-testid="button-submit"
+                        className="flex-1"
+                      >
+                        {createAgencyMutation.isPending ? "Creando..." : "Crear Inmobiliaria"}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
@@ -138,7 +293,7 @@ export default function AgencyDashboard() {
             
             <Dialog open={isPropertyDialogOpen} onOpenChange={setIsPropertyDialogOpen}>
               <DialogTrigger asChild>
-                <Button data-testid="add-property-button">
+                <Button data-testid="button-add-property">
                   <Plus className="h-4 w-4 mr-2" />
                   Agregar Propiedad
                 </Button>

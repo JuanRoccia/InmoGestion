@@ -206,6 +206,32 @@
   padding: 0 2rem;
 }
 
+/* Buttons Section Styling */
+.buttons-busqueda {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.buttons-busqueda .p-button {
+  background: #FF5733 !important;
+  border: none !important;
+  color: white !important;
+  padding: 0.75rem 2rem !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  transition: all 0.3s ease !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+}
+
+.buttons-busqueda .p-button:hover {
+  background: #ff6e52 !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 12px rgba(255, 87, 51, 0.3) !important;
+}
+
 /* Form tabs styling */
 .form-filter .tabs {
   list-style: none;
@@ -339,5 +365,16 @@
   
   .form-filter-container .container {
     padding: 0 1rem;
+  }
+  
+  .buttons-busqueda {
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  .buttons-busqueda .p-button {
+    width: 100%;
+    max-width: 300px;
   }
 }
