@@ -39,11 +39,11 @@ export default function HeroSearch() {
         </button>
       </div>
 
-      <div className="container py-5">
+      <div className="container py-5 relative">
         {/* Hero Text */}
         <div className="home-text">
-          <h2>Viví donde siempre soñaste</h2>
-          <p>Con el respaldo de nuestro sector inmobiliario.</p>
+          <h2 className="text-4xl font-bold mb-2">Viví donde siempre soñaste</h2>
+          <p className="text-xl">Con el respaldo de nuestro sector inmobiliario.</p>
         </div>
 
         {/* Form Filter */}
