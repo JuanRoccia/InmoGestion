@@ -29,7 +29,7 @@
   --chart-3: #42A5F5;
   --chart-4: #FFC107;
   --chart-5: #AB47BC;
-  --font-sans: "Helvetica Neue", Arial, Helvetica, sans-serif;
+  --font-sans: "Roboto","Helvetica Neue", Arial, Helvetica, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: Menlo, monospace;
   --shadow-2xs: 0px 2px 0px 0px rgba(0,0,0,0);
@@ -318,14 +318,20 @@
 /* Call-to-Action Box */
 .cta-box {
   position: absolute;
-  top: 1rem;
-  left: 2rem;
-  background: #FF5733;
+  /* top: 1rem; */
+  top: 134%;
+  /* left: 2rem; */
+  left: 0;
+  /* background: #FF5733; */
+  background: #ff2e06;
   color: white;
-  padding: 1rem 1.25rem;
+  /* padding: 1rem 1.25rem; */
+  padding: 10px 20px;
   border-radius: 8px;
-  width: 380px;
-  z-index: 10;
+  /* width: 380px; */
+  width: 28%;
+  /* z-index: 10; */
+  z-index: 1100;
   border: 2px solid white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
