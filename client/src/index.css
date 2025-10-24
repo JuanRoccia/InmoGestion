@@ -219,11 +219,19 @@
   border: none !important;
   color: white !important;
   padding: 0.75rem 2rem !important;
-  border-radius: 6px !important;
-  font-weight: 600 !important;
+  border-radius: 0 !important;
+  border-bottom-left-radius: 6px !important;
+  border-bottom-right-radius: 6px !important;
+  font-weight: 400 !important;
   transition: all 0.3s ease !important;
   text-decoration: none !important;
   display: inline-block !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  min-width: 280px !important; /* Ancho mínimo fijo */
+  width: 280px !important; /* O usa esto para ancho fijo */
+  text-align: center !important;
+  margin-top: -6px !important;
 }
 
 .buttons-busqueda .p-button:hover {

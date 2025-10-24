@@ -24,7 +24,7 @@ export default function Header() {
     }`}>
       <div className="container relative mx-auto h-full">
         <nav className="h-full">
-          <div className="flex items-center justify-between h-full px-4 mx-10">
+          <div className="flex items-center justify-between h-full px-6 md:px-8 lg:px-12">
             {/* Logo */}
             <div className="logo relative flex-shrink-0">
               <Link href="/">

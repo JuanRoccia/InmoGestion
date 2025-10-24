@@ -471,16 +471,16 @@ export default function Landing() {
         <HeroSearch />
 
         {/* Buttons Section */}
-        <section className="py-8 bg-white">
+        <section className="bg-white">
           <div className="container max-w-6xl mx-auto px-4">
             <div className="buttons-busqueda flex justify-center gap-6">
               <Link href="/inmobiliarias">
-                <Button className="p-button p-component bg-[#FF5733] hover:bg-[#ff6e52] text-white px-8 py-3 rounded">
+                <Button className="p-button p-component bg-[#FF5733] hover:bg-[#ff6e52] text-white px-8 py-3 rounded-b-lg">
                   Buscar por inmobiliaria
                 </Button>
               </Link>
               <Link href="/mapa">
-                <Button className="p-button p-component bg-[#FF5733] hover:bg-[#ff6e52] text-white px-8 py-3 rounded">
+                <Button className="p-button p-component bg-[#FF5733] hover:bg-[#ff6e52] text-white px-8 py-3 rounded-b-lg">
                   Búsqueda por mapa
                 </Button>
               </Link>

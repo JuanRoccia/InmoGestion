@@ -28,7 +28,7 @@ export default function HeroSearch() {
   };
 
   return (
-    <section className="relative min-h-[400px] bg-cover bg-center" style={{
+    <section className="relative min-h-[400px] bg-cover bg-center border-b-4 border-x-2 border-[#FF5733]" style={{
       backgroundImage: `url('/assets/banner_back.jpg')`,
       backgroundPosition: 'center center'
     }}>
@@ -77,7 +77,7 @@ export default function HeroSearch() {
             <button
               className={`tracking-widest uppercase px-12 py-3 rounded-t-lg text-sm font-semibold transition-all ${
                 operationType === "venta"
-                  ? "bg-white/80 text-[#FF5733]"
+                  ? "bg-white/90 text-[#FF5733]"
                   : "bg-white/55 text-gray-600 hover:bg-white/90"
               }`}
               onClick={() => setOperationType("venta")}
@@ -87,7 +87,7 @@ export default function HeroSearch() {
             <button
               className={`tracking-widest uppercase px-12 py-3 rounded-t-lg text-sm font-semibold transition-all ${
                 operationType === "alquiler"
-                  ? "bg-white/80 text-[#FF5733]"
+                  ? "bg-white/90 text-[#FF5733]"
                   : "bg-white/55 text-gray-600 hover:bg-white/90"
               }`}
               onClick={() => setOperationType("alquiler")}
@@ -97,7 +97,7 @@ export default function HeroSearch() {
             <button
               className={`tracking-widest uppercase px-12 py-3 rounded-t-lg text-sm font-semibold transition-all ${
                 operationType === "temporario"
-                  ? "bg-white/80 text-[#FF5733]"
+                  ? "bg-white/90 text-[#FF5733]"
                   : "bg-white/55 text-gray-600 hover:bg-white/90"
               }`}
               onClick={() => setOperationType("temporario")}
@@ -107,7 +107,7 @@ export default function HeroSearch() {
           </div>
 
           {/* Form Card */}
-          <div className="bg-white/80 rounded-lg shadow-xl px-10 py-7">
+          <div className="bg-white/90 rounded-lg shadow-xl px-10 py-7">
             <div className="flex flex-col md:flex-row gap-3 items-stretch">
               {/* Property Type */}
               <div className="flex-1">
