@@ -37,10 +37,10 @@ export default function FeaturedPropertiesSection({
   bgClass = "",
 }: FeaturedPropertiesSectionProps) {
   return (
-    <section className={`py-8 px-4 sm:px-6 lg:px-8 ${bgClass}`}>
+    <section className={`py-12 px-4 sm:px-6 lg:px-8 ${bgClass}`}>
       <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-foreground">
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-xl md:text-2xl text-foreground">
             {title}
           </h2>
           <Link 
@@ -61,11 +61,11 @@ export default function FeaturedPropertiesSection({
           }}
           className="w-full relative"
         >
-          <CarouselContent className="-ml-3">
+          <CarouselContent className="-ml-4">
             {properties.map((property) => (
               <CarouselItem 
                 key={property.id} 
-                className="pl-3 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6"
+                className="pl-4 pb-4 basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6"
                 data-testid={`carousel-item-${property.id}`}
               >
                 <PropertyCard property={property} />

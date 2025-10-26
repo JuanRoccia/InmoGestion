@@ -79,6 +79,29 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+
+  /* Estilos personalizados para el scrollbar */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(117, 117, 117, 0.3);
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(117, 117, 117, 0.5);
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
 }
 
 .glass-effect {

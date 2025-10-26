@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 
-interface LocationGridProps {
+export interface LocationGridProps {
   locations: Array<{
     id: string;
     name: string;

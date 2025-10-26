@@ -16,11 +16,12 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Header with dynamic styles based on scroll position (static original option h-28)
   return (
     <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
       isScrolled 
         ? 'h-20 bg-white/80 backdrop-blur-sm shadow-[0_2px_10px_rgba(0,0,0,0.2)]' 
-        : 'h-28 bg-white/70 backdrop-blur-sm shadow-[0_2px_4px_rgba(0,0,0,0.1)]'
+        : 'h-[4.875rem] bg-white/70 backdrop-blur-sm shadow-[0_2px_4px_rgba(0,0,0,0.1)]'
     }`}>
       <div className="container relative mx-auto h-full">
         <nav className="h-full">
@@ -32,7 +33,7 @@ export default function Header() {
                   alt="Busco Inmueble.click" 
                   src="/assets/logo.png" 
                   className={`w-auto transition-all duration-300 ${
-                    isScrolled ? 'h-12' : 'h-16'
+                    isScrolled ? 'h-12' : 'h-12'
                   }`} 
                 />
               </Link>

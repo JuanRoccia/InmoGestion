@@ -36,7 +36,7 @@ export default function Landing() {
       bedrooms: 2,
       bathrooms: 4,
       address: "Urbanización Tadeo Manjón 64",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     },
@@ -49,7 +49,7 @@ export default function Landing() {
       bedrooms: 2,
       bathrooms: 3,
       address: "Glorieta de Carmelo Dorioso 52",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     },
@@ -62,7 +62,7 @@ export default function Landing() {
       bedrooms: 6,
       bathrooms: 2,
       address: "Vial Evelia Simo 74 Piso 1",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     },
@@ -75,7 +75,7 @@ export default function Landing() {
       bedrooms: 1,
       bathrooms: 1,
       address: "Alameda de Eladio Sandoval 8",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     },
@@ -88,7 +88,7 @@ export default function Landing() {
       bedrooms: 3,
       bathrooms: 2,
       address: "Pasadizo Carina Bernal 6 Piso 9",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     },
@@ -101,7 +101,7 @@ export default function Landing() {
       bedrooms: 4,
       bathrooms: 1,
       address: "C. de Maxi Araujo 247",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     }
@@ -118,7 +118,7 @@ export default function Landing() {
       bedrooms: 2,
       bathrooms: 1,
       address: "Av. Libertador 1250",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "alquiler",
       isFeatured: true
     },
@@ -131,7 +131,7 @@ export default function Landing() {
       bedrooms: 3,
       bathrooms: 2,
       address: "Barrio Residencial Norte",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "alquiler",
       isFeatured: true
     },
@@ -144,7 +144,7 @@ export default function Landing() {
       bedrooms: 1,
       bathrooms: 1,
       address: "Zona Universitaria 456",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "alquiler",
       isFeatured: true
     },
@@ -157,7 +157,7 @@ export default function Landing() {
       bedrooms: 2,
       bathrooms: 2,
       address: "Palermo Soho 789",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "alquiler",
       isFeatured: true
     },
@@ -170,7 +170,7 @@ export default function Landing() {
       bedrooms: 2,
       bathrooms: 1,
       address: "Microcentro 321",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "alquiler",
       isFeatured: true
     },
@@ -183,7 +183,7 @@ export default function Landing() {
       bedrooms: 1,
       bathrooms: 1,
       address: "Recoleta 555",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "alquiler",
       isFeatured: true
     }
@@ -200,7 +200,7 @@ export default function Landing() {
       bedrooms: 0,
       bathrooms: 0,
       address: "Country Las Praderas Lote 45",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     },
@@ -213,7 +213,7 @@ export default function Landing() {
       bedrooms: 0,
       bathrooms: 0,
       address: "Barrio Cerrado Los Sauces",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     },
@@ -226,7 +226,7 @@ export default function Landing() {
       bedrooms: 0,
       bathrooms: 0,
       address: "Zona Norte Industrial",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     },
@@ -239,7 +239,7 @@ export default function Landing() {
       bedrooms: 0,
       bathrooms: 0,
       address: "Country Club Residencial",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     },
@@ -252,7 +252,7 @@ export default function Landing() {
       bedrooms: 0,
       bathrooms: 0,
       address: "Barrio Parque del Este",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     },
@@ -265,7 +265,7 @@ export default function Landing() {
       bedrooms: 0,
       bathrooms: 0,
       address: "Loteo Premium Fase 2",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     }
@@ -282,7 +282,7 @@ export default function Landing() {
       bedrooms: 2,
       bathrooms: 2,
       address: "Av. del Libertador 5600",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     },
@@ -295,7 +295,7 @@ export default function Landing() {
       bedrooms: 2,
       bathrooms: 1,
       address: "Zona Norte - Entrega 2026",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     },
@@ -308,7 +308,7 @@ export default function Landing() {
       bedrooms: 3,
       bathrooms: 2,
       address: "Microcentro - En pozo",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     },
@@ -321,7 +321,7 @@ export default function Landing() {
       bedrooms: 3,
       bathrooms: 3,
       address: "Palermo Chico - Preventa",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     },
@@ -334,7 +334,7 @@ export default function Landing() {
       bedrooms: 1,
       bathrooms: 1,
       address: "Belgrano R - Financiación",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     },
@@ -347,7 +347,7 @@ export default function Landing() {
       bedrooms: 4,
       bathrooms: 3,
       address: "Recoleta - Entrega 2025",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "venta",
       isFeatured: true
     }
@@ -364,7 +364,7 @@ export default function Landing() {
       bedrooms: 1,
       bathrooms: 1,
       address: "Puerto Madero - Por día",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "temporario",
       isFeatured: true
     },
@@ -377,7 +377,7 @@ export default function Landing() {
       bedrooms: 3,
       bathrooms: 2,
       address: "Costa - Por semana",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "temporario",
       isFeatured: true
     },
@@ -390,7 +390,7 @@ export default function Landing() {
       bedrooms: 1,
       bathrooms: 1,
       address: "Microcentro - Por día",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "temporario",
       isFeatured: true
     },
@@ -403,7 +403,7 @@ export default function Landing() {
       bedrooms: 2,
       bathrooms: 1,
       address: "Palermo - Por día",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "temporario",
       isFeatured: true
     },
@@ -416,7 +416,7 @@ export default function Landing() {
       bedrooms: 1,
       bathrooms: 1,
       address: "Recoleta - Por día",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "temporario",
       isFeatured: true
     },
@@ -429,7 +429,7 @@ export default function Landing() {
       bedrooms: 2,
       bathrooms: 2,
       address: "Nordelta - Por semana",
-      images: ["/assets/logo.png"],
+      images: [],
       operationType: "temporario",
       isFeatured: true
     }
@@ -443,22 +443,22 @@ export default function Landing() {
   const { data: rentPropertiesData } = useQuery<Property[]>({
     queryKey: ["/api/properties/featured?limit=6&operationType=alquiler"],
   });
-  const featuredRentProperties = rentPropertiesData?.length ? rentPropertiesData : mockSaleProperties;
+  const featuredRentProperties = rentPropertiesData?.length ? rentPropertiesData : mockRentProperties;
 
   const { data: landPropertiesData } = useQuery<Property[]>({
     queryKey: ["/api/properties/featured?limit=6&category=terrenos"],
   });
-  const featuredLandProperties = landPropertiesData?.length ? landPropertiesData : mockSaleProperties;
+  const featuredLandProperties = landPropertiesData?.length ? landPropertiesData : mockLandProperties;
 
   const { data: developmentsData } = useQuery<Property[]>({
     queryKey: ["/api/properties/featured?limit=6&category=emprendimientos"],
   });
-  const featuredDevelopments = developmentsData?.length ? developmentsData : mockSaleProperties;
+  const featuredDevelopments = developmentsData?.length ? developmentsData : mockDevelopmentProperties;
 
   const { data: temporaryPropertiesData } = useQuery<Property[]>({
     queryKey: ["/api/properties/featured?limit=6&operationType=temporario"],
   });
-  const featuredTemporaryProperties = temporaryPropertiesData?.length ? temporaryPropertiesData : mockSaleProperties;
+  const featuredTemporaryProperties = temporaryPropertiesData?.length ? temporaryPropertiesData : mockTemporaryProperties;
 
   const { data: locations = [] } = useQuery({
     queryKey: ["/api/locations"],
@@ -467,7 +467,8 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      <div className="pt-28">
+      {/* header background (optional pt-28) */}
+      <div className="pt-[4.875rem]">
         <HeroSearch />
 
         {/* Buttons Section */}

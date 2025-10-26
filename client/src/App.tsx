@@ -3,6 +3,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import AuthOverlay from "@/components/auth-overlay";
 import { useAuth } from "@/hooks/useAuth";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
@@ -18,23 +19,16 @@ function Router() {
 
   return (
     <Switch>
-      {isLoading || !isAuthenticated ? (
+      <Route path="/" component={Landing} />
+      <Route path="/properties" component={Properties} />
+      <Route path="/properties/:id" component={PropertyDetail} />
+      {isAuthenticated && (
         <>
-          <Route path="/" component={Landing} />
-          <Route path="/properties" component={Properties} />
-          <Route path="/properties/:id" component={PropertyDetail} />
-          <Route path="/subscribe" component={Subscribe} />
-        </>
-      ) : (
-        <>
-          <Route path="/" component={Home} />
-          <Route path="/properties" component={Properties} />
-          <Route path="/properties/:id" component={PropertyDetail} />
           <Route path="/admin-dashboard" component={AdminDashboard} />
           <Route path="/agency-dashboard" component={AgencyDashboard} />
-          <Route path="/subscribe" component={Subscribe} />
         </>
       )}
+      <Route path="/subscribe" component={Subscribe} />
       <Route component={NotFound} />
     </Switch>
   );
@@ -46,6 +40,7 @@ function App() {
       <TooltipProvider>
         <Toaster />
         <Router />
+        <AuthOverlay />
       </TooltipProvider>
     </QueryClientProvider>
   );

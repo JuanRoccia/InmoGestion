@@ -30,7 +30,10 @@ export default function PropertyCard({ property }: PropertyCardProps) {
         <div 
           className="header no-image relative" 
           style={{
-            backgroundImage: `url(${property.images?.[0] || "/assets/logo.png"})`,
+            backgroundImage: `url(${
+              property.images?.[0] || 
+              `https://source.unsplash.com/random/800x600/?apartment,house,property&sig=${property.id}`
+            })`,
             height: "180px",
             backgroundSize: "cover",
             backgroundPosition: "center",

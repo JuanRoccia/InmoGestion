@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import useAuthModalStore from "@/stores/auth-modal-store";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { User, LogOut, Building2, Settings } from "lucide-react";
@@ -27,7 +28,14 @@ import {
 
 export default function AuthMenu() {
   const { user, isAuthenticated, isLoading } = useAuth();
-  const [isAuthDialogOpen, setIsAuthDialogOpen] = useState(false);
+  const { isOpen, setIsOpen } = useAuthModalStore();
+
+  useEffect(() => {
+    // Si no está autenticado y no está cargando, mostrar el modal
+    if (!isLoading && !isAuthenticated) {
+      setIsOpen(true);
+    }
+  }, [isLoading, isAuthenticated, setIsOpen]);
 
   if (isLoading) {
     return (
@@ -85,7 +93,22 @@ export default function AuthMenu() {
   }
 
   return (
-    <Dialog open={isAuthDialogOpen} onOpenChange={setIsAuthDialogOpen}>
+    <Dialog 
+      open={isOpen} 
+      onOpenChange={setIsOpen}
+      onInteractOutside={(e) => {
+        // Prevenir el cierre del modal si no está autenticado
+        if (!isAuthenticated) {
+          e.preventDefault();
+        }
+      }}
+      onEscapeKeyDown={(e) => {
+        // Prevenir el cierre del modal con ESC si no está autenticado
+        if (!isAuthenticated) {
+          e.preventDefault();
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button 
           className="bg-[#FF5733] hover:bg-[#ff6e52] text-white"
@@ -113,7 +136,7 @@ export default function AuthMenu() {
                 className="w-full bg-[#FF5733] hover:bg-[#ff6e52] text-white"
                 onClick={() => {
                   window.location.href = "/api/login";
-                  setIsAuthDialogOpen(false);
+                  setIsOpen(false);
                 }}
               >
                 Iniciar Sesión con Google
@@ -130,7 +153,7 @@ export default function AuthMenu() {
                 variant="outline"
                 onClick={() => {
                   window.location.href = "/subscribe";
-                  setIsAuthDialogOpen(false);
+                  setIsOpen(false);
                 }}
               >
                 Registrar mi Inmobiliaria
