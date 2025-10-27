@@ -1,5 +1,6 @@
 import Header from "@/components/header";
 import HeroSearch from "@/components/hero-search";
+import Footer from "@/components/ui/footer";
 import FeaturedPropertiesSection from "@/components/featured-properties-section";
 import LocationGrid from "@/components/location-grid";
 import SubscriptionPlans from "@/components/subscription-plans";
@@ -562,8 +563,16 @@ export default function Landing() {
         viewMoreLink="/properties?operationType=temporario"
       />
 
+      {/* Banners intermedios */}
+      <section className="py-2 px-4">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+          <AdBanner width={590} height={150} />
+          <AdBanner width={590} height={150} />
+        </div>
+      </section>
+
       {/* Banner inferior */}
-      <section className="py-8 px-4">
+      <section className="py-4 px-4">
         <div className="max-w-6xl mx-auto">
           <AdBanner width={1200} height={250} />
         </div>
@@ -571,12 +580,7 @@ export default function Landing() {
 
       <LocationGrid locations={locations} />
 
-      {/* Footer minimal, similar estructura */}
-      <footer className="bg-[#212121] text-white py-8 px-4">
-        <div className="max-w-6xl mx-auto text-center border-t border-white/20 pt-6">
-          <p className="text-sm">© 2025 Portal Inmobiliario. Todos los derechos reservados</p>
-        </div>
-      </footer>
+      <Footer />
       </div>
     </div>
   );
