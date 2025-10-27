@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import "./property-card.css";
+import { getPropertyImage } from "@/lib/property-images";
 
 interface PropertyCardProps {
   property: {
@@ -31,8 +32,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           className="header no-image relative" 
           style={{
             backgroundImage: `url(${
-              property.images?.[0] || 
-              `https://source.unsplash.com/random/800x600/?apartment,house,property&sig=${property.id}`
+              property.images?.[0] || getPropertyImage(property.id, 800, 85)
             })`,
             height: "180px",
             backgroundSize: "cover",
