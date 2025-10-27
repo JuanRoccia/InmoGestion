@@ -1,7 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import useAuthModalStore from "@/stores/auth-modal-store";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 import { Link } from "wouter";
 import { User, LogOut, Building2, Settings } from "lucide-react";
 import {
@@ -27,8 +30,12 @@ import {
 } from "@/components/ui/tabs";
 
 export default function AuthMenu() {
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading, refetch } = useAuth();
   const { isOpen, setIsOpen } = useAuthModalStore();
+  const { toast } = useToast();
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   useEffect(() => {
     // Si no está autenticado y no está cargando, mostrar el modal
@@ -36,6 +43,46 @@ export default function AuthMenu() {
       setIsOpen(true);
     }
   }, [isLoading, isAuthenticated, setIsOpen]);
+
+  const handleLocalLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginLoading(true);
+
+    try {
+      const response = await fetch('/api/login/local', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Error al iniciar sesión');
+      }
+
+      toast({
+        title: "¡Bienvenido!",
+        description: "Has iniciado sesión correctamente",
+      });
+
+      // Recargar los datos del usuario
+      await refetch();
+      setIsOpen(false);
+      
+      // Recargar la página para actualizar el estado de autenticación
+      window.location.reload();
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Credenciales incorrectas",
+      });
+    } finally {
+      setLoginLoading(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -132,12 +179,60 @@ export default function AuthMenu() {
           </TabsList>
           <TabsContent value="login" className="mt-4">
             <div className="space-y-4">
+              <form onSubmit={handleLocalLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="email">Correo electrónico</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="test@inmogestion.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    data-testid="input-email"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Contraseña</Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    data-testid="input-password"
+                  />
+                </div>
+                <Button 
+                  type="submit"
+                  className="w-full bg-[#FF5733] hover:bg-[#ff6e52] text-white"
+                  disabled={loginLoading}
+                  data-testid="button-login"
+                >
+                  {loginLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
+                </Button>
+              </form>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    O continuar con
+                  </span>
+                </div>
+              </div>
+
               <Button 
-                className="w-full bg-[#FF5733] hover:bg-[#ff6e52] text-white"
+                className="w-full"
+                variant="outline"
                 onClick={() => {
                   window.location.href = "/api/login";
                   setIsOpen(false);
                 }}
+                data-testid="button-google-login"
               >
                 Iniciar Sesión con Google
               </Button>
