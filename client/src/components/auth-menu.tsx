@@ -28,14 +28,25 @@ import {
 
 export default function AuthMenu() {
   const { user, isAuthenticated, isLoading } = useAuth();
-  const { isOpen, setIsOpen } = useAuthModalStore();
+  const { isOpen, setIsOpen, hasAuthenticated, setHasAuthenticated } = useAuthModalStore();
 
   useEffect(() => {
-    // Si no está autenticado y no está cargando, mostrar el modal
-    if (!isLoading && !isAuthenticated) {
-      setIsOpen(true);
+    // Si el usuario está autenticado, actualizar el estado persistente
+    if (isAuthenticated) {
+      setHasAuthenticated(true);
     }
-  }, [isLoading, isAuthenticated, setIsOpen]);
+    
+    // Solo mostrar el modal si:
+    // 1. No está cargando
+    // 2. No está autenticado
+    // 3. No hay una sesión activa
+    // 4. No se ha autenticado previamente en esta sesión
+    if (!isLoading && !isAuthenticated && !document.cookie.includes('connect.sid') && !hasAuthenticated) {
+      setIsOpen(true);
+    } else {
+      setIsOpen(false);
+    }
+  }, [isLoading, isAuthenticated, setIsOpen, hasAuthenticated, setHasAuthenticated]);
 
   if (isLoading) {
     return (
@@ -132,8 +143,78 @@ export default function AuthMenu() {
           </TabsList>
           <TabsContent value="login" className="mt-4">
             <div className="space-y-4">
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const email = formData.get('email') as string;
+                const password = formData.get('password') as string;
+
+                try {
+                  const response = await fetch('/api/auth/local', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password }),
+                    credentials: 'include' // Importante: incluir cookies en la solicitud
+                  });
+
+                  if (!response.ok) {
+                    throw new Error('Invalid credentials');
+                  }
+
+                  // Marcar como autenticado
+                  setHasAuthenticated(true);
+                  setIsOpen(false);
+
+                  // Actualizar el estado de autenticación
+                  await refetch();
+                  
+                  // Recargar la página después de un breve retraso
+                  setTimeout(() => {
+                    window.location.href = '/admin-dashboard';
+                  }, 100);
+                } catch (error) {
+                  console.error('Error logging in:', error);
+                }
+              }}>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label htmlFor="email" className="text-sm font-medium">Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      id="email"
+                      className="w-full p-2 border rounded-md"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="password" className="text-sm font-medium">Contraseña</label>
+                    <input
+                      type="password"
+                      name="password"
+                      id="password"
+                      className="w-full p-2 border rounded-md"
+                      required
+                    />
+                  </div>
+                  <Button type="submit" className="w-full bg-[#FF5733] hover:bg-[#ff6e52] text-white">
+                    Iniciar Sesión
+                  </Button>
+                </div>
+              </form>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">O</span>
+                </div>
+              </div>
               <Button 
-                className="w-full bg-[#FF5733] hover:bg-[#ff6e52] text-white"
+                className="w-full"
+                variant="outline"
                 onClick={() => {
                   window.location.href = "/api/login";
                   setIsOpen(false);
