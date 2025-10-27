@@ -20,6 +20,8 @@ interface PropertyCardProps {
 }
 
 export default function PropertyCard({ property }: PropertyCardProps) {
+  const imageUrl = property.images?.[0] || getPropertyImage(property.id, 800, 85);
+
   const formatPrice = (price: string) => {
     return parseFloat(price).toLocaleString();
   };
@@ -31,9 +33,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
         <div 
           className="header no-image relative" 
           style={{
-            backgroundImage: `url(${
-              property.images?.[0] || getPropertyImage(property.id, 800, 85)
-            })`,
+            backgroundImage: `url(${imageUrl})`,
             height: "180px",
             backgroundSize: "cover",
             backgroundPosition: "center",

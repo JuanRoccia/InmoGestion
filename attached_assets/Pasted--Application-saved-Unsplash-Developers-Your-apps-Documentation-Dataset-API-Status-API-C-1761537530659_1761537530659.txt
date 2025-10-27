@@ -1,0 +1,92 @@
+
+Application saved
+×
+
+Unsplash Developers
+Your apps
+Documentation
+Dataset
+API Status 
+API Changelog
+Juan Roccia
+View profile
+Stats
+Account settings
+Logout @juanmunsplash
+Inmobiliaria Hernandez
+Demo
+We're excited to see what you'll build.
+Don't forget to apply for production once your application is ready.
+
+‹ Back to dashboard
+🚀 Apply for production
+Here's what needs to be done in order to gain access to production-level rate limits (5,000 requests/hour). Before applying, review the guidelines in full to ensure your application isn't rejected.
+
+Checklist
+Hotlink photos
+Photos must be hotlinked to the original image URL on Unsplash
+Trigger downloads
+When a user in your application uses a photo, it triggers an event to the download endpoint
+Your app does not use the Unsplash logo and is not named similarly to Unsplash
+Your app must look visually dinstinct from Unsplash and not use ‘Unsplash’ in the name (ex: Unsplasher)
+The application description and name included here are accurate
+We should be able to know what you're building just by reading the name and description of your application
+Attribute photographer and Unsplash
+(Add screenshots below)
+Photographer’s full name and Unsplash are properly attributed and linked (ex: Photo by Annie Spratt on Unsplash)
+Add screenshot or video
+Have a question or need help? Get in touch with our team.
+
+📈 Requests & Usage
+50/50 requests remaining this hour
+Requests (7 days)
+0
+
+Views (30 days)
+0
+
+Downloads (30 days)
+0
+
+Note: Views and downloads metrics updated every 20 minutes.
+🔑 Keys
+Application ID
+821955
+Access Key
+QmX5855Mjcn0o3MFSpEyzyrF3VP_FzilnDQUigKYKkQ
+Secret key
+RNTEzjddu_tlN3ru6TKfWThVuENMqNr9AFXBqHfE1zE
+Note: both your Access Key and Secret Key must remain confidential.
+
+📝 Application information
+Application name
+Inmobiliaria Hernandez
+Description
+test images for inmogestion demo project
+🔒 Redirect URI & Permissions
+Redirect URI
+(optional for applications that are only using the 'Public' permissions)
+urn:ietf:wg:oauth:2.0:oob
+White-listed addresses to redirect to after authentication success OR failure (e.g. https://mysite.com/callback)
+Use one line per URI
+Use urn:ietf:wg:oauth:2.0:oob for local tests
+urn:ietf:wg:oauth:2.0:oob (Authorize)
+
+Public access
+Access users' public data
+Read user access
+Access users' private data
+Write user access
+Edit and create user data
+Read photos access
+Access private information for user photos
+Write photos access
+Edit photos for users
+Write likes access
+Like items for the user
+Write followers access
+Follower users for the user
+Read collections access
+Retrieve private collections for the user
+Write collections access
+Create and update collections for the user

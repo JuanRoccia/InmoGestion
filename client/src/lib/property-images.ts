@@ -1,5 +1,3 @@
-const UNSPLASH_ACCESS_KEY = 'QmX5855Mjcn0o3MFSpEyzyrF3VP_FzilnDQUigKYKkQ';
-
 // Función para generar un hash numérico de un string
 const hashCode = (str: string): number => {
   let hash = 0;
@@ -11,52 +9,35 @@ const hashCode = (str: string): number => {
   return Math.abs(hash);
 };
 
-// Colección de fotos curadas de propiedades inmobiliarias
-const PROPERTY_COLLECTIONS = [
-  '9389477',  // Modern Homes
-  '3322116',  // Luxurious Houses
-  '4933370',  // Real Estate
-  '1262403',  // Architecture & Interiors
-];
-
-// Keywords para buscar imágenes
-const PROPERTY_KEYWORDS = [
-  "modern house",
-  "luxury apartment",
-  "real estate property",
-  "modern architecture"
+// Photo IDs fijos de Unsplash de propiedades inmobiliarias de alta calidad
+// Estas URLs NO consumen API calls, solo usan el CDN de Unsplash
+const PROPERTY_PHOTO_IDS = [
+  'photo-1560518883-ce09059eeffa', // Modern house
+  'photo-1568605114967-8130f3a36994', // Luxury home
+  'photo-1600596542815-ffad4c1539a9', // Modern interior
+  'photo-1600607687939-ce8a6c25118c', // Beautiful apartment
+  'photo-1600566753190-17f0baa2a6c3', // Contemporary house
+  'photo-1600585154340-be6161a56a0c', // Elegant home
+  'photo-1600566753086-00f18fb6b3ea', // Modern architecture
+  'photo-1600047509807-ba8f99d2cdde', // Luxury property
+  'photo-1600607687644-c7171b42498b', // Modern living room
+  'photo-1600210492493-0946911123ea', // Beautiful house
+  'photo-1600607687920-4e2a09cf159d', // Contemporary interior
+  'photo-1600566752355-35792bedcfea', // Modern exterior
+  'photo-1600585154526-990dced4db0d', // Luxury apartment
+  'photo-1600566752229-250ed79c1f5f', // Beautiful interior
+  'photo-1600573472592-401b489a3cdc', // Modern design
+  'photo-1600047509358-9dc75507daeb', // Elegant apartment
+  'photo-1600563438938-a9a27216b4f5', // Contemporary home
+  'photo-1600210491369-e753d80a41f3', // Modern house exterior
+  'photo-1600585154084-4e5fe7c39198', // Beautiful home interior
+  'photo-1600566753151-384129cf4e3e', // Luxury living space
 ];
 
 export const getPropertyImage = (propertyId: string, width: number = 800, quality: number = 80): string => {
-  // Usar el ID de la propiedad para seleccionar una colección consistentemente
-  const collectionId = PROPERTY_COLLECTIONS[Math.abs(hashCode(propertyId)) % PROPERTY_COLLECTIONS.length];
+  // Usar el ID de la propiedad para seleccionar una imagen fija y consistente
+  const photoId = PROPERTY_PHOTO_IDS[Math.abs(hashCode(propertyId)) % PROPERTY_PHOTO_IDS.length];
   
-  // Usar source.unsplash.com para obtener una imagen aleatoria de la colección
-  return `https://source.unsplash.com/collection/${collectionId}/${width}x${Math.floor(width * 0.75)}?${propertyId}`;
-};
-
-export const getRandomPropertyImage = async (propertyId: string, width: number = 800, quality: number = 80): Promise<string> => {
-  try {
-    const keyword = PROPERTY_KEYWORDS[Math.abs(hashCode(propertyId)) % PROPERTY_KEYWORDS.length];
-    
-    const response = await fetch(
-      `https://api.unsplash.com/photos/random?query=${encodeURIComponent(keyword)}&orientation=landscape&collections=${PROPERTY_COLLECTIONS.join(',')}&client_id=${UNSPLASH_ACCESS_KEY}`
-    );
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch from Unsplash API');
-    }
-    
-    const data = await response.json();
-    
-    // Registrar la descarga como requiere Unsplash
-    await fetch(`${data.links.download_location}?client_id=${UNSPLASH_ACCESS_KEY}`);
-    
-    // Retornar la URL optimizada
-    return `${data.urls.raw}&w=${width}&q=${quality}&fit=crop&auto=format`;
-  } catch (error) {
-    console.error('Error fetching from Unsplash API:', error);
-    // Fallback a la función sincrónica en caso de error
-    return getPropertyImage(propertyId, width, quality);
-  }
+  // Retornar URL del CDN de Unsplash (no consume API calls)
+  return `https://images.unsplash.com/${photoId}?w=${width}&q=${quality}&fit=crop&auto=format`;
 };
