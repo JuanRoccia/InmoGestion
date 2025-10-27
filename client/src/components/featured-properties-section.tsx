@@ -38,7 +38,7 @@ export default function FeaturedPropertiesSection({
 }: FeaturedPropertiesSectionProps) {
   return (
     <section className={`py-12 px-4 sm:px-6 lg:px-8 ${bgClass}`}>
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto font-light">
         <div className="flex justify-between items-center mb-8">
           <h2 className="text-xl md:text-2xl text-foreground">
             {title}
@@ -61,7 +61,7 @@ export default function FeaturedPropertiesSection({
           }}
           className="w-full relative"
         >
-          <CarouselContent className="-ml-4">
+          <CarouselContent className="-ml-4 px-2">
             {properties.map((property) => (
               <CarouselItem 
                 key={property.id} 
