@@ -1,16 +1,9 @@
 import { useAuth } from "@/hooks/useAuth";
-import useAuthModalStore from "@/stores/auth-modal-store";
 
 export default function AuthOverlay() {
   const { isAuthenticated, isLoading } = useAuth();
-  const { hasAuthenticated } = useAuthModalStore();
-  
-  // No mostrar el overlay si:
-  // 1. Está cargando
-  // 2. Está autenticado
-  // 3. Hay una sesión activa
-  // 4. Se ha autenticado previamente en esta sesión
-  if (isLoading || isAuthenticated || document.cookie.includes('connect.sid') || hasAuthenticated) return null;
+
+  if (isLoading || isAuthenticated) return null;
 
   return (
     <div 

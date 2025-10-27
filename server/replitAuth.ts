@@ -1,5 +1,6 @@
 import * as client from "openid-client";
 import { Strategy, type VerifyFunction } from "openid-client/passport";
+import { Strategy as LocalStrategy } from "passport-local";
 
 import passport from "passport";
 import session from "express-session";
@@ -98,6 +99,36 @@ export async function setupAuth(app: Express) {
     passport.use(strategy);
   }
 
+  // Estrategia local para usuario de prueba
+  passport.use(new LocalStrategy(
+    { usernameField: 'email', passwordField: 'password' },
+    async (email, password, done) => {
+      if (email === 'test@inmogestion.com' && password === 'admin123') {
+        // Crear/actualizar usuario de prueba en la BD
+        await storage.upsertUser({
+          id: 'test-admin-user',
+          email: 'test@inmogestion.com',
+          firstName: 'Admin',
+          lastName: 'Test',
+          profileImageUrl: null,
+        });
+
+        const user = {
+          claims: {
+            sub: 'test-admin-user',
+            email: 'test@inmogestion.com',
+            first_name: 'Admin',
+            last_name: 'Test',
+            exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60), // 7 días
+          },
+          expires_at: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60),
+        };
+        return done(null, user);
+      }
+      return done(null, false, { message: 'Credenciales incorrectas' });
+    }
+  ));
+
   passport.serializeUser((user: Express.User, cb) => cb(null, user));
   passport.deserializeUser((user: Express.User, cb) => cb(null, user));
 
@@ -125,6 +156,24 @@ export async function setupAuth(app: Express) {
       );
     });
   });
+
+  // Ruta de login local para usuario de prueba
+  app.post("/api/login/local", (req, res, next) => {
+    passport.authenticate('local', (err: any, user: any, info: any) => {
+      if (err) {
+        return res.status(500).json({ message: 'Error en el servidor' });
+      }
+      if (!user) {
+        return res.status(401).json({ message: info?.message || 'Credenciales incorrectas' });
+      }
+      req.logIn(user, (err) => {
+        if (err) {
+          return res.status(500).json({ message: 'Error al iniciar sesión' });
+        }
+        return res.json({ success: true, user: { email: user.claims.email } });
+      });
+    })(req, res, next);
+  });
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
@@ -136,6 +185,12 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
 
   const now = Math.floor(Date.now() / 1000);
   if (now <= user.expires_at) {
+    return next();
+  }
+
+  // Si es el usuario de prueba local, renovar su sesión
+  if (user.claims?.sub === 'test-admin-user') {
+    user.expires_at = Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60);
     return next();
   }
 

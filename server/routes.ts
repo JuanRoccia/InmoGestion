@@ -3,7 +3,6 @@ import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { validateTestUser } from "./localAuth";
 import { insertAgencySchema, insertPropertySchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -19,77 +18,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   await setupAuth(app);
 
   // Auth routes
-  app.get('/api/auth/user', async (req: any, res) => {
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
     try {
-      // Si el usuario no está autenticado
-      if (!req.isAuthenticated()) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-
-      // Obtener el ID del usuario de la sesión
-      const userId = req.user.claims?.sub || req.user.id;
-
-      // Si es el usuario de prueba
-      if (userId === "test-user-1") {
-        return res.json({
-          id: "test-user-1",
-          email: "test@inmogestion.com",
-          name: "Usuario de Prueba",
-          role: "admin"
-        });
-      }
-
-      // Si es un usuario de Replit Auth
+      const userId = req.user.claims.sub;
       const user = await storage.getUser(userId);
-      if (!user) {
-        return res.status(401).json({ message: "User not found" });
-      }
-
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
-    }
-  });
-
-  // Local auth for test user
-  app.post('/api/auth/local', async (req, res) => {
-    try {
-      const { email, password } = req.body;
-      const user = await validateTestUser(email, password);
-      
-      if (!user) {
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
-
-      // Set user in session
-      req.login({
-        id: user.id,
-        claims: {
-          sub: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role
-        }
-      }, (err) => {
-        if (err) {
-          console.error("Error logging in:", err);
-          return res.status(500).json({ message: "Error logging in" });
-        }
-        
-        // Set session expiry
-        if (req.session) {
-          req.session.cookie.maxAge = 7 * 24 * 60 * 60 * 1000; // 1 week
-        }
-        
-        res.json({
-          success: true,
-          user: user
-        });
-      });
-    } catch (error) {
-      console.error("Error in local auth:", error);
-      res.status(500).json({ message: "Internal server error" });
     }
   });
 
