@@ -2,7 +2,7 @@ import { Link } from "wouter";
 
 const FooterSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div className="space-y-3">
-    <h3 className="font-semibold text-white/90">{title}</h3>
+    <h3 className="font-semibold text-gray-800">{title}</h3>
     <div className="space-y-2">
       {children}
     </div>
@@ -11,7 +11,7 @@ const FooterSection = ({ title, children }: { title: string; children: React.Rea
 
 const FooterLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
   <Link href={href}>
-    <a className="block text-sm text-white/70 hover:text-white transition-colors">
+    <a className="block text-sm text-gray-600 hover:text-gray-900 transition-colors">
       {children}
     </a>
   </Link>
@@ -22,7 +22,7 @@ const SocialIcon = ({ href, icon }: { href: string; icon: string }) => (
     href={href}
     target="_blank"
     rel="noopener noreferrer"
-    className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+    className="w-8 h-8 flex items-center justify-center rounded-full bg-gray-200 hover:bg-gray-300 text-gray-700 transition-colors"
   >
     <i className={`fab fa-${icon}`} />
   </a>
@@ -30,7 +30,7 @@ const SocialIcon = ({ href, icon }: { href: string; icon: string }) => (
 
 export default function Footer() {
   return (
-    <footer className="bg-[#212121] text-white">
+    <footer className="bg-gray-50 text-gray-800">
       {/* Main footer content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -52,12 +52,12 @@ export default function Footer() {
 
           {/* Contact Information */}
           <FooterSection title="Contacto">
-            <p className="text-sm text-white/70">
+            <p className="text-sm text-gray-600">
               Irigoyen 381 Piso 10<br />
               8000 Bahía Blanca<br />
               Provincia de Buenos Aires<br />
               +54 291<br />
-              <a href="mailto:dh@hernandezyasociados.com.ar" className="hover:text-white transition-colors">
+              <a href="mailto:dh@hernandezyasociados.com.ar" className="hover:text-gray-900 transition-colors">
                 dh@hernandezyasociados.com.ar
               </a>
             </p>
@@ -76,13 +76,13 @@ export default function Footer() {
       </div>
 
       {/* Bottom bar */}
-      <div className="border-t border-white/10">
+      <div className="border-t border-gray-200">
         <div className="max-w-7xl mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <p className="text-sm text-white/70 text-center md:text-left">
+            <p className="text-sm text-gray-600 text-center md:text-left">
               © 2025 Buscoinmuebles.click - Todos los derechos reservados
             </p>
-            <p className="text-sm text-white/70 text-center md:text-left">
+            <p className="text-sm text-gray-600 text-center md:text-left">
               Buscoinmuebles.click es un producto de Hernández & asociados <br className="md:hidden" /> 
               Agencia de Publicidad y Productora de Contenidos
             </p>

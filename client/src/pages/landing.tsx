@@ -2,6 +2,7 @@ import Header from "@/components/header";
 import HeroSearch from "@/components/hero-search";
 import Footer from "@/components/ui/footer";
 import FeaturedPropertiesSection from "@/components/featured-properties-section";
+import FeaturedDevelopmentsFilter from "../components/featured-developments-filter";
 import LocationGrid from "@/components/location-grid";
 import SubscriptionPlans from "@/components/subscription-plans";
 import TutorialOverlay from "@/components/tutorial-overlay";
@@ -469,7 +470,7 @@ export default function Landing() {
     <div className="min-h-screen bg-white">
       <Header />
       {/* header background (optional pt-28) */}
-      <div className="pt-[4.875rem]">
+      <div className="pt-[5.875rem]">
         <HeroSearch />
 
         {/* Buttons Section */}
@@ -477,12 +478,12 @@ export default function Landing() {
           <div className="container max-w-6xl mx-auto px-4">
             <div className="buttons-busqueda flex justify-center gap-6">
               <Link href="/inmobiliarias">
-                <Button className="p-button p-component bg-[#FF5733] hover:bg-[#ff6e52] text-white px-8 py-3 rounded-b-lg">
+                <Button className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg">
                   Buscar por inmobiliaria
                 </Button>
               </Link>
               <Link href="/mapa">
-                <Button className="p-button p-component bg-[#FF5733] hover:bg-[#ff6e52] text-white px-8 py-3 rounded-b-lg">
+                <Button className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg">
                   Búsqueda por mapa
                 </Button>
               </Link>
@@ -490,10 +491,37 @@ export default function Landing() {
           </div>
         </section>
 
-      {/* Banner superior */}
+      {/* Banners intermedios */}
       <section className="py-8 px-4">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+          <AdBanner width={590} height={150} />
+          <AdBanner width={590} height={150} />
+        </div>
+      </section>
+
+      {/* Banner superior */}
+      {/* <section className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
           <AdBanner width={1200} height={150} />
+        </div>
+      </section> */}
+
+      {/* Emprendimientos Destacados con Filtros */}
+      <FeaturedDevelopmentsFilter
+        properties={[
+          ...mockSaleProperties,
+          ...mockRentProperties,
+          ...mockLandProperties,
+          ...mockDevelopmentProperties,
+          ...mockTemporaryProperties
+        ]}
+      />
+
+      {/* Banners intermedios */}
+      <section className="py-8 px-4 bg-gray-50">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+          <AdBanner width={590} height={150} />
+          <AdBanner width={590} height={150} />
         </div>
       </section>
 
@@ -506,7 +534,7 @@ export default function Landing() {
 
       {/* Banners intermedios */}
       <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
           <AdBanner width={590} height={150} />
           <AdBanner width={590} height={150} />
         </div>
@@ -522,7 +550,7 @@ export default function Landing() {
 
       {/* Banners intermedios */}
       <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
           <AdBanner width={590} height={150} />
           <AdBanner width={590} height={150} />
         </div>
@@ -536,7 +564,7 @@ export default function Landing() {
 
       {/* Banners intermedios */}
       <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
           <AdBanner width={590} height={150} />
           <AdBanner width={590} height={150} />
         </div>
@@ -551,7 +579,7 @@ export default function Landing() {
 
       {/* Banners intermedios */}
       <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
           <AdBanner width={590} height={150} />
           <AdBanner width={590} height={150} />
         </div>
@@ -565,7 +593,7 @@ export default function Landing() {
 
       {/* Banners intermedios */}
       <section className="py-2 px-4">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
           <AdBanner width={590} height={150} />
           <AdBanner width={590} height={150} />
         </div>
@@ -573,7 +601,7 @@ export default function Landing() {
 
       {/* Banner inferior */}
       <section className="py-4 px-4">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <AdBanner width={1200} height={250} />
         </div>
       </section>

@@ -15,12 +15,12 @@ export default function LocationGrid({ locations }: LocationGridProps) {
       <div className="max-w-7xl mx-auto">
         <h2 className="text-2xl md:text-3xl font-light text-foreground mb-8">Búsqueda por localidad</h2>
         {locations.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-1">
             {locations.map((location) => (
               <Link
                 key={location.id}
                 href={`/properties?locationId=${location.id}`}
-                className="group relative overflow-hidden rounded-lg aspect-[4/3] bg-muted hover:shadow-lg transition-all duration-300"
+                className="group relative overflow-hidden rounded-sm aspect-[4/3] bg-muted hover:shadow-lg transition-all duration-300"
                 data-testid={`location-${location.slug}`}
               >
                 <div 

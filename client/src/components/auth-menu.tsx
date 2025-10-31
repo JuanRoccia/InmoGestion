@@ -86,7 +86,7 @@ export default function AuthMenu() {
 
   if (isLoading) {
     return (
-      <div className="w-6 h-6 animate-spin border-2 border-[#FF5733] border-t-transparent rounded-full" />
+      <div className="w-6 h-6 animate-spin border-2 border-[#ff2e06] border-t-transparent rounded-full" />
     );
   }
 
@@ -95,7 +95,7 @@ export default function AuthMenu() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button 
-            className="bg-[#FF5733] hover:bg-[#ff6e52] text-white" 
+            className="bg-[#ff2e06] hover:bg-[#e62905] text-white" 
             data-testid="button-account"
           >
             <User className="h-4 w-4 mr-2" />
@@ -158,7 +158,7 @@ export default function AuthMenu() {
     >
       <DialogTrigger asChild>
         <Button 
-          className="bg-[#FF5733] hover:bg-[#ff6e52] text-white"
+          className="bg-[#ff2e06] hover:bg-[#e62905] text-white"
           data-testid="button-auth"
         >
           <User className="h-4 w-4 mr-2" />
@@ -206,7 +206,7 @@ export default function AuthMenu() {
                 </div>
                 <Button 
                   type="submit"
-                  className="w-full bg-[#FF5733] hover:bg-[#ff6e52] text-white"
+                  className="w-full bg-[#ff2e06] hover:bg-[#e62905] text-white"
                   disabled={loginLoading}
                   data-testid="button-login"
                 >

@@ -28,12 +28,13 @@ export default function HeroSearch() {
   };
 
   return (
-    <section className="relative min-h-[400px] bg-cover bg-center border-b-4 border-x-2 border-[#FF5733]" style={{
+    <section className="relative min-h-[400px] bg-cover bg-center" style={{
       backgroundImage: `url('/assets/banner_back.jpg')`,
       backgroundPosition: 'center center'
     }}>
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/20"></div>
+      {/* optional filter (bg-black/20 bg-white/10) */}
+      <div className="absolute inset-0"></div>
       
       {/* Content */}
       <div className="relative container mx-auto px-0 py-12">
@@ -43,13 +44,13 @@ export default function HeroSearch() {
           
           {/* Call-to-Action Box - Top Left */}
           <div className="lg:col-span-1">
-            <div className="absolute top-4 mx-1 left-14 bg-[#FF5733] text-white p-4 rounded-lg shadow-lg max-w-[280px] z-10 border border-white/100">
-              <p className="text-sm mb-3 leading-tight">
+            <div className="absolute top-4 mx-1 left-11 bg-[#ff2e06] text-white py-3 px-5 rounded-lg shadow-lg max-w-[20%] z-10 border border-white/100">
+              <p className="text-xs mb-2 leading-tight">
                 BuscoInmueble.click lo ayuda a buscar el inmueble que necesita ahorrándole tiempo, recibirá notificaciones en su mail y WhatsApp.
               </p>
               <button 
                 type="button"
-                className="w-full bg-white text-[#FF5733] py-2 px-4 rounded font-medium text-sm hover:bg-red-100 transition-colors"
+                className="w-full bg-white text-[#ff2e06] py-1 px-4 rounded font-medium text-xs hover:bg-red-100 transition-colors"
               >
                 Complete el formulario
               </button>
@@ -71,13 +72,13 @@ export default function HeroSearch() {
         </div>  
 
         {/* Search Form */}
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           {/* Operation Type Tabs */}
           <div className="flex gap-2 justify-center mb-0">
             <button
               className={`tracking-widest uppercase px-12 py-3 rounded-t-lg text-sm font-semibold transition-all ${
                 operationType === "venta"
-                  ? "bg-white/90 text-[#FF5733]"
+                  ? "bg-white/90 text-[#ff2e06]"
                   : "bg-white/55 text-gray-600 hover:bg-white/90"
               }`}
               onClick={() => setOperationType("venta")}
@@ -87,7 +88,7 @@ export default function HeroSearch() {
             <button
               className={`tracking-widest uppercase px-12 py-3 rounded-t-lg text-sm font-semibold transition-all ${
                 operationType === "alquiler"
-                  ? "bg-white/90 text-[#FF5733]"
+                  ? "bg-white/90 text-[#ff2e06]"
                   : "bg-white/55 text-gray-600 hover:bg-white/90"
               }`}
               onClick={() => setOperationType("alquiler")}
@@ -97,7 +98,7 @@ export default function HeroSearch() {
             <button
               className={`tracking-widest uppercase px-12 py-3 rounded-t-lg text-sm font-semibold transition-all ${
                 operationType === "temporario"
-                  ? "bg-white/90 text-[#FF5733]"
+                  ? "bg-white/90 text-[#ff2e06]"
                   : "bg-white/55 text-gray-600 hover:bg-white/90"
               }`}
               onClick={() => setOperationType("temporario")}
@@ -148,7 +149,7 @@ export default function HeroSearch() {
                 <Button 
                   type="button" 
                   variant="ghost"
-                  className="w-full md:w-auto h-12 px-4 text-[#FF5733] hover:bg-gray-50 flex items-center gap-2 whitespace-nowrap"
+                  className="w-full md:w-auto h-12 px-4 text-[#ff2e06] hover:bg-gray-50 flex items-center gap-2 whitespace-nowrap"
                 >
                   <SlidersHorizontal className="h-4 w-4" />
                   <span className="text-xs leading-tight">
@@ -162,7 +163,7 @@ export default function HeroSearch() {
                 <Button 
                   type="button"
                   onClick={handleSearch}
-                  className="w-full md:w-auto h-12 px-8 bg-[#FF5733] hover:bg-[#E64A2E] text-white flex items-center justify-center gap-2 font-semibold"
+                  className="w-full md:w-auto h-12 px-8 bg-[#ff2e06] hover:bg-[#e62905] text-white flex items-center justify-center gap-2 font-semibold"
                   title="Buscar"
                 >
                   <Search className="h-4 w-4" />

@@ -10,7 +10,7 @@
   --card-foreground: #212121;
   --popover: #FFFFFF;
   --popover-foreground: #212121;
-  --primary: #FF5733; /* Naranja/Coral */
+  --primary: #ff2e06; /* Naranja/Coral */
   --primary-foreground: #FFFFFF;
   --secondary: #7E57C2; /* Morado/Lila para acentos secundarios */
   --secondary-foreground: #FFFFFF;
@@ -22,7 +22,7 @@
   --destructive-foreground: #FFFFFF;
   --border: #E0E0E0; /* Gris claro bordes */
   --input: #E0E0E0;
-  --ring: #FF5733;
+  --ring: #ff2e06;
   --radius: 0.5rem;
   --chart-1: #FF8A65;
   --chart-2: #4CAF50;
@@ -51,19 +51,19 @@
   --card-foreground: #EAEAEA;
   --popover: #000000;
   --popover-foreground: #EAEAEA;
-  --primary: #FF5733;
+  --primary: #ff2e06;
   --primary-foreground: #FFFFFF;
   --secondary: #7E57C2;
   --secondary-foreground: #FFFFFF;
   --muted: #121212;
   --muted-foreground: #9E9E9E;
   --accent: #0F172A;
-  --accent-foreground: #FF5733;
+  --accent-foreground: #ff2e06;
   --destructive: #E53935;
   --destructive-foreground: #FFFFFF;
   --border: #1F2937;
   --input: #1F2937;
-  --ring: #FF5733;
+  --ring: #ff2e06;
   --chart-1: #FF8A65;
   --chart-2: #4CAF50;
   --chart-3: #42A5F5;
@@ -131,7 +131,8 @@
 .nav-link::after {
   content: '';
   position: absolute;
-  bottom: -4px;
+  /* bottom: -4px; */
+  bottom: 0;
   left: 0;
   width: 0;
   height: 2px;
@@ -238,7 +239,7 @@
 }
 
 .buttons-busqueda .p-button {
-  background: #FF5733 !important;
+  background: #ff2e06 !important;
   border: none !important;
   color: white !important;
   padding: 0.75rem 2rem !important;
@@ -258,9 +259,9 @@
 }
 
 .buttons-busqueda .p-button:hover {
-  background: #ff6e52 !important;
+  background: #e62905 !important;
   transform: translateY(-2px) !important;
-  box-shadow: 0 4px 12px rgba(255, 87, 51, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(255, 46, 6, 0.3) !important;
 }
 
 /* Form tabs styling */
@@ -278,24 +279,24 @@
 .advanced-btn {
   background: transparent !important;
   border: none !important;
-  color: #FF5733 !important;
+  color: #ff2e06 !important;
   font-size: 0.75rem !important;
   line-height: 1.2 !important;
 }
 
 .advanced-btn:hover {
-  background: rgba(255, 87, 51, 0.1) !important;
+  background: rgba(255, 46, 6, 0.1) !important;
 }
 
 .submit-simple {
-  background: #FF5733 !important;
+  background: #ff2e06 !important;
   border: none !important;
   color: white !important;
   font-weight: 600 !important;
 }
 
 .submit-simple:hover {
-  background: #ff6e52 !important;
+  background: #e62905 !important;
 }
 
 /* Grid adjustments for exact layout */
@@ -380,7 +381,7 @@
 
 .cta-box button {
   background: white;
-  color: #FF5733;
+  color: #ff2e06;
   border: none;
   padding: 0.5rem 1rem;
   border-radius: 4px;
