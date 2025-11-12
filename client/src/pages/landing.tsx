@@ -462,7 +462,7 @@ export default function Landing() {
   });
   const featuredTemporaryProperties = temporaryPropertiesData?.length ? temporaryPropertiesData : mockTemporaryProperties;
 
-  const { data: locations = [] } = useQuery({
+  const { data: locations = [] } = useQuery<any[]>({
     queryKey: ["/api/locations"],
   });
 
@@ -475,8 +475,8 @@ export default function Landing() {
 
         {/* Buttons Section */}
         <section className="bg-white">
-          <div className="container max-w-6xl mx-auto px-4">
-            <div className="buttons-busqueda flex justify-center gap-6">
+          <div className="container max-w-8xl mx-auto px-4">
+            <div className="buttons-busqueda flex justify-center gap-2">
               <Link href="/inmobiliarias">
                 <Button className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg">
                   Buscar por inmobiliaria
@@ -487,15 +487,71 @@ export default function Landing() {
                   Búsqueda por mapa
                 </Button>
               </Link>
+              <Link href="/busqueda-codigo">
+                <Button className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg">
+                  Búsqueda por código
+                </Button>
+              </Link>
+              <Link href="/busqueda-valor">
+                <Button className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg">
+                  Búsqueda por valor
+                </Button>
+              </Link>
+              <Link href="/aptas-creditos">
+                <Button className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg">
+                  Búsqueda aptas créditos
+                </Button>
+              </Link>
             </div>
           </div>
         </section>
 
-      {/* Banners intermedios */}
+      {/* Formularios de Acceso - Usuarios e Inmobiliarias */}
       <section className="py-8 px-4">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-          <AdBanner width={590} height={150} />
-          <AdBanner width={590} height={150} />
+          {/* Formulario para Usuarios */}
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+            <div className="text-center mb-4">
+              <h3 className="text-lg font-bold text-gray-800 mb-2">¿Buscás propiedades?</h3>
+              <p className="text-sm text-gray-600">Encontrá el hogar que siempre soñaste</p>
+            </div>
+            
+            <div className="space-y-3">
+              <Link href="/properties">
+                <Button className="w-full h-11 bg-[#ff2e06] hover:bg-[#e62905] text-white font-semibold text-sm transition-colors">
+                  Buscar Propiedades
+                </Button>
+              </Link>
+              
+              <Link href="/propiedades-guardadas">
+                <Button variant="outline" className="w-full h-11 border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold text-sm transition-colors">
+                  Mis Favoritos
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          {/* Formulario para Inmobiliarias */}
+          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100">
+            <div className="text-center mb-4">
+              <h3 className="text-lg font-bold text-gray-800 mb-2">¿Eres inmobiliaria?</h3>
+              <p className="text-sm text-gray-600">Gestioná y publicá tus propiedades</p>
+            </div>
+            
+            <div className="space-y-3">
+              <Link href="/inmobiliarias">
+                <Button className="w-full h-11 bg-[#ff2e06] hover:bg-[#e62905] text-white font-semibold text-sm transition-colors">
+                  Acceder como Inmobiliaria
+                </Button>
+              </Link>
+              
+              <Link href="/registro-inmobiliaria">
+                <Button variant="outline" className="w-full h-11 border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold text-sm transition-colors">
+                  Registrarse
+                </Button>
+              </Link>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -518,78 +574,18 @@ export default function Landing() {
       />
 
       {/* Banners intermedios */}
-      <section className="py-8 px-4 bg-gray-50">
+      {/* <section className="py-8 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
           <AdBanner width={590} height={150} />
           <AdBanner width={590} height={150} />
         </div>
-      </section>
+      </section> */}
 
-      {/* Propiedades destacadas en venta */}
-      <FeaturedPropertiesSection
-        title="Propiedades destacadas en venta"
-        properties={featuredSaleProperties}
-        viewMoreLink="/properties?operationType=venta"
-      />
-
-      {/* Banners intermedios */}
-      <section className="py-8 px-4">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-          <AdBanner width={590} height={150} />
-          <AdBanner width={590} height={150} />
-        </div>
-      </section>
-
-      {/* Propiedades destacadas en alquiler */}
-      <FeaturedPropertiesSection
-        title="Propiedades destacadas en alquiler"
-        properties={featuredRentProperties}
-        viewMoreLink="/properties?operationType=alquiler"
-        bgClass="bg-gray-50"
-      />
-
-      {/* Banners intermedios */}
-      <section className="py-8 px-4">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-          <AdBanner width={590} height={150} />
-          <AdBanner width={590} height={150} />
-        </div>
-      </section>
-
-      <FeaturedPropertiesSection
-        title="Countries – Barrios Cerrados – Terrenos"
-        properties={featuredLandProperties}
-        viewMoreLink="/properties?category=terrenos"
-      />
-
-      {/* Banners intermedios */}
-      <section className="py-8 px-4">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-          <AdBanner width={590} height={150} />
-          <AdBanner width={590} height={150} />
-        </div>
-      </section>
-
-      <FeaturedPropertiesSection
-        title="Emprendimientos destacados"
-        properties={featuredDevelopments}
-        viewMoreLink="/proyectos"
-        bgClass="bg-gray-50"
-      />
-
-      {/* Banners intermedios */}
-      <section className="py-8 px-4">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-          <AdBanner width={590} height={150} />
-          <AdBanner width={590} height={150} />
-        </div>
-      </section>
-
-      <FeaturedPropertiesSection
+      {/* <FeaturedPropertiesSection
         title="Alquileres temporarios"
         properties={featuredTemporaryProperties}
         viewMoreLink="/properties?operationType=temporario"
-      />
+      /> */}
 
       {/* Banners intermedios */}
       <section className="py-2 px-4">

@@ -26,13 +26,13 @@ export default function Header() {
         <nav className="h-full">
           <div className="flex items-center justify-between h-full px-6 md:px-8 lg:px-12">
             {/* Logo */}
-            <div className="logo relative flex-shrink-0 p-2">
+            <div className="logo relative flex-shrink-0 p-3">
               <Link href="/">
                 <img 
                   alt="Busco Inmueble.click" 
                   src="/assets/logo.png" 
                   className={`w-auto transition-all duration-300 ${
-                    isScrolled ? 'h-14' : 'h-[5.9rem] py-4'
+                    isScrolled ? 'h-16' : 'h-[6.0rem] py-3'
                   }`} 
                 />
               </Link>
@@ -45,88 +45,90 @@ export default function Header() {
               </Button>
             </div>
 
-            {/* Navigation Menu */}
-            <nav className="hidden md:flex items-center gap-1 flex-1 justify-center">
-              <Link href="/" className="nav-link text-[#212121] hover:text-[#ff2e06] px-4 py-2 transition-colors">
-                Inicio
-              </Link>
-              
-              <span className="text-gray-300 text-xl">|</span>
-              
-              <Link href="/properties" className="nav-link text-[#212121] hover:text-[#ff2e06] px-4 py-2 transition-colors">
-                Categorías
-              </Link>
-              
-              <span className="text-gray-300 text-xl">|</span>
-              
-              <Link href="#" className="nav-link text-[#212121] hover:text-[#ff2e06] px-4 py-2 transition-colors">
-                Calculadora
-              </Link>
-              
-              <span className="text-gray-300 text-xl">|</span>
-              
-              <Link href="/inmobiliarias" className="nav-link text-[#212121] hover:text-[#ff2e06] px-4 py-2 transition-colors">
-                Inmobiliarias
-              </Link>
-            </nav>
+            {/* Navigation Menu Container - Ahora incluye nav links y social media */}
+            <div className="hidden md:flex flex-col items-center justify-center flex-1">
+              {/* Main Navigation Links */}
+              <nav className="flex items-center justify-center">
+                <Link href="/" className="nav-link text-[#212121] hover:text-[#ff2e06] px-6 py-2 transition-colors text-base">
+                  Inicio
+                </Link>
+                
+                <span className="text-gray-300 text-xl px-4">|</span>
+                
+                <Link href="/properties" className="nav-link text-[#212121] hover:text-[#ff2e06] px-6 py-2 transition-colors text-base">
+                  Categorías
+                </Link>
+                
+                <span className="text-gray-300 text-xl px-4">|</span>
+                
+                <Link href="#" className="nav-link text-[#212121] hover:text-[#ff2e06] px-6 py-2 transition-colors text-base">
+                  Calculadora
+                </Link>
+                
+                <span className="text-gray-300 text-xl px-4">|</span>
+                
+                <Link href="/inmobiliarias" className="nav-link text-[#212121] hover:text-[#ff2e06] px-6 py-2 transition-colors text-base">
+                  Inmobiliarias
+                </Link>
+                
+                <span className="text-gray-300 text-xl px-4">|</span>
+                
+                <Link href="/contacto" className="nav-link text-[#212121] hover:text-[#ff2e06] px-6 py-2 transition-colors text-base">
+                  Contacto
+                </Link>
+              </nav>
 
-            {/* Social Media and Auth Menu Container */}
-            <div className="hidden md:flex flex-col items-end justify-between flex-shrink-0">
-              {/* Social Media Links - SE OCULTAN AL HACER SCROLL */}
-              <div className={`transition-all duration-300 overflow-hidden ${
-                isScrolled ? 'h-0 opacity-0' : 'h-8 opacity-100 mt-0 mb-2'
+              {/* Social Media Links - Debajo del nav principal */}
+              <div className={`transition-all duration-300 overflow-hidden mt-1 ${
+                isScrolled ? 'h-0 opacity-0' : 'h-8 opacity-100'
               }`}>
-                <div className="flex items-center gap-1 pt-1">
+                <div className="flex items-center justify-center space-x-6">
                   <a 
                     href="https://facebook.com" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="nav-link text-gray-500 hover:text-[#ff2e06] px-2 py-1 text-sm font-light transition-colors"
+                    className="nav-link text-gray-600 hover:text-[#ff2e06] text-sm font-medium transition-all duration-300 transform hover:scale-110"
                   >
+                    <i className="fab fa-facebook-f text-base mr-1"></i>
                     Facebook
                   </a>
-                  
-                  <span className="text-gray-300 text-sm font-extralight">|</span>
                   
                   <a 
                     href="https://instagram.com" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="nav-link text-gray-500 hover:text-[#ff2e06] px-2 py-1 text-sm font-light transition-colors"
+                    className="nav-link text-gray-600 hover:text-[#ff2e06] text-sm font-medium transition-all duration-300 transform hover:scale-110"
                   >
+                    <i className="fab fa-instagram text-base mr-1"></i>
                     Instagram
                   </a>
-                  
-                  <span className="text-gray-300 text-sm font-extralight">|</span>
                   
                   <a 
                     href="https://twitter.com" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="nav-link text-gray-500 hover:text-[#ff2e06] px-2 py-1 text-sm font-light transition-colors"
+                    className="nav-link text-gray-600 hover:text-[#ff2e06] text-sm font-medium transition-all duration-300 transform hover:scale-110"
                   >
+                    <i className="fab fa-twitter text-base mr-1"></i>
                     Twitter
                   </a>
-                  
-                  <span className="text-gray-300 text-sm font-extralight">|</span>
                   
                   <a 
                     href="https://linkedin.com" 
                     target="_blank" 
                     rel="noopener noreferrer" 
-                    className="nav-link text-gray-500 hover:text-[#ff2e06] px-2 py-1 text-sm font-light transition-colors"
+                    className="nav-link text-gray-600 hover:text-[#ff2e06] text-sm font-medium transition-all duration-300 transform hover:scale-110"
                   >
+                    <i className="fab fa-linkedin-in text-base mr-1"></i>
                     LinkedIn
                   </a>
                 </div>
               </div>
-              
-              {/* Auth Menu - SIEMPRE VISIBLE */}
-              <div className={`${
-                isScrolled ? 'mb-1' : 'mb-3'
-              } transition-all duration-300`}>
-                <AuthMenu />
-              </div>
+            </div>
+
+            {/* Auth Menu - Solo en la derecha */}
+            <div className="hidden md:flex items-center justify-end flex-shrink-0">
+              <AuthMenu />
             </div>
           </div>
         </nav>

@@ -43,7 +43,7 @@ export default function HeroSearch() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 items-start">
           
           {/* Call-to-Action Box - Top Left */}
-          <div className="lg:col-span-1">
+          {/* <div className="lg:col-span-1">
             <div className="absolute top-4 mx-1 left-11 bg-[#ff2e06] text-white py-3 px-5 rounded-lg shadow-lg max-w-[20%] z-10 border border-white/100">
               <p className="text-xs mb-2 leading-tight">
                 BuscoInmueble.click lo ayuda a buscar el inmueble que necesita ahorrándole tiempo, recibirá notificaciones en su mail y WhatsApp.
@@ -55,7 +55,7 @@ export default function HeroSearch() {
                 Complete el formulario
               </button>
             </div>
-          </div>
+          </div> */}
 
           {/* Hero Text - Center Top */}
           {/* text-center text-white mb-8 pt-8 */}

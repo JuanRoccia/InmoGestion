@@ -167,9 +167,9 @@ export default function AuthMenu() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Acceder a BuscoInmueble.click</DialogTitle>
+          <DialogTitle>Acceder a BuscoInmuebles.click</DialogTitle>
           <DialogDescription>
-            Inicie sesión o regístrese para acceder a todas las funcionalidades.
+            Para conocer las funcionalidades de nuestra plataforma realice un pre registro.
           </DialogDescription>
         </DialogHeader>
         <Tabs defaultValue="login" className="w-full">
