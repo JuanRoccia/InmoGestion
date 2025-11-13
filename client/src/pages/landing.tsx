@@ -513,13 +513,13 @@ export default function Landing() {
           <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
             <div className="text-center mb-4">
               <h3 className="text-lg font-bold text-gray-800 mb-2">¿Buscás propiedades?</h3>
-              <p className="text-sm text-gray-600">Encontrá el hogar que siempre soñaste</p>
+              <p className="text-sm text-gray-600">BuscoInmueble.click lo ayuda a buscar el inmueble que necesita ahorrándole tiempo, recibirá notificaciones en su mail y WhatsApp.</p>
             </div>
             
             <div className="space-y-3">
-              <Link href="/properties">
+              <Link href="/solicitar-inmueble">
                 <Button className="w-full h-11 bg-[#ff2e06] hover:bg-[#e62905] text-white font-semibold text-sm transition-colors">
-                  Buscar Propiedades
+                  Complete el formulario
                 </Button>
               </Link>
               
