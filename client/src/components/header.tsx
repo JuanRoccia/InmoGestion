@@ -89,7 +89,7 @@ export default function Header() {
                     rel="noopener noreferrer" 
                     className="nav-link text-gray-600 hover:text-[#ff2e06] text-sm font-medium transition-all duration-300 transform hover:scale-110"
                   >
-                    <i className="fab fa-facebook-f text-base mr-1"></i>
+                    <i className="text-base mr-1"></i>
                     Facebook
                   </a>
                   
@@ -99,7 +99,7 @@ export default function Header() {
                     rel="noopener noreferrer" 
                     className="nav-link text-gray-600 hover:text-[#ff2e06] text-sm font-medium transition-all duration-300 transform hover:scale-110"
                   >
-                    <i className="fab fa-instagram text-base mr-1"></i>
+                    <i className="text-base mr-1"></i>
                     Instagram
                   </a>
                   
@@ -109,7 +109,7 @@ export default function Header() {
                     rel="noopener noreferrer" 
                     className="nav-link text-gray-600 hover:text-[#ff2e06] text-sm font-medium transition-all duration-300 transform hover:scale-110"
                   >
-                    <i className="fab fa-twitter text-base mr-1"></i>
+                    <i className="text-base mr-1"></i>
                     Twitter
                   </a>
                   
@@ -119,7 +119,7 @@ export default function Header() {
                     rel="noopener noreferrer" 
                     className="nav-link text-gray-600 hover:text-[#ff2e06] text-sm font-medium transition-all duration-300 transform hover:scale-110"
                   >
-                    <i className="fab fa-linkedin-in text-base mr-1"></i>
+                    <i className="text-base mr-1"></i>
                     LinkedIn
                   </a>
                 </div>

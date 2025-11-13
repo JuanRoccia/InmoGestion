@@ -29,8 +29,8 @@ export default function HeroSearch() {
 
   return (
     <section className="relative min-h-[400px] bg-cover bg-center" style={{
-      backgroundImage: `url('/assets/banner_back.jpg')`,
-      backgroundPosition: 'center center'
+      backgroundImage: `url('/assets/banner_back_complete.jpg')`,
+      backgroundPosition: 'top center'
     }}>
       {/* Overlay */}
       {/* optional filter (bg-black/20 bg-white/10) */}
