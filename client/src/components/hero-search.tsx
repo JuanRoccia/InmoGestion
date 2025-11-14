@@ -28,7 +28,7 @@ export default function HeroSearch() {
   };
 
   return (
-    <section className="relative min-h-[400px] bg-cover bg-center" style={{
+    <section className="relative min-h-[100%] bg-cover bg-center pt-28" style={{
       backgroundImage: `url('/assets/banner_back_complete.jpg')`,
       backgroundPosition: 'top center'
     }}>
@@ -37,7 +37,7 @@ export default function HeroSearch() {
       <div className="absolute inset-0"></div>
       
       {/* Content */}
-      <div className="relative container mx-auto px-0 py-12">
+      <div className="relative container mx-auto px-0 py-2">
         
         {/* Top Section - CTA Box and Hero Text side by side */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 items-start">
@@ -61,9 +61,10 @@ export default function HeroSearch() {
           {/* text-center text-white mb-8 pt-8 */}
           <div className="lg:col-span-3 text-center lg:text-center text-white self-center">
             <div className="">
-              <h2 className="text-4xl md:text-4xl font-bold mb-2 [text-shadow:_1px_2px_4px_rgb(0_0_0_/_100%)]">
+              {/* text-4xl md:text-4xl */}
+              <h1 className="text-[2.75rem] md:text-[2.50em] font-bold mb-1 [text-shadow:_1px_2px_4px_rgb(0_0_0_/_100%)]">
                 Viví donde siempre soñaste
-              </h2>
+              </h1>
               <p className="text-lg md:text-xl drop-shadow-md leading-snug [text-shadow:_1px_1px_3px_rgb(0_0_0_/_100%)]">
                 Con el respaldo de nuestro sector inmobiliario.
               </p>
@@ -173,6 +174,92 @@ export default function HeroSearch() {
             </div>
           </div>
         </div>
+
+        {/* Buttons Section */}
+        <section className="bg-white/0">
+          <div className="container max-w-8xl mx-auto px-4">
+            <div className="buttons-busqueda flex justify-center gap-2">
+              <Link href="/inmobiliarias">
+                <Button className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg">
+                  Buscar por inmobiliaria
+                </Button>
+              </Link>
+              <Link href="/mapa">
+                <Button className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg">
+                  Búsqueda por mapa
+                </Button>
+              </Link>
+              <Link href="/busqueda-codigo">
+                <Button className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg">
+                  Búsqueda por código
+                </Button>
+              </Link>
+              <Link href="/busqueda-valor">
+                <Button className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg">
+                  Búsqueda por valor
+                </Button>
+              </Link>
+              <Link href="/aptas-creditos">
+                <Button className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg">
+                  Búsqueda aptas créditos
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* Formularios de Acceso - Usuarios e Inmobiliarias */}
+        <section className="py-10 px-0">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Formulario para Usuarios */}
+            <div className="bg-[#ff2e06] text-white rounded-lg shadow-lg p-6 border border-white/100">
+              <div className="text-center mb-4">
+                <h3 className="text-lg font-bold mb-3">¿Buscás propiedades?</h3>
+                <p className="text-sm leading-relaxed">BuscoInmuebles.click lo ayuda a buscar el inmueble que necesita ahorrándole tiempo, recibirá notificaciones en su mail y WhatsApp.</p>
+              </div>
+              
+              <div className="space-y-3">
+                <Link href="/solicitar-inmueble">
+                  <Button className="w-full h-11 bg-white text-[#ff2e06] hover:bg-red-50 font-semibold text-sm transition-colors">
+                    Complete el formulario
+                  </Button>
+                </Link>
+                
+                {/* <Link href="/propiedades-guardadas">
+                  <Button variant="outline" 
+                          className="w-full h-11 border-2 border-white text-white bg-transparent hover:bg-white/10 font-semibold text-sm transition-colors"
+                  >
+                    Mis Favoritos
+                  </Button>
+                </Link> */}
+              </div>
+            </div>
+  
+            {/* Formulario para Inmobiliarias */}
+            <div className="bg-[#ff2e06] text-white rounded-lg shadow-lg p-6 border border-white/20">
+              <div className="text-center mb-4">
+                <h3 className="text-lg font-bold mb-3">¿Eres inmobiliaria?</h3>
+                <p className="text-sm leading-relaxed">Buscoinmuebles.click lo ayuda a gestionar y publicar sus propiedades ahorrandole costos, recibirá notificaciones a su mail y WhatsApp.</p>
+              </div>
+              
+              <div className="space-y-3">
+                <Link href="/inmobiliarias">
+                  <Button className="w-full h-11 bg-white text-[#ff2e06] hover:bg-red-50 font-semibold text-sm transition-colors">
+                    Complete el formulario
+                  </Button>
+                </Link>
+                
+                {/* <Link href="/registro-inmobiliaria">
+                  <Button variant="outline" 
+                          className="w-full h-11 border-2 border-white text-white bg-transparent hover:bg-white/10 font-semibold text-sm transition-colors"
+                  >
+                    Registrarse
+                  </Button>
+                </Link> */}
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
     </section>
   );

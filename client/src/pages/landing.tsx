@@ -469,12 +469,12 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      {/* header background (optional pt-28) */}
-      <div className="pt-[5.875rem]">
+      {/* header background (optional pt-28 || pt-[5.875rem]) */}
+      <div className="">
         <HeroSearch />
 
         {/* Buttons Section */}
-        <section className="bg-white">
+        {/* <section className="bg-white">
           <div className="container max-w-8xl mx-auto px-4">
             <div className="buttons-busqueda flex justify-center gap-2">
               <Link href="/inmobiliarias">
@@ -504,56 +504,57 @@ export default function Landing() {
               </Link>
             </div>
           </div>
-        </section>
+        </section> */}
 
       {/* Formularios de Acceso - Usuarios e Inmobiliarias */}
-      <section className="py-8 px-4">
+      {/* <section className="py-8 px-4">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Formulario para Usuarios */}
-          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+          <div className="bg-[#ff2e06] text-white rounded-lg shadow-lg p-6 border border-white/20">
             <div className="text-center mb-4">
-              <h3 className="text-lg font-bold text-gray-800 mb-2">¿Buscás propiedades?</h3>
-              <p className="text-sm text-gray-600">BuscoInmueble.click lo ayuda a buscar el inmueble que necesita ahorrándole tiempo, recibirá notificaciones en su mail y WhatsApp.</p>
+              <h3 className="text-lg font-bold mb-3">¿Buscás propiedades?</h3>
+              <p className="text-sm leading-relaxed">BuscoInmuebles.click lo ayuda a buscar el inmueble que necesita ahorrándole tiempo, recibirá notificaciones en su mail y WhatsApp.</p>
             </div>
             
             <div className="space-y-3">
               <Link href="/solicitar-inmueble">
-                <Button className="w-full h-11 bg-[#ff2e06] hover:bg-[#e62905] text-white font-semibold text-sm transition-colors">
+                <Button className="w-full h-11 bg-white text-[#ff2e06] hover:bg-red-50 font-semibold text-sm transition-colors">
                   Complete el formulario
                 </Button>
               </Link>
               
               <Link href="/propiedades-guardadas">
-                <Button variant="outline" className="w-full h-11 border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold text-sm transition-colors">
+                <Button variant="outline" 
+                        className="w-full h-11 border-2 border-white text-white bg-transparent hover:bg-white/10 font-semibold text-sm transition-colors"
+                >
                   Mis Favoritos
                 </Button>
               </Link>
             </div>
           </div>
-
-          {/* Formulario para Inmobiliarias */}
-          <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 border border-green-100">
+          <div className="bg-[#ff2e06] text-white rounded-lg shadow-lg p-6 border border-white/20">
             <div className="text-center mb-4">
-              <h3 className="text-lg font-bold text-gray-800 mb-2">¿Eres inmobiliaria?</h3>
-              <p className="text-sm text-gray-600">Gestioná y publicá tus propiedades</p>
+              <h3 className="text-lg font-bold mb-3">¿Eres inmobiliaria?</h3>
+              <p className="text-sm leading-relaxed">Buscoinmuebles.click lo ayuda a gestionar y publicar sus propiedades ahorrandole costos, recibirá notificaciones a su mail y WhatsApp.</p>
             </div>
             
             <div className="space-y-3">
               <Link href="/inmobiliarias">
-                <Button className="w-full h-11 bg-[#ff2e06] hover:bg-[#e62905] text-white font-semibold text-sm transition-colors">
-                  Acceder como Inmobiliaria
+                <Button className="w-full h-11 bg-white text-[#ff2e06] hover:bg-red-50 font-semibold text-sm transition-colors">
+                  Complete el formulario
                 </Button>
               </Link>
               
               <Link href="/registro-inmobiliaria">
-                <Button variant="outline" className="w-full h-11 border-gray-300 text-gray-700 hover:bg-gray-50 font-semibold text-sm transition-colors">
+                <Button variant="outline" 
+                        className="w-full h-11 border-2 border-white text-white bg-transparent hover:bg-white/10 font-semibold text-sm transition-colors"
+                >
                   Registrarse
                 </Button>
               </Link>
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* Banner superior */}
       {/* <section className="py-8 px-4">
