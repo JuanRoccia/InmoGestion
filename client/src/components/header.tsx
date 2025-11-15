@@ -79,7 +79,7 @@ export default function Header() {
               </nav>
 
               {/* Social Media Links - Debajo del nav principal */}
-              <div className={`transition-all duration-300 overflow-hidden mt-1 ${
+              <div className={`transition-all duration-300 overflow-hidden mt-1 px-2 ${
                 isScrolled ? 'h-0 opacity-0' : 'h-8 opacity-100'
               }`}>
                 <div className="flex items-center justify-center space-x-8">

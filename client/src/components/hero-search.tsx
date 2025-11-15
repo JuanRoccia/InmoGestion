@@ -214,14 +214,15 @@ export default function HeroSearch() {
             {/* Formulario para Usuarios */}
             <div className="bg-[#ff2e06] text-white rounded-lg shadow-lg p-6 border border-white/100">
               <div className="text-center mb-4">
-                <h3 className="text-lg font-bold mb-3">¿Buscás propiedades?</h3>
-                <p className="text-sm leading-relaxed">BuscoInmuebles.click lo ayuda a buscar el inmueble que necesita ahorrándole tiempo, recibirá notificaciones en su mail y WhatsApp.</p>
+                {/* ¿Buscás propiedades? */}
+                <h3 className="text-lg font-bold mb-2">Buscamos por Usted</h3>
+                <p className="text-sm leading-relaxed">Sabemos que su tiempo es valioso. cuéntenos qué está buscando y nosotros nos ocupamos de encontrar la propiedad ideal para usted, entre todas las inmobiliarias que forman parte de <b>Buscoinmuebles</b>.</p>
               </div>
               
               <div className="space-y-3">
                 <Link href="/solicitar-inmueble">
                   <Button className="w-full h-11 bg-white text-[#ff2e06] hover:bg-red-50 font-semibold text-sm transition-colors">
-                    Complete el formulario
+                    Ingresar
                   </Button>
                 </Link>
                 
@@ -238,14 +239,14 @@ export default function HeroSearch() {
             {/* Formulario para Inmobiliarias */}
             <div className="bg-[#ff2e06] text-white rounded-lg shadow-lg p-6 border border-white/20">
               <div className="text-center mb-4">
-                <h3 className="text-lg font-bold mb-3">¿Eres inmobiliaria?</h3>
-                <p className="text-sm leading-relaxed">Buscoinmuebles.click lo ayuda a gestionar y publicar sus propiedades ahorrandole costos, recibirá notificaciones a su mail y WhatsApp.</p>
+                <h3 className="text-lg font-bold mb-2">Propiedades Solicitadas</h3>
+                <p className="text-sm leading-relaxed">Oportunidades reales de compra y alquiler que surgen de pedidos vigentes. Descubra la propiedades buscadas y participe de una operación directa con el respaldo profesional de <b>Buscoinmuebles</b>.</p>
               </div>
               
               <div className="space-y-3">
                 <Link href="/inmobiliarias">
                   <Button className="w-full h-11 bg-white text-[#ff2e06] hover:bg-red-50 font-semibold text-sm transition-colors">
-                    Complete el formulario
+                    Ingresar
                   </Button>
                 </Link>
                 

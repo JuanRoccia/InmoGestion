@@ -64,10 +64,10 @@ export default function FeaturedDevelopmentsFilter({ properties }: FeaturedDevel
   });
 
   return (
-    <section className="py-12 px-4 sm:px-6 lg:px-8">
+    <section className="py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-xl md:text-2xl text-foreground font-light mb-8">
-          Propiedades Destacados
+        <h2 className="text-xl md:text-2xl text-foreground font-extralight mb-4">
+          Propiedades destacadas
         </h2>
 
         {/* Filtros */}

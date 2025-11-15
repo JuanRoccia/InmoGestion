@@ -11,9 +11,12 @@ export interface LocationGridProps {
 
 export default function LocationGrid({ locations }: LocationGridProps) {
   return (
-    <section className="py-12 px-4 bg-white">
+    <section className="py-8 px-4 bg-white">
       <div className="max-w-7xl mx-auto">
-        <h2 className="text-2xl md:text-3xl font-light text-foreground mb-8">Búsqueda por localidad</h2>
+        <h2 className="text-xl md:text-2xl text-foreground font-extralight mb-4">
+          Búsqueda por localidad
+        </h2>
+        {/* <h2 className="text-2xl md:text-3xl font-light text-foreground mb-8">Búsqueda por localidad</h2> */}
         {locations.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-1">
             {locations.map((location) => (

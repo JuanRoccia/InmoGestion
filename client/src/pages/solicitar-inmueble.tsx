@@ -40,10 +40,10 @@ export default function SolicitarInmueble() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <div className="pt-[5.875rem] pb-16">
+      <div className="pt-[8.875rem] pb-16">
         <div className="max-w-5xl mx-auto px-4">
           {/* Título */}
-          <div className="mb-8">
+          <div className="mb-8 justify-center text-center">
             <h1 className="text-3xl font-bold text-gray-800 mb-2">Solicitar Inmueble</h1>
             <p className="text-gray-600">Completá el formulario y te ayudaremos a encontrar tu propiedad ideal</p>
           </div>

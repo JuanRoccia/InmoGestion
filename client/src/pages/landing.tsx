@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import SectionTitle from "@/components/ui/SectionTitle";
 import AdBanner from "@/components/ui/AdBanner";
+import FooterInmo from "@/components/footer-inmo";
 
 interface Property {
   id: string;
@@ -556,6 +557,14 @@ export default function Landing() {
         </div>
       </section> */}
 
+      {/* Banners intermedios */}
+      <section className="pt-8 px-4 pb-0">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+          <AdBanner width={590} height={150} />
+          <AdBanner width={590} height={150} />
+        </div>
+      </section>
+
       {/* Banner superior */}
       {/* <section className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
@@ -574,14 +583,6 @@ export default function Landing() {
         ]}
       />
 
-      {/* Banners intermedios */}
-      {/* <section className="py-8 px-4 bg-gray-50">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-          <AdBanner width={590} height={150} />
-          <AdBanner width={590} height={150} />
-        </div>
-      </section> */}
-
       {/* <FeaturedPropertiesSection
         title="Alquileres temporarios"
         properties={featuredTemporaryProperties}
@@ -597,7 +598,7 @@ export default function Landing() {
       </section>
 
       {/* Banner inferior */}
-      <section className="py-4 px-4">
+      <section className="py-4 pb-0 px-4">
         <div className="max-w-7xl mx-auto">
           <AdBanner width={1200} height={250} />
         </div>
@@ -605,7 +606,8 @@ export default function Landing() {
 
       <LocationGrid locations={locations} />
 
-      <Footer />
+      {/* <Footer /> */}
+      <FooterInmo />
       </div>
     </div>
   );
