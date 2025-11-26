@@ -63,6 +63,14 @@ export default function FeaturedDevelopmentsFilter({ properties }: FeaturedDevel
     }
   });
 
+  // Debug logs
+  if (activeCategory === 'emprendimientos') {
+    console.log('Emprendimientos filter debug:');
+    console.log('Total properties:', properties.length);
+    console.log('Filtered properties:', filteredProperties.length);
+    console.log('First 3 emprendimientos:', filteredProperties.slice(0, 3).map(p => ({ id: p.id, title: p.title, category: p.category })));
+  }
+
   return (
     <section className="py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
