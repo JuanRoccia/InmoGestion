@@ -13,6 +13,8 @@ import SolicitarInmueble from "@/pages/solicitar-inmueble";
 import AdminDashboard from "@/pages/admin-dashboard";
 import AgencyDashboard from "@/pages/agency-dashboard";
 import Subscribe from "@/pages/subscribe";
+import Agencies from "@/pages/agencies";
+import Contact from "@/pages/contact";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -24,6 +26,10 @@ function Router() {
       <Route path="/solicitar-inmueble" component={SolicitarInmueble} />
       <Route path="/properties" component={Properties} />
       <Route path="/properties/:id" component={PropertyDetail} />
+      <Route path="/inmobiliarias" component={Agencies} />
+      <Route path="/agencies" component={Agencies} />
+      <Route path="/contacto" component={Contact} />
+      <Route path="/contact" component={Contact} />
       {isAuthenticated && (
         <>
           <Route path="/admin-dashboard" component={AdminDashboard} />

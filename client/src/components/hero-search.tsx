@@ -35,13 +35,13 @@ export default function HeroSearch() {
       {/* Overlay */}
       {/* optional filter (bg-black/20 bg-white/10) */}
       <div className="absolute inset-0"></div>
-      
+
       {/* Content */}
       <div className="relative container mx-auto px-0 py-2">
-        
+
         {/* Top Section - CTA Box and Hero Text side by side */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8 items-start">
-          
+
           {/* Call-to-Action Box - Top Left */}
           {/* <div className="lg:col-span-1">
             <div className="absolute top-4 mx-1 left-11 bg-[#ff2e06] text-white py-3 px-5 rounded-lg shadow-lg max-w-[20%] z-10 border border-white/100">
@@ -70,38 +70,35 @@ export default function HeroSearch() {
               </p>
             </div>
           </div>
-        </div>  
+        </div>
 
         {/* Search Form */}
         <div className="max-w-7xl mx-auto">
           {/* Operation Type Tabs */}
           <div className="flex gap-2 justify-center mb-0">
             <button
-              className={`tracking-widest uppercase px-12 py-3 rounded-t-lg text-sm font-semibold transition-all ${
-                operationType === "venta"
-                  ? "bg-white/90 text-[#ff2e06]"
-                  : "bg-white/55 text-gray-600 hover:bg-white/90"
-              }`}
+              className={`tracking-widest uppercase px-12 py-3 rounded-t-lg text-sm font-semibold transition-all ${operationType === "venta"
+                ? "bg-white/90 text-[#ff2e06]"
+                : "bg-white/55 text-gray-600 hover:bg-white/90"
+                }`}
               onClick={() => setOperationType("venta")}
             >
               VENTA
             </button>
             <button
-              className={`tracking-widest uppercase px-12 py-3 rounded-t-lg text-sm font-semibold transition-all ${
-                operationType === "alquiler"
-                  ? "bg-white/90 text-[#ff2e06]"
-                  : "bg-white/55 text-gray-600 hover:bg-white/90"
-              }`}
+              className={`tracking-widest uppercase px-12 py-3 rounded-t-lg text-sm font-semibold transition-all ${operationType === "alquiler"
+                ? "bg-white/90 text-[#ff2e06]"
+                : "bg-white/55 text-gray-600 hover:bg-white/90"
+                }`}
               onClick={() => setOperationType("alquiler")}
             >
               ALQUILER
             </button>
             <button
-              className={`tracking-widest uppercase px-12 py-3 rounded-t-lg text-sm font-semibold transition-all ${
-                operationType === "temporario"
-                  ? "bg-white/90 text-[#ff2e06]"
-                  : "bg-white/55 text-gray-600 hover:bg-white/90"
-              }`}
+              className={`tracking-widest uppercase px-12 py-3 rounded-t-lg text-sm font-semibold transition-all ${operationType === "temporario"
+                ? "bg-white/90 text-[#ff2e06]"
+                : "bg-white/55 text-gray-600 hover:bg-white/90"
+                }`}
               onClick={() => setOperationType("temporario")}
             >
               TEMPORARIO
@@ -147,8 +144,8 @@ export default function HeroSearch() {
 
               {/* Advanced Search Button */}
               <div className="md:w-auto">
-                <Button 
-                  type="button" 
+                <Button
+                  type="button"
                   variant="ghost"
                   className="w-full md:w-auto h-12 px-4 text-[#ff2e06] hover:bg-gray-50 flex items-center gap-2 whitespace-nowrap"
                 >
@@ -161,7 +158,7 @@ export default function HeroSearch() {
 
               {/* Search Button */}
               <div className="md:w-auto">
-                <Button 
+                <Button
                   type="button"
                   onClick={handleSearch}
                   className="w-full md:w-auto h-12 px-8 bg-[#ff2e06] hover:bg-[#e62905] text-white flex items-center justify-center gap-2 font-semibold"
@@ -212,20 +209,20 @@ export default function HeroSearch() {
         <section className="py-10 px-0">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Formulario para Usuarios */}
-            <div className="bg-[#ff2e06] text-white rounded-lg shadow-lg p-6 border border-white/100">
+            <div className="bg-[#ff2e06] text-white rounded-lg shadow-lg p-6 border-2 border-white/100">
               <div className="text-center mb-4">
                 {/* ¿Buscás propiedades? */}
                 <h3 className="text-lg font-bold mb-2">Buscamos por Usted</h3>
                 <p className="text-sm leading-relaxed">Sabemos que su tiempo es valioso. cuéntenos qué está buscando y nosotros nos ocupamos de encontrar la propiedad ideal para usted, entre todas las inmobiliarias que forman parte de <b>Buscoinmuebles</b>.</p>
               </div>
-              
+
               <div className="space-y-3">
                 <Link href="/solicitar-inmueble">
                   <Button className="w-full h-11 bg-white text-[#ff2e06] hover:bg-red-50 font-semibold text-sm transition-colors">
                     Ingresar
                   </Button>
                 </Link>
-                
+
                 {/* <Link href="/propiedades-guardadas">
                   <Button variant="outline" 
                           className="w-full h-11 border-2 border-white text-white bg-transparent hover:bg-white/10 font-semibold text-sm transition-colors"
@@ -235,21 +232,21 @@ export default function HeroSearch() {
                 </Link> */}
               </div>
             </div>
-  
+
             {/* Formulario para Inmobiliarias */}
-            <div className="bg-[#ff2e06] text-white rounded-lg shadow-lg p-6 border border-white/20">
+            <div className="bg-[#ff2e06] text-white rounded-lg shadow-lg p-6 border-2 border-white/100">
               <div className="text-center mb-4">
                 <h3 className="text-lg font-bold mb-2">Propiedades Solicitadas</h3>
                 <p className="text-sm leading-relaxed">Oportunidades reales de compra y alquiler que surgen de pedidos vigentes. Descubra la propiedades buscadas y participe de una operación directa con el respaldo profesional de <b>Buscoinmuebles</b>.</p>
               </div>
-              
+
               <div className="space-y-3">
                 <Link href="/inmobiliarias">
                   <Button className="w-full h-11 bg-white text-[#ff2e06] hover:bg-red-50 font-semibold text-sm transition-colors">
                     Ingresar
                   </Button>
                 </Link>
-                
+
                 {/* <Link href="/registro-inmobiliaria">
                   <Button variant="outline" 
                           className="w-full h-11 border-2 border-white text-white bg-transparent hover:bg-white/10 font-semibold text-sm transition-colors"

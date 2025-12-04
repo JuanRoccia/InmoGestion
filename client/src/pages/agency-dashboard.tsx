@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { useLocation, useSearch } from "wouter";
 import { useAuth } from "@/hooks/useAuth";
+import useAuthModalStore from "@/stores/auth-modal-store";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -32,23 +34,40 @@ export default function AgencyDashboard() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading, user } = useAuth();
   const queryClient = useQueryClient();
+  const [location, setLocation] = useLocation();
+  const search = useSearch();
   const [isPropertyDialogOpen, setIsPropertyDialogOpen] = useState(false);
   const [editingProperty, setEditingProperty] = useState<any>(null);
+
+  // Verify subscription if returning from payment
+  useEffect(() => {
+    const params = new URLSearchParams(search);
+    if (params.get('payment_success')) {
+      apiRequest("POST", "/api/agencies/verify-subscription")
+        .then(() => {
+          queryClient.invalidateQueries({ queryKey: ["/api/agencies"] });
+          toast({
+            title: "¡Suscripción Activa!",
+            description: "Tu agencia ha sido activada correctamente.",
+          });
+          // Remove param
+          setLocation("/agency-dashboard");
+        })
+        .catch((err) => {
+          console.error("Verification failed", err);
+        });
+    }
+  }, [search, queryClient, toast, setLocation]);
+
+  // Redirect to home if not authenticated
+  const { setIsOpen } = useAuthModalStore();
 
   // Redirect to home if not authenticated
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Unauthorized",
-        description: "You are logged out. Logging in again...",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 500);
-      return;
+      setIsOpen(true);
     }
-  }, [isAuthenticated, isLoading, toast]);
+  }, [isAuthenticated, isLoading, setIsOpen]);
 
   const { data: agency } = useQuery({
     queryKey: ["/api/agencies"],
@@ -145,9 +164,11 @@ export default function AgencyDashboard() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/agencies"] });
       toast({
-        title: "¡Éxito!",
-        description: "Inmobiliaria creada correctamente",
+        title: "¡Pre-registro Exitoso!",
+        description: "Tu agencia ha sido creada. Ahora suscríbete para activarla.",
       });
+      // Redirect to subscription
+      setLocation("/subscribe");
     },
     onError: (error: any) => {
       if (isUnauthorizedError(error)) {
@@ -260,13 +281,13 @@ export default function AgencyDashboard() {
                     />
 
                     <div className="flex gap-4">
-                      <Button 
-                        type="submit" 
+                      <Button
+                        type="submit"
                         disabled={createAgencyMutation.isPending}
                         data-testid="button-submit"
                         className="flex-1"
                       >
-                        {createAgencyMutation.isPending ? "Creando..." : "Crear Inmobiliaria"}
+                        {createAgencyMutation.isPending ? "Procesando..." : "Continuar a Suscripción"}
                       </Button>
                     </div>
                   </form>
@@ -282,7 +303,7 @@ export default function AgencyDashboard() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <div className="py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
@@ -290,7 +311,20 @@ export default function AgencyDashboard() {
               <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard - {agency.name}</h1>
               <p className="text-muted-foreground">Gestiona tus propiedades y estadísticas</p>
             </div>
-            
+
+            {agency.subscriptionStatus !== 'active' && (
+              <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6" role="alert">
+                <p className="font-bold">Modo Vista Previa</p>
+                <p>Tu agencia está pendiente de activación. Suscríbete para publicar tus propiedades.</p>
+                <Button
+                  className="mt-2 bg-yellow-600 hover:bg-yellow-700 text-white"
+                  onClick={() => setLocation("/subscribe")}
+                >
+                  Activar Suscripción
+                </Button>
+              </div>
+            )}
+
             <Dialog open={isPropertyDialogOpen} onOpenChange={setIsPropertyDialogOpen}>
               <DialogTrigger asChild>
                 <Button data-testid="button-add-property">
@@ -329,7 +363,7 @@ export default function AgencyDashboard() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Propiedades Activas</CardTitle>
@@ -341,7 +375,7 @@ export default function AgencyDashboard() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Destacadas</CardTitle>

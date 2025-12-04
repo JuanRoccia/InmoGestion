@@ -23,99 +23,99 @@ export default function FooterInmo() {
     <footer className="bg-white text-gray-800 border-t border-gray-200">
       {/* Main footer content */}
       <div className="max-w-7xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-[110px_1fr_110px] gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-8 items-start text-center justify-items-center">
           {/* Logo Izquierdo */}
-          <div className="flex items-start justify-start">
-            <img 
-              src="/assets/logo.png" 
-              alt="Busco Inmueble" 
+          <div className="flex items-start justify-center w-full">
+            <img
+              src="/assets/logo.png"
+              alt="Busco Inmueble"
               className="w-[110px] h-auto"
             />
           </div>
 
-          {/* Contenido Central */}
-          {/* justify-items-center justify-center justify-content-center */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 justify-items-center">
-            {/* Navigation Links */}
+          {/* Navigation Links */}
+          <div className="w-full">
             <FooterSection title="Navegación">
               <FooterLink href="/">Inicio</FooterLink>
               <FooterLink href="/properties">Propiedades</FooterLink>
               <FooterLink href="/agencies">Inmobiliarias</FooterLink>
               <FooterLink href="/contact">Contacto</FooterLink>
             </FooterSection>
+          </div>
 
-            {/* Legal Links */}
+          {/* Legal Links */}
+          <div className="w-full">
             <FooterSection title="Legal">
               <FooterLink href="/privacy">Política de Privacidad</FooterLink>
               <FooterLink href="/terms">Términos y Condiciones</FooterLink>
               <FooterLink href="/cookies">Política de Cookies</FooterLink>
               <FooterLink href="/accessibility">Accesibilidad</FooterLink>
             </FooterSection>
+          </div>
 
-            {/* Contact & Social */}
-            <div className="space-y-4">
-              <FooterSection title="Contacto">
-                <p className="text-xs text-gray-600">
-                  8000 Bahía Blanca<br />
-                  Provincia de Buenos Aires<br />
-                  291 4652552<br />
-                  <a 
-                    href="mailto:buscoinmuebles@buscoinmuebles.com.ar" 
-                    className="hover:text-gray-900 transition-colors"
-                  >
-                    buscoinmuebles@buscoinmuebles.com.ar
-                  </a>
-                </p>
-              </FooterSection>
-            </div>
+          {/* Contact */}
+          <div className="w-full">
+            <FooterSection title="Contacto">
+              <p className="text-xs text-gray-600">
+                8000 Bahía Blanca<br />
+                Provincia de Buenos Aires<br />
+                291 4652552<br />
+                <a
+                  href="mailto:buscoinmuebles@buscoinmuebles.com.ar"
+                  className="hover:text-gray-900 transition-colors"
+                >
+                  buscoinmuebles@buscoinmuebles.com.ar
+                </a>
+              </p>
+            </FooterSection>
+          </div>
 
-            {/* Social Media */}
-            <div>
-              <h3 className="font-semibold text-gray-800 text-sm mb-2">Seguinos en las redes</h3>
-              <div className="flex space-x-3">
-                <a 
-                  href="https://facebook.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-[#ff2e06] hover:bg-[#e62905] text-white transition-colors"
-                >
-                  <Facebook className="w-5 h-5" />
-                </a>
-                <a 
-                  href="https://youtube.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-[#ff2e06] hover:bg-[#e62905] text-white transition-colors"
-                >
-                  <Youtube className="w-5 h-5" />
-                </a>
-                <a 
-                  href="https://twitter.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-[#ff2e06] hover:bg-[#e62905] text-white transition-colors"
-                >
-                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                  </svg>
-                </a>
-                <a 
-                  href="https://instagram.com" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="w-10 h-10 flex items-center justify-center rounded-full bg-[#ff2e06] hover:bg-[#e62905] text-white transition-colors"
-                >
-                  <Instagram className="w-5 h-5" />
-                </a>
-              </div>
+          {/* Social Media */}
+          <div className="space-y-2 w-full">
+            <h3 className="font-semibold text-gray-800 text-sm">Seguinos en las redes</h3>
+            <div className="flex space-x-3 justify-center">
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-[#ff2e06] hover:bg-[#e62905] text-white transition-colors"
+              >
+                <Facebook className="w-5 h-5" />
+              </a>
+              <a
+                href="https://youtube.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-[#ff2e06] hover:bg-[#e62905] text-white transition-colors"
+              >
+                <Youtube className="w-5 h-5" />
+              </a>
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-[#ff2e06] hover:bg-[#e62905] text-white transition-colors"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+              </a>
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 flex items-center justify-center rounded-full bg-[#ff2e06] hover:bg-[#e62905] text-white transition-colors"
+              >
+                <Instagram className="w-5 h-5" />
+              </a>
             </div>
           </div>
 
           {/* Logo Derecho */}
-          <div className="flex items-start justify-end">
-            <img 
-              src="/assets/logo.png" 
-              alt="Busco Inmueble" 
+          <div className="flex items-start justify-center w-full">
+            <img
+              src="/assets/logo.png"
+              alt="Busco Inmueble"
               className="w-[110px] h-auto"
             />
           </div>

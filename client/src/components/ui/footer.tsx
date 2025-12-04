@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 
 const FooterSection = ({ title, children }: { title: string; children: React.ReactNode }) => (
-  <div className="space-y-3">
+  <div className="space-y-3 text-center">
     <h3 className="font-semibold text-gray-800">{title}</h3>
     <div className="space-y-2">
       {children}
@@ -10,15 +10,13 @@ const FooterSection = ({ title, children }: { title: string; children: React.Rea
 );
 
 const FooterLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
-  <Link href={href}>
-    <a className="block text-sm text-gray-600 hover:text-gray-900 transition-colors">
-      {children}
-    </a>
+  <Link href={href} className="block text-sm text-gray-600 hover:text-gray-900 transition-colors">
+    {children}
   </Link>
 );
 
 const SocialIcon = ({ href, icon }: { href: string; icon: string }) => (
-  <a 
+  <a
     href={href}
     target="_blank"
     rel="noopener noreferrer"
@@ -33,7 +31,7 @@ export default function Footer() {
     <footer className="bg-gray-50 text-gray-800">
       {/* Main footer content */}
       <div className="max-w-7xl mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-center align-center" style={{ textAlign: 'center' }}>
           {/* Navigation Links */}
           <FooterSection title="Navegación">
             <FooterLink href="/">Inicio</FooterLink>
@@ -65,7 +63,7 @@ export default function Footer() {
 
           {/* Social Media */}
           <FooterSection title="Síguenos">
-            <div className="flex space-x-3">
+            <div className="flex space-x-3 justify-center">
               <SocialIcon href="https://facebook.com" icon="facebook-f" />
               <SocialIcon href="https://twitter.com" icon="twitter" />
               <SocialIcon href="https://instagram.com" icon="instagram" />
@@ -83,7 +81,7 @@ export default function Footer() {
               © 2025 Buscoinmuebles.click - Todos los derechos reservados
             </p>
             <p className="text-sm text-gray-600 text-center md:text-left">
-              Buscoinmuebles.click es un producto de Hernández & asociados <br className="md:hidden" /> 
+              Buscoinmuebles.click es un producto de Hernández & asociados <br className="md:hidden" />
               Agencia de Publicidad y Productora de Contenidos
             </p>
           </div>

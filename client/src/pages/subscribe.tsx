@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import useAuthModalStore from "@/stores/auth-modal-store";
 import Header from "@/components/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -71,7 +72,7 @@ const SubscribeForm = ({ selectedPlan }: { selectedPlan: any }) => {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/dashboard`,
+        return_url: `${window.location.origin}/agency-dashboard?payment_success=true`,
       },
     });
 
@@ -97,11 +98,11 @@ const SubscribeForm = ({ selectedPlan }: { selectedPlan: any }) => {
         <h3 className="font-semibold text-foreground mb-2">Plan seleccionado: {selectedPlan.name}</h3>
         <p className="text-2xl font-bold text-primary">${selectedPlan.price}/mes</p>
       </div>
-      
+
       <PaymentElement />
-      
-      <Button 
-        type="submit" 
+
+      <Button
+        type="submit"
         disabled={!stripe || isProcessing}
         className="w-full"
         data-testid="submit-payment"
@@ -154,18 +155,13 @@ export default function Subscribe() {
   const [selectedPlan, setSelectedPlan] = useState(plans[1]); // Default to professional
   const [showCheckout, setShowCheckout] = useState(false);
 
+  const { setIsOpen } = useAuthModalStore();
+
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      toast({
-        title: "Inicia sesión requerido",
-        description: "Debes iniciar sesión para suscribirte",
-        variant: "destructive",
-      });
-      setTimeout(() => {
-        window.location.href = "/api/login";
-      }, 2000);
+      setIsOpen(true);
     }
-  }, [isAuthenticated, isLoading, toast]);
+  }, [isAuthenticated, isLoading, setIsOpen]);
 
   if (isLoading) {
     return (
@@ -192,7 +188,7 @@ export default function Subscribe() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <div className="py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
@@ -211,9 +207,8 @@ export default function Subscribe() {
                 {plans.map((plan) => (
                   <Card
                     key={plan.id}
-                    className={`relative hover:shadow-lg transition-all cursor-pointer ${
-                      selectedPlan.id === plan.id ? "ring-2 ring-primary" : ""
-                    } ${plan.popular ? "border-2 border-primary" : ""}`}
+                    className={`relative hover:shadow-lg transition-all cursor-pointer ${selectedPlan.id === plan.id ? "ring-2 ring-primary" : ""
+                      } ${plan.popular ? "border-2 border-primary" : ""}`}
                     onClick={() => setSelectedPlan(plan)}
                     data-testid={`plan-${plan.id}`}
                   >
@@ -224,7 +219,7 @@ export default function Subscribe() {
                         </Badge>
                       </div>
                     )}
-                    
+
                     <CardContent className="p-8">
                       <div className="text-center mb-6">
                         <h4 className="text-xl font-semibold text-foreground mb-2">
@@ -235,7 +230,7 @@ export default function Subscribe() {
                         </div>
                         <div className="text-sm text-muted-foreground">por mes</div>
                       </div>
-                      
+
                       <ul className="space-y-3 mb-8">
                         {plan.features.map((feature, index) => (
                           <li key={index} className="flex items-center text-sm">
@@ -244,7 +239,7 @@ export default function Subscribe() {
                           </li>
                         ))}
                       </ul>
-                      
+
                       <div className="text-center">
                         {selectedPlan.id === plan.id && (
                           <Badge variant="outline" className="border-primary text-primary">
@@ -275,7 +270,7 @@ export default function Subscribe() {
                 </CardHeader>
                 <CardContent>
                   <CheckoutWrapper selectedPlan={selectedPlan} />
-                  
+
                   <div className="text-center mt-6">
                     <Button
                       variant="outline"

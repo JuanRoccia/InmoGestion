@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { useEffect } from "react";
 
 export interface LocationGridProps {
   locations: Array<{
@@ -10,6 +11,30 @@ export interface LocationGridProps {
 }
 
 export default function LocationGrid({ locations }: LocationGridProps) {
+  useEffect(() => {
+    // Solución provisoria: Buscar y eliminar el elemento "Punta Alta" del DOM
+    const cleanPuntaAlta = () => {
+      const anchors = document.querySelectorAll('a');
+      anchors.forEach(anchor => {
+        if (anchor.textContent?.includes('Punta Alta') || anchor.getAttribute('href')?.includes('punta-alta')) {
+          anchor.remove();
+        }
+      });
+    };
+
+    // Ejecutar inmediatamente
+    cleanPuntaAlta();
+
+    // También observar cambios en el DOM por si acaso
+    const observer = new MutationObserver(cleanPuntaAlta);
+    const grid = document.querySelector('.grid');
+    if (grid) {
+      observer.observe(grid, { childList: true, subtree: true });
+    }
+
+    return () => observer.disconnect();
+  }, [locations]);
+
   return (
     <section className="py-8 px-4 bg-white">
       <div className="max-w-7xl mx-auto">
@@ -26,7 +51,7 @@ export default function LocationGrid({ locations }: LocationGridProps) {
                 className="group relative overflow-hidden rounded-sm aspect-[4/3] bg-muted hover:shadow-lg transition-all duration-300"
                 data-testid={`location-${location.slug}`}
               >
-                <div 
+                <div
                   className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                   style={{
                     backgroundImage: `url(/assets/locations/${location.slug}.jpg)`,

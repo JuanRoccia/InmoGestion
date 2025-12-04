@@ -22,7 +22,7 @@ export default function Properties() {
       Object.entries(filters).forEach(([key, value]) => {
         if (value && value !== "all") params.append(key, value.toString());
       });
-      
+
       const response = await fetch(`/api/properties?${params}`);
       if (!response.ok) throw new Error('Failed to fetch properties');
       return response.json();
@@ -38,9 +38,9 @@ export default function Properties() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-28">
       <Header />
-      
+
       <div className="py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">

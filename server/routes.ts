@@ -34,13 +34,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { search } = req.query;
       let agencies;
-      
+
       if (search) {
         agencies = await storage.searchAgencies(search as string);
       } else {
         agencies = await storage.getAgencies();
       }
-      
+
       res.json(agencies);
     } catch (error) {
       console.error("Error fetching agencies:", error);
@@ -80,11 +80,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const agency = await storage.getAgency(req.params.id);
-      
+
       if (!agency) {
         return res.status(404).json({ message: "Agency not found" });
       }
-      
+
       if (agency.ownerId !== userId) {
         return res.status(403).json({ message: "Unauthorized" });
       }
@@ -105,11 +105,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const agency = await storage.getAgency(req.params.id);
-      
+
       if (!agency) {
         return res.status(404).json({ message: "Agency not found" });
       }
-      
+
       if (agency.ownerId !== userId) {
         return res.status(403).json({ message: "Unauthorized" });
       }
@@ -119,6 +119,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting agency:", error);
       res.status(500).json({ message: "Failed to delete agency" });
+    }
+  });
+
+  app.post('/api/agencies/verify-subscription', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+
+      if (!user?.stripeSubscriptionId) {
+        return res.status(400).json({ message: "No active subscription found" });
+      }
+
+      const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+
+      if (subscription.status === 'active') {
+        const agency = await storage.getAgencyByOwnerId(userId);
+        if (agency) {
+          const updatedAgency = await storage.updateAgency(agency.id, {
+            isActive: true,
+            subscriptionStatus: 'active'
+          });
+          return res.json(updatedAgency);
+        }
+      }
+
+      res.json({ message: "Subscription not active yet", status: subscription.status });
+    } catch (error) {
+      console.error("Error verifying subscription:", error);
+      res.status(500).json({ message: "Failed to verify subscription" });
     }
   });
 
@@ -184,7 +213,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const agency = await storage.getAgencyByOwnerId(userId);
-      
+
       if (!agency) {
         return res.status(403).json({ message: "You must own an agency to create properties" });
       }
@@ -205,11 +234,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const property = await storage.getProperty(req.params.id);
-      
+
       if (!property) {
         return res.status(404).json({ message: "Property not found" });
       }
-      
+
       const agency = await storage.getAgency(property.agencyId);
       if (agency?.ownerId !== userId) {
         return res.status(403).json({ message: "Unauthorized" });
@@ -231,11 +260,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = req.user.claims.sub;
       const property = await storage.getProperty(req.params.id);
-      
+
       if (!property) {
         return res.status(404).json({ message: "Property not found" });
       }
-      
+
       const agency = await storage.getAgency(property.agencyId);
       if (agency?.ownerId !== userId) {
         return res.status(403).json({ message: "Unauthorized" });
@@ -296,7 +325,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       const latestInvoice = subscription.latest_invoice;
-      const clientSecret = typeof latestInvoice === 'object' && latestInvoice?.payment_intent 
+      const clientSecret = typeof latestInvoice === 'object' && latestInvoice?.payment_intent
         ? (typeof latestInvoice.payment_intent === 'object' ? latestInvoice.payment_intent.client_secret : null)
         : null;
 
@@ -307,7 +336,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       return;
     }
-    
+
     if (!user.claims.email) {
       throw new Error('No user email on file');
     }
@@ -328,9 +357,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       await storage.updateUserStripeInfo(user.claims.sub, customer.id, subscription.id);
-  
+
       const latestInvoice = subscription.latest_invoice;
-      const clientSecret = typeof latestInvoice === 'object' && latestInvoice?.payment_intent 
+      const clientSecret = typeof latestInvoice === 'object' && latestInvoice?.payment_intent
         ? (typeof latestInvoice.payment_intent === 'object' ? latestInvoice.payment_intent.client_secret : null)
         : null;
 
