@@ -49,15 +49,23 @@ async function seedTestData() {
     // 3. Ensure Locations
     console.log("Ensuring locations...");
     const locationsData = [
-        { name: "Bahía Blanca", slug: "bahia-blanca", province: "Buenos Aires" },
-        { name: "Monte Hermoso", slug: "monte-hermoso", province: "Buenos Aires" },
-        { name: "Punta Alta", slug: "punta-alta", province: "Buenos Aires" },
+        { name: "Bahía Blanca", slug: "bahia-blanca", province: "Buenos Aires", latitude: "-38.7183", longitude: "-62.2663" },
+        { name: "Monte Hermoso", slug: "monte-hermoso", province: "Buenos Aires", latitude: "-38.9833", longitude: "-61.2833" },
+        { name: "Punta Alta", slug: "punta-alta", province: "Buenos Aires", latitude: "-38.8779", longitude: "-62.0712" },
+        { name: "Pehuen Co", slug: "pehuen-co", province: "Buenos Aires", latitude: "-38.9967", longitude: "-61.5433" },
     ];
 
     const locations = [];
     for (const loc of locationsData) {
         const [l] = await db.insert(schema.locations).values(loc)
-            .onConflictDoUpdate({ target: schema.locations.slug, set: { name: loc.name } })
+            .onConflictDoUpdate({
+                target: schema.locations.slug,
+                set: {
+                    name: loc.name,
+                    latitude: loc.latitude,
+                    longitude: loc.longitude
+                }
+            })
             .returning();
         locations.push(l);
     }
@@ -91,7 +99,10 @@ async function seedTestData() {
             agencyId: agency.id,
             locationId: locations[0].id, // Bahía Blanca
             categoryId: houseCat.id,
-            images: ["https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"]
+            code: "PROP-15000",
+            images: ["https://images.unsplash.com/photo-1568605114967-8130f3a36994?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
+            latitude: "-38.7051",
+            longitude: "-62.2662"
         },
         {
             title: "Departamento Céntrico 2 Ambientes",
@@ -109,7 +120,10 @@ async function seedTestData() {
             agencyId: agency.id,
             locationId: locations[0].id, // Bahía Blanca
             categoryId: aptCat.id,
-            images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"]
+            code: "PROP-65000",
+            images: ["https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
+            latitude: "-38.7202",
+            longitude: "-62.2618"
         },
         {
             title: "Terreno en Monte Hermoso",
@@ -127,7 +141,10 @@ async function seedTestData() {
             agencyId: agency.id,
             locationId: locations[1].id, // Monte Hermoso
             categoryId: landCat.id,
-            images: ["https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"]
+            code: "PROP-45000",
+            images: ["https://images.unsplash.com/photo-1500382017468-9049fed747ef?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
+            latitude: "-38.9867",
+            longitude: "-61.2885"
         },
         {
             title: "Alquiler Casa Quinta",
@@ -145,7 +162,10 @@ async function seedTestData() {
             agencyId: agency.id,
             locationId: locations[0].id, // Bahía Blanca
             categoryId: houseCat.id,
-            images: ["https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"]
+            code: "PROP-15001",
+            images: ["https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
+            latitude: "-38.6833",
+            longitude: "-62.2167"
         },
         {
             title: "Oficina Premium Centro",
@@ -163,7 +183,10 @@ async function seedTestData() {
             agencyId: agency.id,
             locationId: locations[0].id,
             categoryId: aptCat.id, // Using apt category as proxy for office if needed, or fetch office cat
-            images: ["https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"]
+            code: "PROP-800",
+            images: ["https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80"],
+            latitude: "-38.7180",
+            longitude: "-62.2650"
         }
     ];
 

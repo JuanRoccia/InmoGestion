@@ -6,16 +6,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Link } from "wouter";
 
+import AdvancedSearchDialog from "@/components/advanced-search-dialog";
+import SearchByCodeDialog from "@/components/search-by-code-dialog";
+
 export default function HeroSearch() {
-  const [operationType, setOperationType] = useState("venta");
+  const [operationType, setOperationType] = useState("alquiler");
   const [propertyType, setPropertyType] = useState("");
   const [location, setLocation] = useState("");
+  const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
+  const [isSearchByCodeOpen, setIsSearchByCodeOpen] = useState(false);
 
-  const { data: locations = [] } = useQuery({
+  const { data: locations = [] } = useQuery<any[]>({
     queryKey: ["/api/locations"],
   });
 
-  const { data: categories = [] } = useQuery({
+  const { data: categories = [] } = useQuery<any[]>({
     queryKey: ["/api/categories"],
   });
 
@@ -146,6 +151,7 @@ export default function HeroSearch() {
               <div className="md:w-auto">
                 <Button
                   type="button"
+                  onClick={() => setIsAdvancedOpen(true)}
                   variant="ghost"
                   className="w-full md:w-auto h-12 px-4 text-[#ff2e06] hover:bg-gray-50 flex items-center gap-2 whitespace-nowrap"
                 >
@@ -172,6 +178,23 @@ export default function HeroSearch() {
           </div>
         </div>
 
+        <AdvancedSearchDialog
+          open={isAdvancedOpen}
+          onOpenChange={setIsAdvancedOpen}
+          initialFilters={{
+            operationType,
+            locationId: location,
+            categoryId: propertyType
+          }}
+          locations={locations}
+          categories={categories}
+        />
+
+        <SearchByCodeDialog
+          open={isSearchByCodeOpen}
+          onOpenChange={setIsSearchByCodeOpen}
+        />
+
         {/* Buttons Section */}
         <section className="bg-white/0">
           <div className="container max-w-8xl mx-auto px-4">
@@ -186,11 +209,12 @@ export default function HeroSearch() {
                   Búsqueda por mapa
                 </Button>
               </Link>
-              <Link href="/busqueda-codigo">
-                <Button className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg">
-                  Búsqueda por código
-                </Button>
-              </Link>
+              <Button
+                onClick={() => setIsSearchByCodeOpen(true)}
+                className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg"
+              >
+                Búsqueda por código
+              </Button>
               <Link href="/busqueda-valor">
                 <Button className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg">
                   Búsqueda por valor

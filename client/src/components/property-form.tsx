@@ -15,6 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, DollarSign, Home, Camera } from "lucide-react";
+import LocationPicker from "@/components/location-picker";
 
 const propertyFormSchema = insertPropertySchema.extend({
   price: z.string().min(1, "El precio es requerido"),
@@ -22,6 +23,8 @@ const propertyFormSchema = insertPropertySchema.extend({
   bedrooms: z.string().optional(),
   bathrooms: z.string().optional(),
   garages: z.string().optional(),
+  latitude: z.string().optional(),
+  longitude: z.string().optional(),
 });
 
 type PropertyFormData = z.infer<typeof propertyFormSchema>;
@@ -54,6 +57,8 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
       isActive: property?.isActive !== false,
       locationId: property?.locationId || "",
       categoryId: property?.categoryId || "",
+      latitude: property?.latitude?.toString() || "",
+      longitude: property?.longitude?.toString() || "",
     },
   });
 
@@ -64,6 +69,13 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
   const { data: categories = [] } = useQuery({
     queryKey: ["/api/categories"],
   });
+
+  // Calculate city location for map centering based on selected locationId
+  const selectedLocationId = form.watch("locationId");
+  const cityLocation = locations.find((l: any) => l.id === selectedLocationId && l.latitude && l.longitude)
+    ? { lat: parseFloat(locations.find((l: any) => l.id === selectedLocationId).latitude), lng: parseFloat(locations.find((l: any) => l.id === selectedLocationId).longitude) }
+    : null;
+
 
   const createPropertyMutation = useMutation({
     mutationFn: async (data: PropertyFormData) => {
@@ -77,6 +89,8 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
         images: imageUrls,
         locationId: data.locationId && data.locationId !== "none" ? data.locationId : null,
         categoryId: data.categoryId && data.categoryId !== "none" ? data.categoryId : null,
+        latitude: data.latitude ? data.latitude.toString() : null, // Ensure string for decimal type if needed, or number if schema allows
+        longitude: data.longitude ? data.longitude.toString() : null,
       };
 
       if (property) {
@@ -137,7 +151,7 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
               <Home className="h-5 w-5 text-primary mr-2" />
               <h3 className="text-lg font-semibold">Información Básica</h3>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
@@ -209,7 +223,7 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
                   <FormItem className="md:col-span-2">
                     <FormLabel>Descripción</FormLabel>
                     <FormControl>
-                      <Textarea 
+                      <Textarea
                         placeholder="Describe la propiedad en detalle..."
                         className="min-h-[100px]"
                         {...field}
@@ -231,7 +245,7 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
               <DollarSign className="h-5 w-5 text-primary mr-2" />
               <h3 className="text-lg font-semibold">Precio y Características</h3>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <FormField
                 control={form.control}
@@ -336,22 +350,8 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
               <MapPin className="h-5 w-5 text-primary mr-2" />
               <h3 className="text-lg font-semibold">Ubicación</h3>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Dirección</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Dirección completa" {...field} data-testid="property-address" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <FormField
                 control={form.control}
                 name="locationId"
@@ -377,7 +377,64 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Dirección</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Dirección completa" {...field} data-testid="property-address" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
+
+            {/* Map Picker */}
+            <div className="mt-4">
+              <FormLabel>Ubicación en Mapa (Opcional)</FormLabel>
+              <div className="mt-2 border rounded-lg overflow-hidden h-[300px]">
+                <LocationPicker
+                  latitude={form.watch("latitude") ? parseFloat(form.watch("latitude")!) : undefined}
+                  longitude={form.watch("longitude") ? parseFloat(form.watch("longitude")!) : undefined}
+                  cityLocation={cityLocation}
+                  onLocationSelect={(lat, lng) => {
+                    form.setValue("latitude", lat.toString());
+                    form.setValue("longitude", lng.toString());
+                  }}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-2">
+                <FormField
+                  control={form.control}
+                  name="latitude"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs text-muted-foreground">Latitud</FormLabel>
+                      <FormControl>
+                        <Input {...field} readOnly className="h-8 text-xs bg-gray-50" />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="longitude"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs text-muted-foreground">Longitud</FormLabel>
+                      <FormControl>
+                        <Input {...field} readOnly className="h-8 text-xs bg-gray-50" />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
           </CardContent>
         </Card>
 
@@ -388,7 +445,7 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
               <Camera className="h-5 w-5 text-primary mr-2" />
               <h3 className="text-lg font-semibold">Imágenes</h3>
             </div>
-            
+
             <div className="space-y-4">
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {imageUrls.map((url, index) => (
@@ -410,7 +467,7 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
                   </div>
                 ))}
               </div>
-              
+
               <Button
                 type="button"
                 variant="outline"
@@ -427,7 +484,7 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
         <Card>
           <CardContent className="p-6">
             <h3 className="text-lg font-semibold mb-4">Configuración</h3>
-            
+
             <div className="space-y-4">
               <FormField
                 control={form.control}
@@ -475,15 +532,15 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
           <Button type="button" variant="outline" onClick={onCancel} data-testid="cancel-button">
             Cancelar
           </Button>
-          <Button 
-            type="submit" 
+          <Button
+            type="submit"
             disabled={createPropertyMutation.isPending}
             data-testid="save-property"
           >
-            {createPropertyMutation.isPending 
-              ? "Guardando..." 
-              : property 
-                ? "Actualizar Propiedad" 
+            {createPropertyMutation.isPending
+              ? "Guardando..."
+              : property
+                ? "Actualizar Propiedad"
                 : "Crear Propiedad"
             }
           </Button>

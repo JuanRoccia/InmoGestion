@@ -24,6 +24,7 @@ interface SearchFiltersProps {
     id: string;
     name: string;
   }>;
+  onApply?: () => void;
 }
 
 export default function SearchFilters({
@@ -31,6 +32,7 @@ export default function SearchFilters({
   onFiltersChange,
   locations,
   categories,
+  onApply,
 }: SearchFiltersProps) {
   const updateFilter = (key: string, value: any) => {
     onFiltersChange({
@@ -50,8 +52,8 @@ export default function SearchFilters({
     });
   };
 
-  const hasActiveFilters = (filters.operationType && filters.operationType !== "all") || 
-    (filters.locationId && filters.locationId !== "all") || 
+  const hasActiveFilters = (filters.operationType && filters.operationType !== "all") ||
+    (filters.locationId && filters.locationId !== "all") ||
     (filters.categoryId && filters.categoryId !== "all");
 
   return (
@@ -59,7 +61,7 @@ export default function SearchFilters({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center">
-          <SlidersHorizontal className="h-5 w-5 text-primary mr-2" />
+          <SlidersHorizontal className="h-5 w-5 text-[#ff2e06] mr-2" />
           <h3 className="font-semibold text-foreground">Filtros</h3>
         </div>
         {hasActiveFilters && (
@@ -82,33 +84,33 @@ export default function SearchFilters({
           <h4 className="text-sm font-medium text-muted-foreground">Filtros activos:</h4>
           <div className="flex flex-wrap gap-2">
             {filters.operationType && (
-              <Badge variant="secondary" className="flex items-center gap-1" data-testid="active-operation-filter">
+              <Badge variant="secondary" className="flex items-center gap-1 bg-red-50 text-[#ff2e06] border border-red-100 hover:bg-red-100" data-testid="active-operation-filter">
                 {filters.operationType}
                 <button
                   onClick={() => updateFilter("operationType", "")}
-                  className="ml-1 hover:text-destructive"
+                  className="ml-1 hover:text-red-700"
                 >
                   <X className="h-3 w-3" />
                 </button>
               </Badge>
             )}
             {filters.locationId && (
-              <Badge variant="secondary" className="flex items-center gap-1" data-testid="active-location-filter">
+              <Badge variant="secondary" className="flex items-center gap-1 bg-red-50 text-[#ff2e06] border border-red-100 hover:bg-red-100" data-testid="active-location-filter">
                 {locations.find(l => l.id === filters.locationId)?.name || "Ubicación"}
                 <button
                   onClick={() => updateFilter("locationId", "")}
-                  className="ml-1 hover:text-destructive"
+                  className="ml-1 hover:text-red-700"
                 >
                   <X className="h-3 w-3" />
                 </button>
               </Badge>
             )}
             {filters.categoryId && (
-              <Badge variant="secondary" className="flex items-center gap-1" data-testid="active-category-filter">
+              <Badge variant="secondary" className="flex items-center gap-1 bg-red-50 text-[#ff2e06] border border-red-100 hover:bg-red-100" data-testid="active-category-filter">
                 {categories.find(c => c.id === filters.categoryId)?.name || "Categoría"}
                 <button
                   onClick={() => updateFilter("categoryId", "")}
-                  className="ml-1 hover:text-destructive"
+                  className="ml-1 hover:text-red-700"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -292,7 +294,7 @@ export default function SearchFilters({
       </div>
 
       {/* Apply Filters Button */}
-      <Button className="w-full" data-testid="apply-filters">
+      <Button className="w-full bg-[#ff2e06] hover:bg-[#e62905] text-white" onClick={onApply} data-testid="apply-filters">
         <Search className="h-4 w-4 mr-2" />
         Aplicar Filtros
       </Button>

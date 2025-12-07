@@ -15,6 +15,7 @@ import AgencyDashboard from "@/pages/agency-dashboard";
 import Subscribe from "@/pages/subscribe";
 import Agencies from "@/pages/agencies";
 import Contact from "@/pages/contact";
+import MapSearch from "@/pages/map-search";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -37,6 +38,7 @@ function Router() {
         </>
       )}
       <Route path="/subscribe" component={Subscribe} />
+      <Route path="/mapa" component={MapSearch} />
       <Route component={NotFound} />
     </Switch>
   );

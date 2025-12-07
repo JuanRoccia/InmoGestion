@@ -35,6 +35,7 @@ export const users = pgTable("users", {
   profileImageUrl: varchar("profile_image_url"),
   stripeCustomerId: varchar("stripe_customer_id"),
   stripeSubscriptionId: varchar("stripe_subscription_id"),
+  password: varchar("password"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -88,6 +89,7 @@ export const operationTypeEnum = pgEnum('operation_type', ['venta', 'alquiler', 
 // Properties table
 export const properties = pgTable("properties", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  code: varchar("code", { length: 20 }).notNull().unique(), // Unique property code e.g. "PROP-12345"
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
   price: decimal("price", { precision: 12, scale: 2 }).notNull(),
@@ -180,6 +182,7 @@ export const insertAgencySchema = createInsertSchema(agencies).omit({
 
 export const insertPropertySchema = createInsertSchema(properties).omit({
   id: true,
+  code: true,
   createdAt: true,
   updatedAt: true,
 });

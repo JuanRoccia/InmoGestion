@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearch } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/header";
 import PropertyCard from "@/components/property-card";
@@ -7,12 +8,16 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Properties() {
-  const [filters, setFilters] = useState({
-    operationType: "all",
-    locationId: "all",
-    categoryId: "all",
-    limit: 12,
-    offset: 0,
+  const search = useSearch();
+  const [filters, setFilters] = useState(() => {
+    const params = new URLSearchParams(search);
+    return {
+      operationType: params.get("operationType") || "all",
+      locationId: params.get("locationId") || "all",
+      categoryId: params.get("categoryId") || "all",
+      limit: 12,
+      offset: 0,
+    };
   });
 
   const { data: properties = [], isLoading } = useQuery({

@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Bed, Bath, Car, Square, Phone, Mail, ExternalLink } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import FooterInmo from "@/components/footer-inmo";
 
 export default function PropertyDetail() {
   const { id } = useParams<{ id: string }>();
@@ -17,7 +18,7 @@ export default function PropertyDetail() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pt-28">
         <Header />
         <div className="py-8 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto">
@@ -34,13 +35,14 @@ export default function PropertyDetail() {
             </div>
           </div>
         </div>
+        <FooterInmo />
       </div>
     );
   }
 
   if (!property) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pt-28">
         <Header />
         <div className="py-8 px-4 sm:px-6 lg:px-8">
           <div className="max-w-7xl mx-auto text-center">
@@ -48,14 +50,15 @@ export default function PropertyDetail() {
             <p className="text-muted-foreground">La propiedad que buscas no existe o ha sido eliminada.</p>
           </div>
         </div>
+        <FooterInmo />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-28">
       <Header />
-      
+
       <div className="py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           {/* Property Images */}
@@ -101,16 +104,16 @@ export default function PropertyDetail() {
                     <Badge variant="default">Destacada</Badge>
                   )}
                 </div>
-                
+
                 <h1 className="text-3xl font-bold text-foreground mb-2" data-testid="property-title">
                   {property.title}
                 </h1>
-                
+
                 <div className="flex items-center text-muted-foreground mb-4">
                   <MapPin className="h-4 w-4 mr-1" />
                   <span data-testid="property-address">{property.address}</span>
                 </div>
-                
+
                 <div className="text-3xl font-bold text-primary mb-6" data-testid="property-price">
                   {property.currency} {parseFloat(property.price).toLocaleString()}
                 </div>
@@ -167,18 +170,18 @@ export default function PropertyDetail() {
               <Card className="sticky top-8">
                 <CardContent className="p-6">
                   <h2 className="text-xl font-semibold mb-4">Información de Contacto</h2>
-                  
+
                   <div className="space-y-4 mb-6">
                     <Button className="w-full" size="lg" data-testid="contact-phone">
                       <Phone className="h-4 w-4 mr-2" />
                       Llamar ahora
                     </Button>
-                    
+
                     <Button variant="outline" className="w-full" size="lg" data-testid="contact-email">
                       <Mail className="h-4 w-4 mr-2" />
                       Enviar email
                     </Button>
-                    
+
                     <Button variant="outline" className="w-full" size="lg" data-testid="contact-whatsapp">
                       <ExternalLink className="h-4 w-4 mr-2" />
                       WhatsApp
@@ -197,6 +200,7 @@ export default function PropertyDetail() {
           </div>
         </div>
       </div>
+      <FooterInmo />
     </div>
   );
 }

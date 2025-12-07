@@ -44,6 +44,7 @@ export interface IStorage {
     offset?: number;
   }): Promise<Property[]>;
   getProperty(id: string): Promise<Property | undefined>;
+  getPropertyByCode(code: string): Promise<Property | undefined>;
   createProperty(property: InsertProperty): Promise<Property>;
   updateProperty(id: string, property: Partial<InsertProperty>): Promise<Property>;
   deleteProperty(id: string): Promise<void>;
@@ -186,8 +187,15 @@ export class DatabaseStorage implements IStorage {
     return property;
   }
 
+  async getPropertyByCode(code: string): Promise<Property | undefined> {
+    const [property] = await db.select().from(properties).where(eq(properties.code, code));
+    return property;
+  }
+
   async createProperty(property: InsertProperty): Promise<Property> {
-    const [newProperty] = await db.insert(properties).values(property).returning();
+    // Generate a unique code like "PROP-12345"
+    const code = `PROP-${Math.floor(10000 + Math.random() * 90000)}`;
+    const [newProperty] = await db.insert(properties).values({ ...property, code }).returning();
     return newProperty;
   }
 

@@ -209,6 +209,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get('/api/properties/code/:code', async (req, res) => {
+    try {
+      const property = await storage.getPropertyByCode(req.params.code);
+      if (!property) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+      res.json(property);
+    } catch (error) {
+      console.error("Error fetching property by code:", error);
+      res.status(500).json({ message: "Failed to fetch property" });
+    }
+  });
+
   app.post('/api/properties', isAuthenticated, async (req: any, res) => {
     try {
       const userId = req.user.claims.sub;
