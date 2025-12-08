@@ -5,6 +5,7 @@ import Header from "@/components/header";
 import AdminTable from "@/components/admin-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, Users, TrendingUp, DollarSign } from "lucide-react";
+import FooterInmo from "@/components/footer-inmo";
 
 export default function AdminDashboard() {
   const { toast } = useToast();
@@ -38,9 +39,9 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-28">
       <Header />
-      
+
       <div className="py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="mb-8">
@@ -62,7 +63,7 @@ export default function AdminDashboard() {
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Usuarios Activos</CardTitle>
@@ -75,7 +76,7 @@ export default function AdminDashboard() {
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Propiedades</CardTitle>
@@ -88,7 +89,7 @@ export default function AdminDashboard() {
                 </p>
               </CardContent>
             </Card>
-            
+
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Ingresos Mensual</CardTitle>
@@ -106,6 +107,7 @@ export default function AdminDashboard() {
           <AdminTable />
         </div>
       </div>
+      <FooterInmo />
     </div>
   );
 }

@@ -186,7 +186,7 @@ export default function Subscribe() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-28">
       <Header />
 
       <div className="py-8 px-4 sm:px-6 lg:px-8">

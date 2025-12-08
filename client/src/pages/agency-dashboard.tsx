@@ -196,7 +196,7 @@ export default function AgencyDashboard() {
 
   if (!agency) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pt-28">
         <Header />
         <div className="py-8 px-4 sm:px-6 lg:px-8">
           <div className="max-w-2xl mx-auto">
@@ -301,7 +301,7 @@ export default function AgencyDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pt-28">
       <Header />
 
       <div className="py-8 px-4 sm:px-6 lg:px-8">
