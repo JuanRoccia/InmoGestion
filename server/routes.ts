@@ -160,6 +160,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         categoryId,
         agencyId,
         isFeatured,
+        isCreditSuitable,
+        minPrice,
+        maxPrice,
+        price,
         limit,
         offset,
       } = req.query;
@@ -170,6 +174,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         categoryId: categoryId as string,
         agencyId: agencyId as string,
         isFeatured: isFeatured === 'true',
+        isCreditSuitable: isCreditSuitable === 'true',
+        minPrice: minPrice ? Number(minPrice) : undefined,
+        maxPrice: maxPrice ? Number(maxPrice) : undefined,
+        price: price ? Number(price) : undefined,
         limit: limit ? parseInt(limit as string) : undefined,
         offset: offset ? parseInt(offset as string) : undefined,
       };

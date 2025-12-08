@@ -17,6 +17,7 @@ import {
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, like, desc, asc, sql, or } from "drizzle-orm";
+import * as fs from 'fs';
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -40,6 +41,10 @@ export interface IStorage {
     categoryId?: string;
     agencyId?: string;
     isFeatured?: boolean;
+    isCreditSuitable?: boolean;
+    minPrice?: number;
+    maxPrice?: number;
+    price?: number;
     limit?: number;
     offset?: number;
   }): Promise<Property[]>;
@@ -152,6 +157,9 @@ export class DatabaseStorage implements IStorage {
     limit?: number;
     offset?: number;
   }): Promise<Property[]> {
+    console.log("getProperties filters:", filters);
+    fs.writeFileSync('debug-query.txt', JSON.stringify({ timestamp: new Date(), filters }, null, 2));
+
     const conditions = [eq(properties.isActive, true)];
 
     if (filters?.operationType) {
@@ -168,6 +176,18 @@ export class DatabaseStorage implements IStorage {
     }
     if (filters?.isFeatured !== undefined) {
       conditions.push(eq(properties.isFeatured, filters.isFeatured));
+    }
+    if (filters?.isCreditSuitable) {
+      conditions.push(eq(properties.isCreditSuitable, true));
+    }
+    if (filters?.minPrice !== undefined) {
+      conditions.push(sql`${properties.price} >= ${filters.minPrice}`);
+    }
+    if (filters?.maxPrice !== undefined) {
+      conditions.push(sql`${properties.price} <= ${filters.maxPrice}`);
+    }
+    if (filters?.price !== undefined) {
+      conditions.push(eq(properties.price, filters.price.toString()));
     }
 
     let query = db.select().from(properties).where(and(...conditions)).orderBy(desc(properties.createdAt));

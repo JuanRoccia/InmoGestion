@@ -25,6 +25,7 @@ const propertyFormSchema = insertPropertySchema.extend({
   garages: z.string().optional(),
   latitude: z.string().optional(),
   longitude: z.string().optional(),
+  isCreditSuitable: z.boolean().optional(),
 });
 
 type PropertyFormData = z.infer<typeof propertyFormSchema>;
@@ -59,6 +60,7 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
       categoryId: property?.categoryId || "",
       latitude: property?.latitude?.toString() || "",
       longitude: property?.longitude?.toString() || "",
+      isCreditSuitable: property?.isCreditSuitable || false,
     },
   });
 

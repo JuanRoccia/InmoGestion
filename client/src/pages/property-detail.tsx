@@ -11,7 +11,7 @@ import FooterInmo from "@/components/footer-inmo";
 export default function PropertyDetail() {
   const { id } = useParams<{ id: string }>();
 
-  const { data: property, isLoading } = useQuery({
+  const { data: property, isLoading } = useQuery<any>({
     queryKey: ["/api/properties", id],
     enabled: !!id,
   });
@@ -102,6 +102,11 @@ export default function PropertyDetail() {
                   </Badge>
                   {property.isFeatured && (
                     <Badge variant="default">Destacada</Badge>
+                  )}
+                  {property.isCreditSuitable && (
+                    <Badge variant="outline" className="border-green-500 text-green-600 bg-green-50">
+                      Apta Crédito
+                    </Badge>
                   )}
                 </div>
 

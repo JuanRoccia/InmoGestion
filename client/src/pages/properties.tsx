@@ -17,6 +17,12 @@ export default function Properties() {
       categoryId: params.get("categoryId") || "all",
       limit: 12,
       offset: 0,
+      minPrice: params.get("minPrice") || "",
+      maxPrice: params.get("maxPrice") || "",
+      price: params.get("price") || "",
+      minArea: params.get("minArea") || "",
+      maxArea: params.get("maxArea") || "",
+      isCreditSuitable: params.get("isCreditSuitable") === "true",
     };
   });
 
@@ -34,11 +40,11 @@ export default function Properties() {
     },
   });
 
-  const { data: locations = [] } = useQuery({
+  const { data: locations = [] } = useQuery<any[]>({
     queryKey: ["/api/locations"],
   });
 
-  const { data: categories = [] } = useQuery({
+  const { data: categories = [] } = useQuery<any[]>({
     queryKey: ["/api/categories"],
   });
 

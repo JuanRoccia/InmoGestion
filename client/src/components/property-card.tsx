@@ -16,6 +16,7 @@ interface PropertyCardProps {
     images?: string[];
     operationType: string;
     isFeatured?: boolean;
+    isCreditSuitable?: boolean;
   };
 }
 
@@ -30,8 +31,8 @@ export default function PropertyCard({ property }: PropertyCardProps) {
     <div className="card-prop w-full" data-testid={`property-card-${property.id}`}>
       <Link href={`/properties/${property.id}`} className="go-detail">
         <span className="hover">Más info</span>
-        <div 
-          className="header no-image relative" 
+        <div
+          className="header no-image relative"
           style={{
             backgroundImage: `url(${imageUrl})`,
             height: "180px",
@@ -49,6 +50,11 @@ export default function PropertyCard({ property }: PropertyCardProps) {
           <span className="absolute top-2 left-2 bg-accent text-accent-foreground px-2 py-1 rounded-md text-xs font-semibold capitalize" data-testid={`property-operation-${property.id}`}>
             {property.operationType}
           </span>
+          {property.isCreditSuitable && (
+            <span className="absolute bottom-2 left-2 bg-green-500 text-white px-2 py-1 rounded-md text-xs font-semibold" data-testid={`property-credit-${property.id}`}>
+              Apta Crédito
+            </span>
+          )}
         </div>
       </Link>
       <div className="content p-3">

@@ -104,6 +104,7 @@ export const properties = pgTable("properties", {
   images: text("images").array(), // Array of image URLs
   operationType: operationTypeEnum("operation_type").notNull(),
   isFeatured: boolean("is_featured").default(false),
+  isCreditSuitable: boolean("is_credit_suitable").default(false),
   isActive: boolean("is_active").default(true),
   agencyId: varchar("agency_id").references(() => agencies.id).notNull(),
   locationId: varchar("location_id").references(() => locations.id),

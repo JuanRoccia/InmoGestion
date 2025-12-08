@@ -14,6 +14,16 @@ interface SearchFiltersProps {
     categoryId: string;
     limit: number;
     offset: number;
+    minPrice?: string;
+    maxPrice?: string;
+    price?: string;
+    minArea?: string;
+    maxArea?: string;
+    featured?: boolean;
+    withImages?: boolean;
+    isCreditSuitable?: boolean;
+    bedrooms?: number;
+    bathrooms?: number;
   };
   onFiltersChange: (filters: any) => void;
   locations: Array<{
@@ -49,12 +59,19 @@ export default function SearchFilters({
       categoryId: "all",
       limit: 12,
       offset: 0,
+      minPrice: "",
+      maxPrice: "",
+      price: "",
+      minArea: "",
+      maxArea: "",
     });
   };
 
   const hasActiveFilters = (filters.operationType && filters.operationType !== "all") ||
     (filters.locationId && filters.locationId !== "all") ||
-    (filters.categoryId && filters.categoryId !== "all");
+    (filters.categoryId && filters.categoryId !== "all") ||
+    filters.minPrice || filters.maxPrice || filters.price ||
+    filters.minArea || filters.maxArea;
 
   return (
     <div className="space-y-6">
@@ -112,6 +129,22 @@ export default function SearchFilters({
                   onClick={() => updateFilter("categoryId", "")}
                   className="ml-1 hover:text-red-700"
                 >
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            )}
+            {filters.price && (
+              <Badge variant="secondary" className="flex items-center gap-1 bg-red-50 text-[#ff2e06] border border-red-100 hover:bg-red-100">
+                Precio: ${filters.price}
+                <button onClick={() => updateFilter("price", "")} className="ml-1 hover:text-red-700">
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            )}
+            {(filters.minPrice || filters.maxPrice) && !filters.price && (
+              <Badge variant="secondary" className="flex items-center gap-1 bg-red-50 text-[#ff2e06] border border-red-100 hover:bg-red-100">
+                Precio: {filters.minPrice || "0"} - {filters.maxPrice || "∞"}
+                <button onClick={() => { updateFilter("minPrice", ""); updateFilter("maxPrice", ""); }} className="ml-1 hover:text-red-700">
                   <X className="h-3 w-3" />
                 </button>
               </Badge>
@@ -189,12 +222,38 @@ export default function SearchFilters({
             placeholder="Mín"
             className="text-sm"
             data-testid="filter-price-min"
+            value={filters.minPrice || ""}
+            onChange={(e) => {
+              updateFilter("minPrice", e.target.value);
+              if (e.target.value) updateFilter("price", "");
+            }}
           />
           <Input
             type="number"
             placeholder="Máx"
             className="text-sm"
             data-testid="filter-price-max"
+            value={filters.maxPrice || ""}
+            onChange={(e) => {
+              updateFilter("maxPrice", e.target.value);
+              if (e.target.value) updateFilter("price", "");
+            }}
+          />
+        </div>
+        <div className="pt-2">
+          <Label className="text-xs text-muted-foreground mb-1 block">O Precio Exacto</Label>
+          <Input
+            type="number"
+            placeholder="Precio Exacto"
+            className="text-sm"
+            value={filters.price || ""}
+            onChange={(e) => {
+              updateFilter("price", e.target.value);
+              if (e.target.value) {
+                updateFilter("minPrice", "");
+                updateFilter("maxPrice", "");
+              }
+            }}
           />
         </div>
       </div>
@@ -213,6 +272,14 @@ export default function SearchFilters({
             <Checkbox id="images" data-testid="filter-with-images" />
             <Label htmlFor="images" className="text-sm">Con imágenes</Label>
           </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox
+              id="credit"
+              checked={filters.isCreditSuitable || false}
+              onCheckedChange={(checked) => updateFilter("isCreditSuitable", checked)}
+            />
+            <Label htmlFor="credit" className="text-sm">Apta Crédito</Label>
+          </div>
         </div>
       </div>
 
@@ -227,12 +294,16 @@ export default function SearchFilters({
             placeholder="Mín m²"
             className="text-sm"
             data-testid="filter-area-min"
+            value={filters.minArea || ""}
+            onChange={(e) => updateFilter("minArea", e.target.value)}
           />
           <Input
             type="number"
             placeholder="Máx m²"
             className="text-sm"
             data-testid="filter-area-max"
+            value={filters.maxArea || ""}
+            onChange={(e) => updateFilter("maxArea", e.target.value)}
           />
         </div>
       </div>

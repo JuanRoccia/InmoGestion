@@ -7,7 +7,10 @@ import { Search, SlidersHorizontal } from "lucide-react";
 import { Link } from "wouter";
 
 import AdvancedSearchDialog from "@/components/advanced-search-dialog";
+
 import SearchByCodeDialog from "@/components/search-by-code-dialog";
+import SearchByValueDialog from "@/components/search-by-value-dialog";
+import CreditSearchDialog from "@/components/credit-search-dialog";
 
 export default function HeroSearch() {
   const [operationType, setOperationType] = useState("alquiler");
@@ -15,6 +18,8 @@ export default function HeroSearch() {
   const [location, setLocation] = useState("");
   const [isAdvancedOpen, setIsAdvancedOpen] = useState(false);
   const [isSearchByCodeOpen, setIsSearchByCodeOpen] = useState(false);
+  const [isSearchByValueOpen, setIsSearchByValueOpen] = useState(false);
+  const [isCreditSearchOpen, setIsCreditSearchOpen] = useState(false);
 
   const { data: locations = [] } = useQuery<any[]>({
     queryKey: ["/api/locations"],
@@ -195,6 +200,16 @@ export default function HeroSearch() {
           onOpenChange={setIsSearchByCodeOpen}
         />
 
+        <SearchByValueDialog
+          open={isSearchByValueOpen}
+          onOpenChange={setIsSearchByValueOpen}
+        />
+
+        <CreditSearchDialog
+          open={isCreditSearchOpen}
+          onOpenChange={setIsCreditSearchOpen}
+        />
+
         {/* Buttons Section */}
         <section className="bg-white/0">
           <div className="container max-w-8xl mx-auto px-4">
@@ -215,16 +230,18 @@ export default function HeroSearch() {
               >
                 Búsqueda por código
               </Button>
-              <Link href="/busqueda-valor">
-                <Button className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg">
-                  Búsqueda por valor
-                </Button>
-              </Link>
-              <Link href="/aptas-creditos">
-                <Button className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg">
-                  Búsqueda aptas créditos
-                </Button>
-              </Link>
+              <Button
+                onClick={() => setIsSearchByValueOpen(true)}
+                className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg"
+              >
+                Búsqueda por valor
+              </Button>
+              <Button
+                onClick={() => setIsCreditSearchOpen(true)}
+                className="p-button p-component bg-[#ff2e06] hover:bg-[#e62905] text-white px-8 py-3 rounded-b-lg"
+              >
+                Búsqueda aptas créditos
+              </Button>
             </div>
           </div>
         </section>
