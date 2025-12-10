@@ -31,7 +31,7 @@ interface Property {
 
 export default function Landing() {
   const { data: properties = [], isLoading } = useQuery<Property[]>({
-    queryKey: ["/api/properties?isFeatured=true&limit=100"],
+    queryKey: ["/api/properties/featured?limit=100"],
   });
 
   if (isLoading) {

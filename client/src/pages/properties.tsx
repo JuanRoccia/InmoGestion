@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSearch } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import Header from "@/components/header";
@@ -6,19 +6,32 @@ import PropertyCard from "@/components/property-card";
 import SearchFilters from "@/components/search-filters";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+import FooterInmo from "@/components/footer-inmo";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+
+const ITEMS_PER_PAGE = 12;
 
 export default function Properties() {
   const search = useSearch();
   const params = new URLSearchParams(search);
   const agencyId = params.get("agencyId");
 
+  const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState(() => {
     return {
       operationType: params.get("operationType") || "all",
       locationId: params.get("locationId") || "all",
       categoryId: params.get("categoryId") || "all",
       agencyId: agencyId || "all",
-      limit: 12,
+      limit: ITEMS_PER_PAGE,
       offset: 0,
       minPrice: params.get("minPrice") || "",
       maxPrice: params.get("maxPrice") || "",
@@ -28,6 +41,17 @@ export default function Properties() {
       isCreditSuitable: params.get("isCreditSuitable") === "true",
     };
   });
+
+  // Reset to page 1 when filters change (except offset)
+  useEffect(() => {
+    setCurrentPage(1);
+    setFilters(prev => ({ ...prev, offset: 0 }));
+  }, [filters.operationType, filters.locationId, filters.categoryId, filters.agencyId, filters.minPrice, filters.maxPrice, filters.isCreditSuitable]);
+
+  // Update offset when page changes
+  useEffect(() => {
+    setFilters(prev => ({ ...prev, offset: (currentPage - 1) * ITEMS_PER_PAGE }));
+  }, [currentPage]);
 
   // Fetch agency info if filtering by agencyId
   const { data: agency } = useQuery({
@@ -42,7 +66,12 @@ export default function Properties() {
     enabled: !!agencyId,
   });
 
-  const { data: properties = [], isLoading } = useQuery({
+  const { data: response = { data: [], total: 0 }, isLoading } = useQuery<{
+    data: any[];
+    total: number;
+    limit: number;
+    offset: number;
+  }>({
     queryKey: ["/api/properties", filters],
     queryFn: async () => {
       const queryParams = new URLSearchParams();
@@ -50,11 +79,15 @@ export default function Properties() {
         if (value && value !== "all") queryParams.append(key, value.toString());
       });
 
-      const response = await fetch(`/api/properties?${queryParams}`);
-      if (!response.ok) throw new Error('Failed to fetch properties');
-      return response.json();
+      const res = await fetch(`/api/properties?${queryParams}`);
+      if (!res.ok) throw new Error('Failed to fetch properties');
+      return res.json();
     },
   });
+
+  const properties = response.data;
+  const total = response.total;
+  const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
 
   const { data: locations = [] } = useQuery<any[]>({
     queryKey: ["/api/locations"],
@@ -71,6 +104,43 @@ export default function Properties() {
   const pageSubtitle = agency
     ? `Explora las propiedades de ${agency.name}`
     : "Encuentra la propiedad perfecta";
+
+  // Generate page numbers to display
+  const getPageNumbers = () => {
+    const pages: (number | 'ellipsis')[] = [];
+    const maxVisiblePages = 5;
+
+    if (totalPages <= maxVisiblePages) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+
+      if (currentPage > 3) {
+        pages.push('ellipsis');
+      }
+
+      const start = Math.max(2, currentPage - 1);
+      const end = Math.min(totalPages - 1, currentPage + 1);
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      if (currentPage < totalPages - 2) {
+        pages.push('ellipsis');
+      }
+
+      pages.push(totalPages);
+    }
+
+    return pages;
+  };
+
+  // Calculate display range
+  const startItem = total > 0 ? (currentPage - 1) * ITEMS_PER_PAGE + 1 : 0;
+  const endItem = Math.min(currentPage * ITEMS_PER_PAGE, total);
 
   return (
     <div className="min-h-screen bg-background pt-28">
@@ -98,6 +168,13 @@ export default function Properties() {
 
             {/* Properties Grid */}
             <div className="lg:col-span-3">
+              {/* Results counter */}
+              {!isLoading && total > 0 && (
+                <div className="mb-4 text-sm text-muted-foreground">
+                  Mostrando {startItem}-{endItem} de {total} propiedades
+                </div>
+              )}
+
               {isLoading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {[...Array(6)].map((_, i) => (
@@ -113,11 +190,64 @@ export default function Properties() {
                   ))}
                 </div>
               ) : properties.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                  {properties.map((property: any) => (
-                    <PropertyCard key={property.id} property={property} />
-                  ))}
-                </div>
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {properties.map((property: any) => (
+                      <PropertyCard key={property.id} property={property} />
+                    ))}
+                  </div>
+
+                  {/* Pagination */}
+                  {totalPages > 1 && (
+                    <div className="mt-8">
+                      <Pagination>
+                        <PaginationContent>
+                          <PaginationItem>
+                            <PaginationPrevious
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                if (currentPage > 1) setCurrentPage(currentPage - 1);
+                              }}
+                              className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                            />
+                          </PaginationItem>
+
+                          {getPageNumbers().map((page, index) => (
+                            <PaginationItem key={index}>
+                              {page === 'ellipsis' ? (
+                                <PaginationEllipsis />
+                              ) : (
+                                <PaginationLink
+                                  href="#"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    setCurrentPage(page);
+                                  }}
+                                  isActive={currentPage === page}
+                                  className="cursor-pointer"
+                                >
+                                  {page}
+                                </PaginationLink>
+                              )}
+                            </PaginationItem>
+                          ))}
+
+                          <PaginationItem>
+                            <PaginationNext
+                              href="#"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+                              }}
+                              className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    </div>
+                  )}
+                </>
               ) : (
                 <div className="text-center py-12">
                   <p className="text-muted-foreground text-lg">No se encontraron propiedades</p>
@@ -130,6 +260,7 @@ export default function Properties() {
           </div>
         </div>
       </div>
+      <FooterInmo />
     </div>
   );
 }

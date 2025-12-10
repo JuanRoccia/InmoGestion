@@ -59,7 +59,9 @@ export default function FeaturedDevelopmentsFilter({ properties }: FeaturedDevel
   const itemsPerPage = 6;
 
   // Filter: ONLY featured properties, then by category
-  const filteredProperties = properties.filter(property => {
+  // Defensive check to ensure properties is an array
+  const safeProperties = Array.isArray(properties) ? properties : [];
+  const filteredProperties = safeProperties.filter(property => {
     // First: Must be featured
     if (!property.isFeatured) return false;
 

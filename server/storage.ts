@@ -48,6 +48,17 @@ export interface IStorage {
     limit?: number;
     offset?: number;
   }): Promise<Property[]>;
+  countProperties(filters?: {
+    operationType?: string;
+    locationId?: string;
+    categoryId?: string;
+    agencyId?: string;
+    isFeatured?: boolean;
+    isCreditSuitable?: boolean;
+    minPrice?: number;
+    maxPrice?: number;
+    price?: number;
+  }): Promise<number>;
   getProperty(id: string): Promise<Property | undefined>;
   getPropertyByCode(code: string): Promise<Property | undefined>;
   createProperty(property: InsertProperty): Promise<Property>;
@@ -200,6 +211,55 @@ export class DatabaseStorage implements IStorage {
     }
 
     return await query;
+  }
+
+  async countProperties(filters?: {
+    operationType?: string;
+    locationId?: string;
+    categoryId?: string;
+    agencyId?: string;
+    isFeatured?: boolean;
+    isCreditSuitable?: boolean;
+    minPrice?: number;
+    maxPrice?: number;
+    price?: number;
+  }): Promise<number> {
+    const conditions = [eq(properties.isActive, true)];
+
+    if (filters?.operationType) {
+      conditions.push(eq(properties.operationType, filters.operationType as any));
+    }
+    if (filters?.locationId) {
+      conditions.push(eq(properties.locationId, filters.locationId));
+    }
+    if (filters?.categoryId) {
+      conditions.push(eq(properties.categoryId, filters.categoryId));
+    }
+    if (filters?.agencyId) {
+      conditions.push(eq(properties.agencyId, filters.agencyId));
+    }
+    if (filters?.isFeatured !== undefined) {
+      conditions.push(eq(properties.isFeatured, filters.isFeatured));
+    }
+    if (filters?.isCreditSuitable) {
+      conditions.push(eq(properties.isCreditSuitable, true));
+    }
+    if (filters?.minPrice !== undefined) {
+      conditions.push(sql`${properties.price} >= ${filters.minPrice}`);
+    }
+    if (filters?.maxPrice !== undefined) {
+      conditions.push(sql`${properties.price} <= ${filters.maxPrice}`);
+    }
+    if (filters?.price !== undefined) {
+      conditions.push(eq(properties.price, filters.price.toString()));
+    }
+
+    const result = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(properties)
+      .where(and(...conditions));
+
+    return result[0]?.count ?? 0;
   }
 
   async getProperty(id: string): Promise<Property | undefined> {

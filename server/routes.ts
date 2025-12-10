@@ -178,12 +178,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         minPrice: minPrice ? Number(minPrice) : undefined,
         maxPrice: maxPrice ? Number(maxPrice) : undefined,
         price: price ? Number(price) : undefined,
-        limit: limit ? parseInt(limit as string) : undefined,
-        offset: offset ? parseInt(offset as string) : undefined,
+        limit: limit ? parseInt(limit as string) : 12,
+        offset: offset ? parseInt(offset as string) : 0,
       };
 
-      const properties = await storage.getProperties(filters);
-      res.json(properties);
+      const [propertiesData, total] = await Promise.all([
+        storage.getProperties(filters),
+        storage.countProperties(filters)
+      ]);
+
+      res.json({
+        data: propertiesData,
+        total,
+        limit: filters.limit,
+        offset: filters.offset
+      });
     } catch (error) {
       console.error("Error fetching properties:", error);
       res.status(500).json({ message: "Failed to fetch properties" });
