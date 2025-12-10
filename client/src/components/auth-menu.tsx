@@ -70,7 +70,7 @@ export default function AuthMenu() {
       // Recargar los datos del usuario
       await refetch();
       setIsOpen(false);
-      
+
       // Recargar la página para actualizar el estado de autenticación
       window.location.reload();
     } catch (error: any) {
@@ -94,8 +94,8 @@ export default function AuthMenu() {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button 
-            className="bg-[#ff2e06] hover:bg-[#e62905] text-white" 
+          <Button
+            className="bg-[#ff2e06] hover:bg-[#e62905] text-white"
             data-testid="button-account"
           >
             <User className="h-4 w-4 mr-2" />
@@ -104,30 +104,32 @@ export default function AuthMenu() {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-48">
           <DropdownMenuItem asChild>
-            <Link 
-              href="/agency-dashboard" 
-              className="cursor-pointer flex items-center" 
+            <Link
+              href="/agency-dashboard"
+              className="cursor-pointer flex items-center"
               data-testid="link-agency-dashboard"
             >
               <Building2 className="h-4 w-4 mr-2" />
               Panel de Agencia
             </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link 
-              href="/admin-dashboard" 
-              className="cursor-pointer flex items-center" 
-              data-testid="link-admin-dashboard"
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Panel de Admin
-            </Link>
-          </DropdownMenuItem>
+          {user.email === 'test@inmogestion.com' && (
+            <DropdownMenuItem asChild>
+              <Link
+                href="/admin-dashboard"
+                className="cursor-pointer flex items-center"
+                data-testid="link-admin-dashboard"
+              >
+                <Settings className="h-4 w-4 mr-2" />
+                Panel de Admin
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuSeparator />
           <DropdownMenuItem asChild>
-            <a 
-              href="/api/logout" 
-              className="cursor-pointer flex items-center text-red-600 hover:text-red-700" 
+            <a
+              href="/api/logout"
+              className="cursor-pointer flex items-center text-red-600 hover:text-red-700"
               data-testid="button-logout"
             >
               <LogOut className="h-4 w-4 mr-2" />
@@ -140,8 +142,8 @@ export default function AuthMenu() {
   }
 
   return (
-    <Dialog 
-      open={isOpen} 
+    <Dialog
+      open={isOpen}
       onOpenChange={setIsOpen}
       onInteractOutside={(e) => {
         // Prevenir el cierre del modal si no está autenticado
@@ -157,7 +159,7 @@ export default function AuthMenu() {
       }}
     >
       <DialogTrigger asChild>
-        <Button 
+        <Button
           className="bg-[#ff2e06] hover:bg-[#e62905] text-white"
           data-testid="button-auth"
         >
@@ -204,7 +206,7 @@ export default function AuthMenu() {
                     data-testid="input-password"
                   />
                 </div>
-                <Button 
+                <Button
                   type="submit"
                   className="w-full bg-[#ff2e06] hover:bg-[#e62905] text-white"
                   disabled={loginLoading}
@@ -225,7 +227,7 @@ export default function AuthMenu() {
                 </div>
               </div>
 
-              <Button 
+              <Button
                 className="w-full"
                 variant="outline"
                 onClick={() => {
@@ -243,7 +245,7 @@ export default function AuthMenu() {
           </TabsContent>
           <TabsContent value="register" className="mt-4">
             <div className="space-y-4">
-              <Button 
+              <Button
                 className="w-full"
                 variant="outline"
                 onClick={() => {

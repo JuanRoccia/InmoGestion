@@ -4,6 +4,7 @@ import PropertyCard from "./property-card";
 import { cn } from "@/lib/utils";
 import AdBanner from "./ui/AdBanner";
 import { Link } from "wouter";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Property {
   id: string;
@@ -54,6 +55,8 @@ const developmentStatuses = [
 export default function FeaturedDevelopmentsFilter({ properties }: FeaturedDevelopmentsFilterProps) {
   const [activeCategory, setActiveCategory] = useState('venta');
   const [activeSubCategory, setActiveSubCategory] = useState('all');
+  const [startIndex, setStartIndex] = useState(0);
+  const itemsPerPage = 6;
 
   // Filter: ONLY featured properties, then by category
   const filteredProperties = properties.filter(property => {
@@ -71,12 +74,16 @@ export default function FeaturedDevelopmentsFilter({ properties }: FeaturedDevel
           property.categoryId !== CATEGORY_IDS.campo;
         break;
       case 'alquiler':
+        // Alquiler: exclude emprendimientos (those go only in emprendimientos tab)
         matchesCategory = property.operationType === 'alquiler' &&
+          !property.developmentStatus &&
           property.categoryId !== CATEGORY_IDS.country &&
           property.categoryId !== CATEGORY_IDS.campo;
         break;
       case 'temporarios':
+        // Temporarios: exclude emprendimientos
         matchesCategory = property.operationType === 'temporario' &&
+          !property.developmentStatus &&
           property.categoryId !== CATEGORY_IDS.country &&
           property.categoryId !== CATEGORY_IDS.campo;
         break;
@@ -118,6 +125,7 @@ export default function FeaturedDevelopmentsFilter({ properties }: FeaturedDevel
               key={category.id}
               onClick={() => {
                 setActiveCategory(category.id);
+                setStartIndex(0); // Reset carousel position
                 if (category.id !== 'emprendimientos') {
                   setActiveSubCategory('all');
                 }
@@ -167,17 +175,42 @@ export default function FeaturedDevelopmentsFilter({ properties }: FeaturedDevel
           )}
         </div>
 
-        {/* Grid de propiedades */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
-          {filteredProperties.slice(0, 6).map((property) => (
-            <div key={property.id} className="w-full">
-              <PropertyCard property={property} />
-            </div>
-          ))}
-          {filteredProperties.length === 0 && (
-            <div className="col-span-full text-center py-12">
-              <p className="text-muted-foreground">No hay propiedades disponibles en esta categoría</p>
-            </div>
+        {/* Carousel con flechas */}
+        <div className="relative">
+          {/* Flecha izquierda */}
+          {startIndex > 0 && (
+            <button
+              onClick={() => setStartIndex(Math.max(0, startIndex - itemsPerPage))}
+              className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 bg-white rounded-full shadow-lg p-2 hover:bg-gray-100 transition-colors"
+              aria-label="Anterior"
+            >
+              <ChevronLeft className="h-6 w-6 text-gray-600" />
+            </button>
+          )}
+
+          {/* Grid de propiedades */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6">
+            {filteredProperties.slice(startIndex, startIndex + itemsPerPage).map((property) => (
+              <div key={property.id} className="w-full">
+                <PropertyCard property={property} />
+              </div>
+            ))}
+            {filteredProperties.length === 0 && (
+              <div className="col-span-full text-center py-12">
+                <p className="text-muted-foreground">No hay propiedades disponibles en esta categoría</p>
+              </div>
+            )}
+          </div>
+
+          {/* Flecha derecha */}
+          {startIndex + itemsPerPage < filteredProperties.length && (
+            <button
+              onClick={() => setStartIndex(startIndex + itemsPerPage)}
+              className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 bg-white rounded-full shadow-lg p-2 hover:bg-gray-100 transition-colors"
+              aria-label="Siguiente"
+            >
+              <ChevronRight className="h-6 w-6 text-gray-600" />
+            </button>
           )}
         </div>
       </div>
