@@ -43,6 +43,9 @@ export const users = pgTable("users", {
 // Subscription plans enum
 export const subscriptionPlanEnum = pgEnum('subscription_plan', ['basic', 'professional', 'enterprise']);
 
+// Agency types enum
+export const agencyTypeEnum = pgEnum('agency_type', ['inmobiliaria', 'constructora']);
+
 // Real estate agencies table
 export const agencies = pgTable("agencies", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -53,6 +56,7 @@ export const agencies = pgTable("agencies", {
   website: varchar("website", { length: 255 }),
   description: text("description"),
   logo: varchar("logo"),
+  type: agencyTypeEnum("type").default('inmobiliaria').notNull(),
   isActive: boolean("is_active").default(false),
   subscriptionPlan: subscriptionPlanEnum("subscription_plan").default('basic'),
   subscriptionStatus: varchar("subscription_status").default('pending'),
@@ -85,6 +89,8 @@ export const propertyCategories = pgTable("property_categories", {
 
 // Operation types enum
 export const operationTypeEnum = pgEnum('operation_type', ['venta', 'alquiler', 'temporario']);
+// Development status enum for Constructoras/Edificios
+export const developmentStatusEnum = pgEnum('development_status', ['pozo', 'construccion', 'terminado']);
 
 // Properties table
 export const properties = pgTable("properties", {
@@ -103,6 +109,7 @@ export const properties = pgTable("properties", {
   longitude: decimal("longitude", { precision: 10, scale: 7 }),
   images: text("images").array(), // Array of image URLs
   operationType: operationTypeEnum("operation_type").notNull(),
+  developmentStatus: developmentStatusEnum("development_status"), // Only for developments/edificios
   isFeatured: boolean("is_featured").default(false),
   isCreditSuitable: boolean("is_credit_suitable").default(false),
   isActive: boolean("is_active").default(true),

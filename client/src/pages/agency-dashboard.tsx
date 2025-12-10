@@ -340,6 +340,7 @@ export default function AgencyDashboard() {
                 </DialogHeader>
                 <PropertyForm
                   property={editingProperty}
+                  agency={agency}
                   onSuccess={handlePropertyFormSuccess}
                   onCancel={() => {
                     setIsPropertyDialogOpen(false);

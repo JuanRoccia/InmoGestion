@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, DollarSign, Home, Camera } from "lucide-react";
+import { MapPin, DollarSign, Home, Camera, Building2 } from "lucide-react";
 import LocationPicker from "@/components/location-picker";
 
 const propertyFormSchema = insertPropertySchema.extend({
@@ -26,20 +26,24 @@ const propertyFormSchema = insertPropertySchema.extend({
   latitude: z.string().optional(),
   longitude: z.string().optional(),
   isCreditSuitable: z.boolean().optional(),
+  developmentStatus: z.enum(['pozo', 'construccion', 'terminado']).optional().nullable(),
 });
 
 type PropertyFormData = z.infer<typeof propertyFormSchema>;
 
 interface PropertyFormProps {
   property?: any;
+  agency?: any;
   onSuccess: () => void;
   onCancel: () => void;
 }
 
-export default function PropertyForm({ property, onSuccess, onCancel }: PropertyFormProps) {
+export default function PropertyForm({ property, agency, onSuccess, onCancel }: PropertyFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [imageUrls, setImageUrls] = useState<string[]>(property?.images || []);
+
+  const isConstructora = agency?.type === 'constructora';
 
   const form = useForm<PropertyFormData>({
     resolver: zodResolver(propertyFormSchema),
@@ -61,6 +65,7 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
       latitude: property?.latitude?.toString() || "",
       longitude: property?.longitude?.toString() || "",
       isCreditSuitable: property?.isCreditSuitable || false,
+      developmentStatus: property?.developmentStatus || null,
     },
   });
 
@@ -91,8 +96,9 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
         images: imageUrls,
         locationId: data.locationId && data.locationId !== "none" ? data.locationId : null,
         categoryId: data.categoryId && data.categoryId !== "none" ? data.categoryId : null,
-        latitude: data.latitude ? data.latitude.toString() : null, // Ensure string for decimal type if needed, or number if schema allows
+        latitude: data.latitude ? data.latitude.toString() : null,
         longitude: data.longitude ? data.longitude.toString() : null,
+        developmentStatus: isConstructora && data.developmentStatus ? data.developmentStatus : null, // Ensure sent only if valid
       };
 
       if (property) {
@@ -108,7 +114,7 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
       });
       onSuccess();
     },
-    onError: (error) => {
+    onError: (error: any) => {
       if (isUnauthorizedError(error)) {
         toast({
           title: "No autorizado",
@@ -122,7 +128,7 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
       }
       toast({
         title: "Error",
-        description: property ? "Error al actualizar la propiedad" : "Error al crear la propiedad",
+        description: error.message || (property ? "Error al actualizar la propiedad" : "Error al crear la propiedad"),
         variant: "destructive",
       });
     },
@@ -140,6 +146,10 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
   };
 
   const onSubmit = (data: PropertyFormData) => {
+    if (isConstructora && !data.developmentStatus) {
+      form.setError("developmentStatus", { message: "El estado del desarrollo es requerido para constructoras" });
+      return;
+    }
     createPropertyMutation.mutate(data);
   };
 
@@ -162,7 +172,7 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
                   <FormItem className="md:col-span-2">
                     <FormLabel>Título *</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ej: Casa moderna en zona céntrica" {...field} data-testid="property-title" />
+                      <Input placeholder="Ej: Edificio Torres del Sol" {...field} data-testid="property-title" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -217,6 +227,31 @@ export default function PropertyForm({ property, onSuccess, onCancel }: Property
                   </FormItem>
                 )}
               />
+
+              {isConstructora && (
+                <FormField
+                  control={form.control}
+                  name="developmentStatus"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Estado del Desarrollo *</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value || undefined} required>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecciona estado" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="pozo">En Pozo</SelectItem>
+                          <SelectItem value="construccion">En Construcción</SelectItem>
+                          <SelectItem value="terminado">Terminado</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <FormField
                 control={form.control}

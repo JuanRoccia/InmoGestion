@@ -173,7 +173,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         locationId: locationId as string,
         categoryId: categoryId as string,
         agencyId: agencyId as string,
-        isFeatured: isFeatured === 'true',
+        isFeatured: isFeatured !== undefined ? isFeatured === 'true' : undefined,
         isCreditSuitable: isCreditSuitable === 'true',
         minPrice: minPrice ? Number(minPrice) : undefined,
         maxPrice: maxPrice ? Number(maxPrice) : undefined,
@@ -240,6 +240,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const propertyData = insertPropertySchema.parse({ ...req.body, agencyId: agency.id });
+
+      // Validation for Constructoras
+      if (agency.type === 'constructora') {
+        if (!propertyData.developmentStatus) {
+          // Allow if category is 'emprendimiento' (we need to check category slug/id, but simplified: enforce status)
+          // Actually, the requirement says "unicamente suben propiedades que son edificios, los cuales pueden encontrarse con las siuguientes categorias: ...".
+          // So they MUST have a development status.
+          return res.status(400).json({ message: "Las constructoras solo pueden subir propiedades con estado de desarrollo (En Pozo, En Construcción, Terminado)" });
+        }
+      }
+
+      // Optional: Prevent normal agencies from setting development status?
+      // "en logica son lo mismo que las inmobiliarias, pero con algunas diferencias... unicamente suben propiedades que son edificios"
+      // It implies implied restriction on Constructoras, not necessarily on Agencies (though agencies usually sell everything).
+      // Let's assume Agencies CAN allow developmentStatus if they want (e.g. selling a development for a third party), 
+      // but Constructoras MUST ONLY do that.
+
       const property = await storage.createProperty(propertyData);
       res.status(201).json(property);
     } catch (error) {
@@ -266,6 +283,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const propertyData = insertPropertySchema.partial().parse(req.body);
+
+      // Validation for Constructoras on update
+      if (agency && agency.type === 'constructora') {
+        // If they are updating, presumably they might maintain validity. 
+        // If they try to clear developmentStatus, we should block it? 
+        // simplified: if developmentStatus is explicitly passed as null/undefined in specific cases we might need care, 
+        // but parse only includes present fields. logic: if they update, they can't remove it or change to non-compliant.
+        // However, verifying implicit state on partial update is complex without full object. 
+        // For now, let's just check if they try to set it to null if that's possible, or if they are creating a new one.
+        // Since this is update, let's relax or rely on frontend + initial creation check, unless they try to CHANGE it to invalid.
+        // propertyData.developmentStatus check:
+        if (propertyData.developmentStatus === null) {  // If they try to remove it
+          return res.status(400).json({ message: "Las constructoras deben mantener el estado de desarrollo" });
+        }
+      }
+
       const updatedProperty = await storage.updateProperty(req.params.id, propertyData);
       res.json(updatedProperty);
     } catch (error) {

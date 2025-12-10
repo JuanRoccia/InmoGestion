@@ -1,16 +1,12 @@
 import { Link } from "wouter";
 import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-export interface LocationGridProps {
-  locations: Array<{
-    id: string;
-    name: string;
-    slug: string;
-    imageUrl?: string;
-  }>;
-}
+export default function LocationGrid() {
+  const { data: locations = [] } = useQuery<any[]>({
+    queryKey: ["/api/locations"],
+  });
 
-export default function LocationGrid({ locations }: LocationGridProps) {
   useEffect(() => {
     // Solución provisoria: Buscar y eliminar el elemento "Punta Alta" del DOM
     const cleanPuntaAlta = () => {

@@ -11,10 +11,8 @@ const FooterSection = ({ title, children }: { title: string; children: React.Rea
 );
 
 const FooterLink = ({ href, children }: { href: string; children: React.ReactNode }) => (
-  <Link href={href}>
-    <a className="block text-xs text-gray-600 hover:text-gray-900 transition-colors">
-      {children}
-    </a>
+  <Link href={href} className="block text-xs text-gray-600 hover:text-gray-900 transition-colors">
+    {children}
   </Link>
 );
 

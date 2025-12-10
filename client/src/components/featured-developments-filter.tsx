@@ -9,6 +9,7 @@ interface Property {
   id: string;
   title: string;
   price: string;
+  priceNumber?: number;
   currency: string;
   area?: number;
   bedrooms?: number;
@@ -16,14 +17,23 @@ interface Property {
   address: string;
   images?: string[];
   operationType: string;
+  developmentStatus?: string;
   isFeatured?: boolean;
+  isCreditSuitable?: boolean;
   category?: string;
+  categoryId?: string;
   propertyType?: string;
 }
 
 interface FeaturedDevelopmentsFilterProps {
   properties: Property[];
 }
+
+// Category IDs from database
+const CATEGORY_IDS = {
+  country: '83006202-b65f-44e2-a8fc-645eb08b27d4',
+  campo: 'a5963624-27cc-4779-8eb8-a16a1e787b95',
+};
 
 const categories = [
   { id: 'venta', label: 'Venta' },
@@ -34,42 +44,65 @@ const categories = [
   { id: 'campos', label: 'Campos' },
 ];
 
-export default function FeaturedDevelopmentsFilter({ properties }: FeaturedDevelopmentsFilterProps) {
-  const [activeCategory, setActiveCategory] = useState('emprendimientos');
+const developmentStatuses = [
+  { id: 'all', label: 'Todos' },
+  { id: 'pozo', label: 'En Pozo' },
+  { id: 'construccion', label: 'En Construcción' },
+  { id: 'terminado', label: 'Terminado' },
+];
 
-  // Mapeo de categorías a tipos de propiedades
+export default function FeaturedDevelopmentsFilter({ properties }: FeaturedDevelopmentsFilterProps) {
+  const [activeCategory, setActiveCategory] = useState('venta');
+  const [activeSubCategory, setActiveSubCategory] = useState('all');
+
+  // Filter: ONLY featured properties, then by category
   const filteredProperties = properties.filter(property => {
+    // First: Must be featured
+    if (!property.isFeatured) return false;
+
+    // Then filter by active category
+    let matchesCategory = false;
     switch (activeCategory) {
       case 'venta':
-        return property.operationType === 'venta' && 
-               (!property.category || 
-                !['emprendimiento', 'country', 'barrio-cerrado', 'campo'].includes(property.category));
+        // Venta: operationType venta, excluding emprendimientos/countries/campos
+        matchesCategory = property.operationType === 'venta' &&
+          !property.developmentStatus &&
+          property.categoryId !== CATEGORY_IDS.country &&
+          property.categoryId !== CATEGORY_IDS.campo;
+        break;
       case 'alquiler':
-        return property.operationType === 'alquiler';
+        matchesCategory = property.operationType === 'alquiler' &&
+          property.categoryId !== CATEGORY_IDS.country &&
+          property.categoryId !== CATEGORY_IDS.campo;
+        break;
       case 'temporarios':
-        return property.operationType === 'temporario';
+        matchesCategory = property.operationType === 'temporario' &&
+          property.categoryId !== CATEGORY_IDS.country &&
+          property.categoryId !== CATEGORY_IDS.campo;
+        break;
       case 'emprendimientos':
-        return property.category === 'emprendimiento' || 
-               property.propertyType === 'emprendimiento';
+        // Emprendimientos: Has developmentStatus (pozo/construccion/terminado)
+        matchesCategory = !!property.developmentStatus;
+        break;
       case 'countries':
-        return property.category === 'country' || 
-               property.category === 'barrio-cerrado' || 
-               property.propertyType === 'country';
+        matchesCategory = property.categoryId === CATEGORY_IDS.country;
+        break;
       case 'campos':
-        return property.category === 'campo' || 
-               property.propertyType === 'campo';
+        matchesCategory = property.categoryId === CATEGORY_IDS.campo;
+        break;
       default:
-        return true;
+        matchesCategory = true;
     }
-  });
 
-  // Debug logs
-  if (activeCategory === 'emprendimientos') {
-    console.log('Emprendimientos filter debug:');
-    console.log('Total properties:', properties.length);
-    console.log('Filtered properties:', filteredProperties.length);
-    console.log('First 3 emprendimientos:', filteredProperties.slice(0, 3).map(p => ({ id: p.id, title: p.title, category: p.category })));
-  }
+    if (!matchesCategory) return false;
+
+    // Sub-category filter for Emprendimientos
+    if (activeCategory === 'emprendimientos' && activeSubCategory !== 'all') {
+      return property.developmentStatus === activeSubCategory;
+    }
+
+    return true;
+  });
 
   return (
     <section className="py-8 px-4 sm:px-6 lg:px-8">
@@ -78,12 +111,17 @@ export default function FeaturedDevelopmentsFilter({ properties }: FeaturedDevel
           Propiedades destacadas
         </h2>
 
-        {/* Filtros */}
-        <div className="flex flex-wrap gap-4 mb-8">
+        {/* Filtros Principales */}
+        <div className="flex flex-wrap gap-4 mb-4">
           {categories.map(category => (
             <Button
               key={category.id}
-              onClick={() => setActiveCategory(category.id)}
+              onClick={() => {
+                setActiveCategory(category.id);
+                if (category.id !== 'emprendimientos') {
+                  setActiveSubCategory('all');
+                }
+              }}
               className={cn(
                 "px-6 py-2 rounded-full transition-colors",
                 activeCategory === category.id
@@ -92,15 +130,32 @@ export default function FeaturedDevelopmentsFilter({ properties }: FeaturedDevel
               )}
             >
               {category.label}
-              {category.id === activeCategory && filteredProperties.length > 0 && (
-                <span className="ml-2 px-2 py-0.5 bg-white/20 rounded-full text-xs">
-                  {filteredProperties.length}
-                </span>
-              )}
             </Button>
           ))}
         </div>
-        
+
+        {/* Sub-filtros para Emprendimientos */}
+        {activeCategory === 'emprendimientos' && (
+          <div className="flex flex-wrap gap-2 mb-8 ml-4">
+            {developmentStatuses.map(status => (
+              <Button
+                key={status.id}
+                onClick={() => setActiveSubCategory(status.id)}
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "rounded-full text-xs h-8",
+                  activeSubCategory === status.id
+                    ? "bg-gray-800 text-white hover:bg-gray-700 border-gray-800"
+                    : "text-gray-600 border-gray-300 hover:bg-gray-100"
+                )}
+              >
+                {status.label}
+              </Button>
+            ))}
+          </div>
+        )}
+
         <div className="flex justify-between items-center mb-6">
           <p className="text-sm text-muted-foreground">
             {filteredProperties.length} {filteredProperties.length === 1 ? 'propiedad encontrada' : 'propiedades encontradas'}
