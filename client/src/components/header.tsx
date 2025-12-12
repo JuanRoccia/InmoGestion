@@ -21,7 +21,7 @@ export default function Header() {
   return (
     <>
       <header className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${isScrolled
-        ? 'h-20 bg-white/10 backdrop-blur-sm shadow-[0_2px_10px_rgba(0,0,0,0.2)]'
+        ? 'h-20 bg-white shadow-[0_2px_10px_rgba(0,0,0,0.2)]'
         : 'h-[5.875rem] bg-white/10 backdrop-blur-sm shadow-[0_2px_4px_rgba(0,0,0,0.1)]'
         }`}>
         <div className="container relative mx-auto h-full">

@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import AuthOverlay from "@/components/auth-overlay";
 import { useAuth } from "@/hooks/useAuth";
+import { useCustomScrollbar } from "@/components/custom-scrollbar";
 import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import Properties from "@/pages/properties";
@@ -45,6 +46,7 @@ function Router() {
 }
 
 function App() {
+  useCustomScrollbar();
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
