@@ -20,10 +20,10 @@ app.use(
 );
 app.use(express.urlencoded({ extended: false }));
 
-// ===== NUEVO: Logging de acceso y seguridad =====
+// ===== LOGGING: Acceso y Seguridad =====
 app.use(accessLogger);
 app.use(securityLogger);
-// =================================================
+// ========================================
 
 app.use((req, res, next) => {
   const start = Date.now();
@@ -58,12 +58,11 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
-  // ===== NUEVO: Manejo de errores mejorado con logging =====
   app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
-    // Log de errores
+    // Log de errores con más contexto
     console.error("❌ ERROR:", {
       timestamp: new Date().toISOString(),
       method: req.method,
@@ -75,8 +74,8 @@ app.use((req, res, next) => {
     });
 
     res.status(status).json({ message });
+    throw err;
   });
-  // =========================================================
 
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
@@ -100,6 +99,7 @@ app.use((req, res, next) => {
     },
     () => {
       log(`serving on port ${port}`);
+      console.log("🔒 Security logging enabled: logs/ directory");
     },
   );
 })();
