@@ -86,41 +86,18 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
-
-  /* Estilos personalizados para el scrollbar */
-  /* ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: rgba(117, 117, 117, 0.3);
-    border-radius: 8px;
-    border: 2px solid transparent;
-    background-clip: content-box;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(117, 117, 117, 0.5);
-    border: 2px solid transparent;
-    background-clip: content-box;
-  } */
 }
 
-/* OverlayScrollbars - Estilos forzados */
-.os-scrollbar {
+/* OverlayScrollbars - Configuración principal */
+html .os-scrollbar {
   --os-handle-bg: #ff2e06;
   --os-handle-bg-hover: #e62905;
   --os-handle-bg-active: #cc2404;
-  --os-track-bg: rgba(245, 245, 245, 0.5);
+  --os-track-bg: rgba(245, 245, 245, 0.0);
   --os-track-bg-hover: rgba(245, 245, 245, 0.8);
 }
 
-.os-theme-custom {
+html .os-theme-custom {
   --os-size: 12px;
   --os-padding-perpendicular: 2px;
   --os-padding-axis: 2px;
@@ -133,74 +110,76 @@
   --os-handle-interactive-area-offset: 0px;
 }
 
-.os-theme-custom.os-scrollbar {
+html .os-theme-custom.os-scrollbar {
   opacity: 1 !important;
   visibility: visible !important;
   display: block !important;
 }
 
-.os-theme-custom>.os-scrollbar-vertical {
+html .os-theme-custom>.os-scrollbar-vertical {
   width: 12px !important;
   right: 0 !important;
   top: 0 !important;
   height: 100% !important;
+  display: block !important;
 }
 
-.os-theme-custom>.os-scrollbar-horizontal {
-  height: 12px !important;
-  bottom: 0 !important;
-  left: 0 !important;
-  width: 100% !important;
+html .os-theme-custom>.os-scrollbar-horizontal {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }
 
-.os-theme-custom .os-scrollbar-track {
+html .os-theme-custom .os-scrollbar-track {
   background: var(--os-track-bg) !important;
   border-radius: var(--os-track-border-radius) !important;
 }
 
-.os-theme-custom .os-scrollbar-handle {
+html .os-theme-custom .os-scrollbar-handle {
   background: var(--os-handle-bg) !important;
   border-radius: var(--os-handle-border-radius) !important;
   min-height: var(--os-handle-min-size) !important;
   transition: background 0.2s ease !important;
+  position: relative !important;
+  overflow: visible !important;
 }
 
-.os-theme-custom .os-scrollbar:hover .os-scrollbar-track {
+/* YA NO necesitas ::before y ::after - las flechas se inyectan con JS */
+
+html .os-theme-custom .os-scrollbar:hover .os-scrollbar-track {
   background: var(--os-track-bg-hover) !important;
 }
 
-.os-theme-custom .os-scrollbar:hover .os-scrollbar-handle {
+html .os-theme-custom .os-scrollbar:hover .os-scrollbar-handle {
   background: var(--os-handle-bg-hover) !important;
   box-shadow: 0 0 10px rgba(255, 46, 6, 0.5) !important;
 }
 
-.os-theme-custom .os-scrollbar-handle:active {
+html .os-theme-custom .os-scrollbar-handle:active {
   background: var(--os-handle-bg-active) !important;
 }
 
-/* Forzar visibilidad */
-.os-theme-custom.os-scrollbar-auto-hidden,
-.os-theme-custom.os-scrollbar-auto-hide-hidden {
+html .os-theme-custom.os-scrollbar-auto-hidden.os-scrollbar-vertical,
+html .os-theme-custom.os-scrollbar-auto-hide-hidden.os-scrollbar-vertical {
   opacity: 1 !important;
   visibility: visible !important;
 }
 
-/* Asegurar que el viewport tenga scroll */
-.os-host,
-.os-viewport {
-  overflow: visible !important;
+html .os-host,
+html .os-viewport {
+  overflow-x: hidden !important;
+  overflow-y: visible !important;
 }
 
-body.os-host {
+html body.os-host {
   overflow: hidden !important;
 }
 
-body.os-host>.os-viewport {
+html body.os-host>.os-viewport {
   overflow-y: scroll !important;
   overflow-x: hidden !important;
 }
-
-/* OverlayScrollbars Custom Theme - FUERA del @layer base */
 
 .glass-effect {
   backdrop-filter: blur(10px);
