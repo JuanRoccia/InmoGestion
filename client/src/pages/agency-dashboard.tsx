@@ -157,33 +157,12 @@ export default function AgencyDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Header />
-
-      {/* Visual Header Enhancement */}
-      <div className="bg-white pt-28 pb-4 border-b border-gray-100 mt-5">
-        <div className="container mx-auto px-4 md:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-            <div>
-              <h1 className="text-3xl md:text-4xl font-light text-gray-800">
-                Bienvenido inmobiliaria <span className="font-semibold text-primary">{agency.name}</span>
-              </h1>
-              <p className="text-muted-foreground mt-1 text-lg">Gestiona sus propiedades y estadísticas</p>
-            </div>
-
-            <Button
-              variant="outline"
-              className="gap-2 border-primary text-primary hover:bg-primary hover:text-white transition-all shadow-sm"
-              onClick={() => window.location.href = "/contacto"}
-            >
-              <Mail className="h-4 w-4" />
-              Contáctenos
-            </Button>
-          </div>
-        </div>
-      </div>
+      {/* Header is not needed, quedaria reemplazado por el dashboard nav */}
+      {/* Header removed as it is replaced by DashboardNav */}
+      {/* <Header /> */}
 
       <div className="flex-grow">
-        <DashboardNav />
+        <DashboardNav agency={agency} />
 
         <main className="container mx-auto px-4 md:px-8 pb-12">
           <PromoBanner />

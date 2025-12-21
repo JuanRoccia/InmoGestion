@@ -110,7 +110,7 @@ export default function AuthMenu() {
               data-testid="link-agency-dashboard"
             >
               <Building2 className="h-4 w-4 mr-2" />
-              Panel de Agencia
+              Panel de Inmob
             </Link>
           </DropdownMenuItem>
           {user.email === 'test@inmogestion.com' && (
