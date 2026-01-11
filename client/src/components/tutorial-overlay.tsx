@@ -2,11 +2,18 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { HelpCircle } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function TutorialOverlay() {
   const [showTutorial, setShowTutorial] = useState(false);
+  const { isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
+    // Solo mostrar tutorial si el usuario está autenticado
+    if (isLoading || !isAuthenticated) {
+      return;
+    }
+
     // Show tutorial after 2 seconds if user hasn't seen it
     const hasSeenTutorial = localStorage.getItem("hasSeenTutorial");
     if (!hasSeenTutorial) {
@@ -15,7 +22,7 @@ export default function TutorialOverlay() {
       }, 2000);
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [isAuthenticated, isLoading]);
 
   const handleStartTutorial = () => {
     setShowTutorial(false);
