@@ -58,6 +58,8 @@ const SubscribeForm = ({ selectedPlan }: { selectedPlan: any }) => {
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
+  const { refetch } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -72,7 +74,7 @@ const SubscribeForm = ({ selectedPlan }: { selectedPlan: any }) => {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${window.location.origin}/agency-dashboard?payment_success=true`,
+        return_url: `${window.location.origin}/subscribe?payment_success=true`,
       },
     });
 
@@ -82,14 +84,19 @@ const SubscribeForm = ({ selectedPlan }: { selectedPlan: any }) => {
         description: error.message,
         variant: "destructive",
       });
+      setIsProcessing(false);
     } else {
+      // El pago fue exitoso, actualizar el estado del usuario
+      await refetch();
       toast({
-        title: "¡Suscripción exitosa!",
-        description: "Bienvenido a InmoPortal. Redirigiendo al dashboard...",
+        title: "¡Registro completado!",
+        description: "Tu suscripción ha sido activada. Redirigiendo al dashboard...",
       });
+      // Redirigir al dashboard después de un breve delay
+      setTimeout(() => {
+        setLocation('/agency-dashboard');
+      }, 1500);
     }
-
-    setIsProcessing(false);
   };
 
   return (
@@ -150,11 +157,10 @@ const CheckoutWrapper = ({ selectedPlan }: { selectedPlan: any }) => {
 };
 
 export default function Subscribe() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading, refetch } = useAuth();
   const { toast } = useToast();
   const [selectedPlan, setSelectedPlan] = useState(plans[1]); // Default to professional
   const [showCheckout, setShowCheckout] = useState(false);
-
   const { setIsOpen } = useAuthModalStore();
 
   useEffect(() => {
@@ -179,6 +185,27 @@ export default function Subscribe() {
           <div className="max-w-7xl mx-auto text-center">
             <h1 className="text-2xl font-bold text-foreground mb-4">Iniciar sesión requerido</h1>
             <p className="text-muted-foreground">Redirigiendo...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Verificar que el usuario sea pre-registrado
+  const registrationStatus = (user as any)?.registrationStatus;
+  if (registrationStatus === 'completed') {
+    return (
+      <div className="min-h-screen bg-background pt-28">
+        <Header />
+        <div className="py-8 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <h1 className="text-2xl font-bold text-foreground mb-4">Registro completado</h1>
+            <p className="text-muted-foreground mb-4">
+              Tu registro ya está completo. Puedes acceder al panel administrativo.
+            </p>
+            <a href="/agency-dashboard" className="text-primary hover:underline">
+              Ir al Panel Administrativo
+            </a>
           </div>
         </div>
       </div>

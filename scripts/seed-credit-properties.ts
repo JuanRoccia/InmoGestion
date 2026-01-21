@@ -1,6 +1,6 @@
 
-import { db } from "./server/db";
-import { properties } from "./shared/schema";
+import { db } from "../server/db";
+import { properties } from "../shared/schema";
 import { eq, and } from "drizzle-orm";
 
 async function main() {

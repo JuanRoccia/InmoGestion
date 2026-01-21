@@ -4,6 +4,7 @@ import Stripe from "stripe";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertAgencySchema, insertPropertySchema } from "@shared/schema";
+import { hashPassword, comparePassword } from "./auth-utils";
 import { z } from "zod";
 
 if (!process.env.STRIPE_SECRET_KEY) {
@@ -26,6 +27,112 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching user:", error);
       res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Pre-registration endpoint
+  const preRegisterSchema = z.object({
+    email: z.string().email("Email inválido"),
+    password: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  });
+
+  app.post('/api/register/pre', async (req, res) => {
+    try {
+      // Validate input
+      const validationResult = preRegisterSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({
+          message: "Datos inválidos",
+          errors: validationResult.error.errors,
+        });
+      }
+
+      const { email, password } = validationResult.data;
+
+      // Check if user already exists
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(409).json({
+          message: "El email ya está registrado",
+        });
+      }
+
+      // Hash password
+      const hashedPassword = await hashPassword(password);
+
+      // Create user with pre-registered status
+      const newUser = await storage.upsertUser({
+        email,
+        password: hashedPassword,
+        registrationStatus: 'pre-registered',
+        firstName: null,
+        lastName: null,
+        profileImageUrl: null,
+      });
+
+      res.status(201).json({
+        success: true,
+        message: "Pre-registro exitoso",
+        user: {
+          id: newUser.id,
+          email: newUser.email,
+          registrationStatus: newUser.registrationStatus,
+        },
+      });
+    } catch (error) {
+      console.error("Error en pre-registro:", error);
+      res.status(500).json({ message: "Error al procesar el pre-registro" });
+    }
+  });
+
+  // Endpoint para establecer o cambiar contraseña (para account linking)
+  const setPasswordSchema = z.object({
+    currentPassword: z.string().optional(), // Requerido si el usuario ya tiene contraseña
+    newPassword: z.string().min(6, "La contraseña debe tener al menos 6 caracteres"),
+  });
+
+  app.post('/api/auth/set-password', isAuthenticated, async (req: any, res) => {
+    try {
+      const validationResult = setPasswordSchema.safeParse(req.body);
+      if (!validationResult.success) {
+        return res.status(400).json({
+          message: "Datos inválidos",
+          errors: validationResult.error.errors,
+        });
+      }
+
+      const userId = req.user.claims.sub;
+      const { currentPassword, newPassword } = validationResult.data;
+
+      // Obtener usuario actual
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "Usuario no encontrado" });
+      }
+
+      // Si el usuario ya tiene contraseña, verificar la actual
+      if (user.password && currentPassword) {
+        const isValid = await comparePassword(currentPassword, user.password);
+        if (!isValid) {
+          return res.status(401).json({ message: "Contraseña actual incorrecta" });
+        }
+      } else if (user.password && !currentPassword) {
+        return res.status(401).json({ message: "Se requiere contraseña actual para cambiar" });
+      }
+
+      // Hash de la nueva contraseña
+      const hashedPassword = await hashPassword(newPassword);
+
+      // Actualizar contraseña
+      await storage.updateUserPassword(userId, hashedPassword);
+
+      res.json({
+        success: true,
+        message: user.password ? "Contraseña actualizada correctamente" : "Contraseña establecida correctamente",
+      });
+    } catch (error) {
+      console.error("Error al establecer contraseña:", error);
+      res.status(500).json({ message: "Error al procesar solicitud" });
     }
   });
 

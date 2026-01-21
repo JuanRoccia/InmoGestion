@@ -8,6 +8,7 @@ import type { Express, RequestHandler } from "express";
 import memoize from "memoizee";
 import connectPg from "connect-pg-simple";
 import { storage } from "./storage";
+import { comparePassword } from "./auth-utils";
 
 if (!process.env.REPLIT_DOMAINS) {
   throw new Error("Environment variable REPLIT_DOMAINS not provided");
@@ -59,7 +60,6 @@ async function upsertUser(
   claims: any,
 ) {
   await storage.upsertUser({
-    id: claims["sub"],
     email: claims["email"],
     firstName: claims["first_name"],
     lastName: claims["last_name"],
@@ -99,33 +99,54 @@ export async function setupAuth(app: Express) {
     passport.use(strategy);
   }
 
-  // Estrategia local para usuario de prueba
+  // Estrategia local para login con email/password
+  // Soporta múltiples métodos de autenticación:
+  // - Usuarios registrados localmente (con contraseña)
+  // - Usuarios OIDC que agregaron una contraseña
   passport.use(new LocalStrategy(
     { usernameField: 'email', passwordField: 'password' },
     async (email, password, done) => {
-      if (email === 'test@inmogestion.com' && password === 'admin123') {
-        // Crear/actualizar usuario de prueba en la BD
-        await storage.upsertUser({
-          id: 'test-admin-user',
-          email: 'test@inmogestion.com',
-          firstName: 'Admin',
-          lastName: 'Test',
-          profileImageUrl: null,
-        });
+      try {
+        // Buscar usuario por email
+        const user = await storage.getUserByEmail(email);
+        
+        if (!user) {
+          return done(null, false, { message: 'Credenciales incorrectas' });
+        }
 
-        const user = {
+        // Verificar si el usuario tiene contraseña establecida
+        if (!user.password) {
+          return done(null, false, { 
+            message: 'Este email no tiene contraseña. Por favor, inicia sesión con Google primero y luego puedes establecer una contraseña.' 
+          });
+        }
+
+        // Verificar contraseña (funciona para usuarios locales y OIDC con contraseña)
+        const isPasswordValid = await comparePassword(password, user.password);
+        
+        if (!isPasswordValid) {
+          return done(null, false, { message: 'Credenciales incorrectas' });
+        }
+
+        // Crear objeto de usuario para la sesión
+        const sessionUser = {
           claims: {
-            sub: 'test-admin-user',
-            email: 'test@inmogestion.com',
-            first_name: 'Admin',
-            last_name: 'Test',
+            sub: user.id,
+            email: user.email,
+            first_name: user.firstName || '',
+            last_name: user.lastName || '',
+            registration_status: user.registrationStatus || 'pre-registered',
             exp: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60), // 7 días
           },
           expires_at: Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60),
+          registrationStatus: user.registrationStatus || 'pre-registered',
         };
-        return done(null, user);
+
+        return done(null, sessionUser);
+      } catch (error) {
+        console.error('Error en estrategia local:', error);
+        return done(error, false);
       }
-      return done(null, false, { message: 'Credenciales incorrectas' });
     }
   ));
 
@@ -157,7 +178,7 @@ export async function setupAuth(app: Express) {
     });
   });
 
-  // Ruta de login local para usuario de prueba
+  // Ruta de login local con email/password
   app.post("/api/login/local", (req, res, next) => {
     passport.authenticate('local', (err: any, user: any, info: any) => {
       if (err) {
@@ -170,7 +191,13 @@ export async function setupAuth(app: Express) {
         if (err) {
           return res.status(500).json({ message: 'Error al iniciar sesión' });
         }
-        return res.json({ success: true, user: { email: user.claims.email } });
+        return res.json({
+          success: true,
+          user: {
+            email: user.claims.email,
+            registrationStatus: user.registrationStatus || user.claims.registration_status,
+          },
+        });
       });
     })(req, res, next);
   });
@@ -188,8 +215,9 @@ export const isAuthenticated: RequestHandler = async (req, res, next) => {
     return next();
   }
 
-  // Si es el usuario de prueba local, renovar su sesión
-  if (user.claims?.sub === 'test-admin-user') {
+  // Si es un usuario local (no OIDC), renovar su sesión automáticamente
+  // Los usuarios locales no tienen refresh_token, solo expires_at
+  if (!user.refresh_token && user.claims?.sub) {
     user.expires_at = Math.floor(Date.now() / 1000) + (7 * 24 * 60 * 60);
     return next();
   }

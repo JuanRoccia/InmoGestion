@@ -16,6 +16,9 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import FeatureGate from "@/components/FeatureGate";
+import { useAccessPermissions } from "@/hooks/useAccessPermissions";
+import { Button } from "@/components/ui/button";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -152,6 +155,23 @@ export default function Properties() {
             <h1 className="text-3xl font-bold text-foreground mb-2">{pageTitle}</h1>
             <p className="text-muted-foreground">{pageSubtitle}</p>
           </div>
+
+          {/* Mensaje de upgrade para usuarios pre-registrados */}
+          <FeatureGate 
+            feature="canAccessAgencyDashboard"
+            message="Descubre todas las funcionalidades avanzadas al completar tu registro"
+            showUpgradeButton={true}
+          >
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                  <span className="text-green-800 font-medium">Registro completo - Acceso total</span>
+                </div>
+                <span className="text-green-600 text-sm">¡Felicidades! Tienes acceso a todas las funcionalidades</span>
+              </div>
+            </div>
+          </FeatureGate>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
             {/* Filters Sidebar */}

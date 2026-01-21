@@ -6,6 +6,7 @@ import AdminTable from "@/components/admin-table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Building2, Users, TrendingUp, DollarSign } from "lucide-react";
 import FooterInmo from "@/components/footer-inmo";
+import RequireCompletedRegistration from "@/components/ProtectedRoute";
 
 export default function AdminDashboard() {
   const { toast } = useToast();
@@ -39,7 +40,8 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-background pt-28">
+    <RequireCompletedRegistration>
+      <div className="min-h-screen bg-background pt-28">
       <Header />
 
       <div className="py-8 px-4 sm:px-6 lg:px-8">
@@ -109,5 +111,6 @@ export default function AdminDashboard() {
       </div>
       <FooterInmo />
     </div>
+    </RequireCompletedRegistration>
   );
 }

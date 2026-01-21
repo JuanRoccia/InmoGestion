@@ -1,5 +1,5 @@
 
-import { storage } from "./server/storage";
+import { storage } from "../server/storage";
 
 async function main() {
     console.log("--- Testing Storage Filters ---");

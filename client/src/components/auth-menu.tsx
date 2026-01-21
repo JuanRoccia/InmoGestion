@@ -5,8 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { User, LogOut, Building2, Settings } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   Dialog,
   DialogContent,
@@ -33,9 +34,14 @@ export default function AuthMenu() {
   const { user, isAuthenticated, isLoading, refetch } = useAuth();
   const { isOpen, setIsOpen } = useAuthModalStore();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [, setLocation] = useLocation();
   const [loginLoading, setLoginLoading] = useState(false);
+  const [registerLoading, setRegisterLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [registerEmail, setRegisterEmail] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
 
   useEffect(() => {
     // Si no está autenticado y no está cargando, mostrar el modal
@@ -55,6 +61,7 @@ export default function AuthMenu() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ email, password }),
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -62,17 +69,24 @@ export default function AuthMenu() {
         throw new Error(data.message || 'Error al iniciar sesión');
       }
 
+      const data = await response.json();
+      
+      // Recargar los datos del usuario - esto actualizará el estado automáticamente
+      await refetch();
+      
+      // Invalidar queries relacionadas para asegurar datos frescos
+      queryClient.invalidateQueries();
+      
+      setIsOpen(false);
+      
       toast({
         title: "¡Bienvenido!",
         description: "Has iniciado sesión correctamente",
       });
-
-      // Recargar los datos del usuario
-      await refetch();
-      setIsOpen(false);
-
-      // Recargar la página para actualizar el estado de autenticación
-      window.location.reload();
+      
+      // Limpiar campos del formulario
+      setEmail("");
+      setPassword("");
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -81,6 +95,72 @@ export default function AuthMenu() {
       });
     } finally {
       setLoginLoading(false);
+    }
+  };
+
+  const handlePreRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setRegisterLoading(true);
+
+    try {
+      const response = await fetch('/api/register/pre', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: registerEmail,
+          password: registerPassword,
+        }),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || 'Error en el pre-registro');
+      }
+
+      const data = await response.json();
+
+      toast({
+        title: "¡Pre-registro exitoso!",
+        description: "Tu cuenta ha sido creada. Ahora puedes explorar la plataforma.",
+      });
+
+      // Hacer login automático después del pre-registro
+      const loginResponse = await fetch('/api/login/local', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: registerEmail,
+          password: registerPassword,
+        }),
+        credentials: 'include',
+      });
+
+      if (loginResponse.ok) {
+        // Recargar los datos del usuario
+        await refetch();
+        
+        // Invalidar queries relacionadas
+        queryClient.invalidateQueries();
+        
+        setIsOpen(false);
+        
+        // Limpiar campos
+        setRegisterEmail("");
+        setRegisterPassword("");
+      }
+    } catch (error: any) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message || "Error en el pre-registro",
+      });
+    } finally {
+      setRegisterLoading(false);
     }
   };
 
@@ -245,18 +325,43 @@ export default function AuthMenu() {
           </TabsContent>
           <TabsContent value="register" className="mt-4">
             <div className="space-y-4">
-              <Button
-                className="w-full"
-                variant="outline"
-                onClick={() => {
-                  window.location.href = "/subscribe";
-                  setIsOpen(false);
-                }}
-              >
-                Registrar mi Inmobiliaria
-              </Button>
+              <form onSubmit={handlePreRegister} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="register-email">Correo electrónico</Label>
+                  <Input
+                    id="register-email"
+                    type="email"
+                    placeholder="tu@email.com"
+                    value={registerEmail}
+                    onChange={(e) => setRegisterEmail(e.target.value)}
+                    required
+                    data-testid="input-register-email"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="register-password">Contraseña</Label>
+                  <Input
+                    id="register-password"
+                    type="password"
+                    placeholder="Mínimo 6 caracteres"
+                    value={registerPassword}
+                    onChange={(e) => setRegisterPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    data-testid="input-register-password"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full bg-[#ff2e06] hover:bg-[#e62905] text-white"
+                  disabled={registerLoading}
+                  data-testid="button-register"
+                >
+                  {registerLoading ? "Registrando..." : "Pre-registrarse"}
+                </Button>
+              </form>
               <p className="text-center text-sm text-muted-foreground">
-                Únase a nuestra red de inmobiliarias y comience a publicar propiedades.
+                Al pre-registrarse, podrás explorar la plataforma. Más tarde podrás completar tu registro y acceder al panel administrativo.
               </p>
             </div>
           </TabsContent>

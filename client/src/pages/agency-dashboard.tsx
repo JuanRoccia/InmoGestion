@@ -24,6 +24,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Edit, Trash2, Building2, Mail } from "lucide-react";
+import RequireCompletedRegistration from "@/components/ProtectedRoute";
 
 // Use shared schema but omit fields that will be set server-side
 const agencyFormSchema = insertAgencySchema.pick({
@@ -146,6 +147,27 @@ export default function AgencyDashboard() {
 
   if (!isAuthenticated) {
     return null;
+  }
+
+  // Verificar si el usuario tiene registro completo
+  const registrationStatus = (user as any)?.registrationStatus;
+  if (registrationStatus !== 'completed') {
+    return (
+      <div className="min-h-screen bg-background pt-28">
+        <Header />
+        <div className="py-8 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-7xl mx-auto text-center">
+            <h1 className="text-2xl font-bold text-foreground mb-4">Registro incompleto</h1>
+            <p className="text-muted-foreground mb-4">
+              Debe completar su registro y suscribirse para acceder al panel administrativo.
+            </p>
+            <Button onClick={() => setLocation('/subscribe')}>
+              Completar Registro
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // Reuse the form setup for registration part (if needed, though normally user has agency here or sees registration)
@@ -383,107 +405,109 @@ function RegistrationForm() {
   };
 
   return (
-    <div className="min-h-screen bg-background pt-28">
-      <Header />
-      <div className="py-8 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl mx-auto">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">Registrar Inmobiliaria</CardTitle>
-              <p className="text-muted-foreground">
-                Completa los datos para crear tu inmobiliaria
-              </p>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmitAgency)} className="space-y-6">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nombre de la Inmobiliaria</FormLabel>
-                        <FormControl>
-                          <Input {...field} data-testid="input-name" placeholder="Ej: Inmobiliaria ABC" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+    <RequireCompletedRegistration>
+      <div className="min-h-screen bg-background pt-28">
+        <Header />
+        <div className="py-8 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl mx-auto">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl">Registrar Inmobiliaria</CardTitle>
+                <p className="text-muted-foreground">
+                  Completa los datos para crear tu inmobiliaria
+                </p>
+              </CardHeader>
+              <CardContent>
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(onSubmitAgency)} className="space-y-6">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nombre de la Inmobiliaria</FormLabel>
+                          <FormControl>
+                            <Input {...field} data-testid="input-name" placeholder="Ej: Inmobiliaria ABC" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email</FormLabel>
-                        <FormControl>
-                          <Input {...field} type="email" data-testid="input-email" placeholder="Ej: contacto@inmobiliaria.com" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Email</FormLabel>
+                          <FormControl>
+                            <Input {...field} type="email" data-testid="input-email" placeholder="Ej: contacto@inmobiliaria.com" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Teléfono</FormLabel>
-                        <FormControl>
-                          <Input {...field} data-testid="input-phone" placeholder="Ej: 2914567890" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Teléfono</FormLabel>
+                          <FormControl>
+                            <Input {...field} data-testid="input-phone" placeholder="Ej: 2914567890" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="address"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Dirección</FormLabel>
-                        <FormControl>
-                          <Input {...field} data-testid="input-address" placeholder="Ej: Calle Principal 123" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="address"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Dirección</FormLabel>
+                          <FormControl>
+                            <Input {...field} data-testid="input-address" placeholder="Ej: Calle Principal 123" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <FormField
-                    control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Descripción (opcional)</FormLabel>
-                        <FormControl>
-                          <Textarea {...field} data-testid="textarea-description" placeholder="Describe tu inmobiliaria..." rows={4} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                    <FormField
+                      control={form.control}
+                      name="description"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Descripción (opcional)</FormLabel>
+                          <FormControl>
+                            <Textarea {...field} data-testid="textarea-description" placeholder="Describe tu inmobiliaria..." rows={4} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
 
-                  <div className="flex gap-4">
-                    <Button
-                      type="submit"
-                      disabled={createAgencyMutation.isPending}
-                      data-testid="button-submit"
-                      className="flex-1"
-                    >
-                      {createAgencyMutation.isPending ? "Procesando..." : "Continuar a Suscripción"}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
+                    <div className="flex gap-4">
+                      <Button
+                        type="submit"
+                        disabled={createAgencyMutation.isPending}
+                        data-testid="button-submit"
+                        className="flex-1"
+                      >
+                        {createAgencyMutation.isPending ? "Procesando..." : "Continuar a Suscripción"}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
+    </RequireCompletedRegistration>
   );
 }
 

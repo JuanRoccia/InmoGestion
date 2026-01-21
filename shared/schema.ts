@@ -26,6 +26,15 @@ export const sessions = pgTable(
   (table) => [index("IDX_session_expire").on(table.expire)],
 );
 
+// Registration status enum
+export const registrationStatusEnum = pgEnum('registration_status', ['pre-registered', 'completed']);
+
+// Subscription plans enum
+export const subscriptionPlanEnum = pgEnum('subscription_plan', ['basic', 'professional', 'enterprise']);
+
+// Agency types enum
+export const agencyTypeEnum = pgEnum('agency_type', ['inmobiliaria', 'constructora']);
+
 // User storage table (required for Replit Auth)
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -36,15 +45,10 @@ export const users = pgTable("users", {
   stripeCustomerId: varchar("stripe_customer_id"),
   stripeSubscriptionId: varchar("stripe_subscription_id"),
   password: varchar("password"),
+  registrationStatus: registrationStatusEnum("registration_status").default('pre-registered'),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
-
-// Subscription plans enum
-export const subscriptionPlanEnum = pgEnum('subscription_plan', ['basic', 'professional', 'enterprise']);
-
-// Agency types enum
-export const agencyTypeEnum = pgEnum('agency_type', ['inmobiliaria', 'constructora']);
 
 // Real estate agencies table
 export const agencies = pgTable("agencies", {
@@ -180,6 +184,8 @@ export const insertUserSchema = createInsertSchema(users).pick({
   firstName: true,
   lastName: true,
   profileImageUrl: true,
+  password: true,
+  registrationStatus: true,
 });
 
 export const insertAgencySchema = createInsertSchema(agencies).omit({

@@ -22,8 +22,13 @@ import * as fs from 'fs';
 export interface IStorage {
   // User operations (required for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
+  getUsers(): Promise<User[]>;
   upsertUser(user: UpsertUser): Promise<User>;
   updateUserStripeInfo(userId: string, stripeCustomerId: string, stripeSubscriptionId: string): Promise<User>;
+  updateUserRegistrationStatus(userId: string, registrationStatus: 'pre-registered' | 'completed'): Promise<User>;
+  deleteUser(id: string): Promise<void>;
+  updateUserPassword(userId: string, hashedPassword: string): Promise<User>;
 
   // Agency operations
   getAgencies(): Promise<Agency[]>;
@@ -84,12 +89,21 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
+  async getUsers(): Promise<User[]> {
+    return await db.select().from(users).orderBy(desc(users.createdAt));
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user;
+  }
+
   async upsertUser(userData: UpsertUser): Promise<User> {
     const [user] = await db
       .insert(users)
       .values(userData)
       .onConflictDoUpdate({
-        target: users.id,
+        target: users.email,
         set: {
           ...userData,
           updatedAt: new Date(),
@@ -105,6 +119,35 @@ export class DatabaseStorage implements IStorage {
       .set({
         stripeCustomerId,
         stripeSubscriptionId,
+        registrationStatus: 'completed', // Cuando se completa la suscripción, el registro está completo
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async updateUserRegistrationStatus(userId: string, registrationStatus: 'pre-registered' | 'completed'): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        registrationStatus,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, userId))
+      .returning();
+    return user;
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    await db.delete(users).where(eq(users.id, id));
+  }
+
+  async updateUserPassword(userId: string, hashedPassword: string): Promise<User> {
+    const [user] = await db
+      .update(users)
+      .set({
+        password: hashedPassword,
         updatedAt: new Date(),
       })
       .where(eq(users.id, userId))

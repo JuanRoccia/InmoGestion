@@ -5,6 +5,7 @@ import FeaturedDevelopmentsFilter from "../components/featured-developments-filt
 import LocationGrid from "@/components/location-grid";
 import SubscriptionPlans from "@/components/subscription-plans";
 import TutorialOverlay from "@/components/tutorial-overlay";
+import RegistrationInviteBanner from "@/components/registration-invite-banner";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
@@ -173,6 +174,7 @@ export default function Landing() {
 
       <FooterInmo />
       <TutorialOverlay />
+      <RegistrationInviteBanner />
     </div>
   );
 }
