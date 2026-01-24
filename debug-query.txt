@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-01-09T23:36:15.527Z",
+  "timestamp": "2026-01-24T23:03:29.728Z",
   "filters": {
     "isCreditSuitable": false,
-    "limit": 50,
+    "limit": 12,
     "offset": 0
   }
 }

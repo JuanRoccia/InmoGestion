@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Link, useLocation } from "wouter";
-import { User, LogOut, Building2, Settings } from "lucide-react";
+import { User, LogOut, Building2, Settings, Eye, EyeOff } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   Dialog,
@@ -42,6 +42,8 @@ export default function AuthMenu() {
   const [password, setPassword] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
 
   useEffect(() => {
     // Si no está autenticado y no está cargando, mostrar el modal
@@ -70,20 +72,20 @@ export default function AuthMenu() {
       }
 
       const data = await response.json();
-      
+
       // Recargar los datos del usuario - esto actualizará el estado automáticamente
       await refetch();
-      
+
       // Invalidar queries relacionadas para asegurar datos frescos
       queryClient.invalidateQueries();
-      
+
       setIsOpen(false);
-      
+
       toast({
         title: "¡Bienvenido!",
         description: "Has iniciado sesión correctamente",
       });
-      
+
       // Limpiar campos del formulario
       setEmail("");
       setPassword("");
@@ -143,12 +145,12 @@ export default function AuthMenu() {
       if (loginResponse.ok) {
         // Recargar los datos del usuario
         await refetch();
-        
+
         // Invalidar queries relacionadas
         queryClient.invalidateQueries();
-        
+
         setIsOpen(false);
-        
+
         // Limpiar campos
         setRegisterEmail("");
         setRegisterPassword("");
@@ -274,17 +276,37 @@ export default function AuthMenu() {
                     data-testid="input-email"
                   />
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="password">Contraseña</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    data-testid="input-password"
-                  />
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      data-testid="input-password"
+                      className="pr-10"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? (
+                        <Eye className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <EyeOff className="h-4 w-4 text-muted-foreground" />
+                      )}
+                      <span className="sr-only">
+                        {showPassword ? "Ocultar contraseña" : "Ver contraseña"}
+                      </span>
+                    </Button>
+                  </div>
                 </div>
                 <Button
                   type="submit"
@@ -338,18 +360,38 @@ export default function AuthMenu() {
                     data-testid="input-register-email"
                   />
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="register-password">Contraseña</Label>
-                  <Input
-                    id="register-password"
-                    type="password"
-                    placeholder="Mínimo 6 caracteres"
-                    value={registerPassword}
-                    onChange={(e) => setRegisterPassword(e.target.value)}
-                    required
-                    minLength={6}
-                    data-testid="input-register-password"
-                  />
+                  <div className="relative">
+                    <Input
+                      id="register-password"
+                      type={showRegisterPassword ? "text" : "password"}
+                      placeholder="Mínimo 6 caracteres"
+                      value={registerPassword}
+                      onChange={(e) => setRegisterPassword(e.target.value)}
+                      required
+                      minLength={6}
+                      data-testid="input-register-password"
+                      className="pr-10"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={() => setShowRegisterPassword(!showRegisterPassword)}
+                    >
+                      {showRegisterPassword ? (
+                        <Eye className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <EyeOff className="h-4 w-4 text-muted-foreground" />
+                      )}
+                      <span className="sr-only">
+                        {showRegisterPassword ? "Ocultar contraseña" : "Ver contraseña"}
+                      </span>
+                    </Button>
+                  </div>
                 </div>
                 <Button
                   type="submit"
@@ -364,9 +406,9 @@ export default function AuthMenu() {
                 Al pre-registrarse, podrás explorar la plataforma. Más tarde podrás completar tu registro y acceder al panel administrativo.
               </p>
             </div>
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
+          </TabsContent >
+        </Tabs >
+      </DialogContent >
+    </Dialog >
   );
 }

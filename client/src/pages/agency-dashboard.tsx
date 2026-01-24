@@ -151,29 +151,13 @@ export default function AgencyDashboard() {
 
   // Verificar si el usuario tiene registro completo
   const registrationStatus = (user as any)?.registrationStatus;
-  if (registrationStatus !== 'completed') {
-    return (
-      <div className="min-h-screen bg-background pt-28">
-        <Header />
-        <div className="py-8 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-7xl mx-auto text-center">
-            <h1 className="text-2xl font-bold text-foreground mb-4">Registro incompleto</h1>
-            <p className="text-muted-foreground mb-4">
-              Debe completar su registro y suscribirse para acceder al panel administrativo.
-            </p>
-            <Button onClick={() => setLocation('/subscribe')}>
-              Completar Registro
-            </Button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+
+  const [showRegistration, setShowRegistration] = useState(false);
 
   // Reuse the form setup for registration part (if needed, though normally user has agency here or sees registration)
   // Simplifying: If no agency, show registration component (kept from original code but wrapped neatly)
 
-  if (!agency) {
+  if (showRegistration) {
     return <RegistrationView />;
   }
 
@@ -197,12 +181,29 @@ export default function AgencyDashboard() {
           />
 
           <ActionBar onAddProperty={() => {
+            if (!agency) {
+              setShowRegistration(true);
+              return;
+            }
+
+            if (registrationStatus !== 'completed' || agency?.subscriptionStatus !== 'active') {
+              toast({
+                title: "Acceso Restringido",
+                description: "Debes completar tu registro y suscripción para publicar propiedades.",
+                variant: "destructive",
+              });
+              // Optional: redirect to subscribe if they are strictly not registered
+              if (registrationStatus !== 'completed') {
+                setLocation('/subscribe');
+              }
+              return;
+            }
             setEditingProperty(null);
             setIsPropertyDialogOpen(true);
           }} />
 
           {/* Subscription Warning - moved to bottom of banner area or here as requested */}
-          {agency.subscriptionStatus !== 'active' && (
+          {agency?.subscriptionStatus !== 'active' && (
             <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-lg mb-8 flex items-center justify-between shadow-sm">
               <div>
                 <p className="font-bold">Modo Vista Previa</p>
@@ -293,7 +294,13 @@ export default function AgencyDashboard() {
                     Comienza a gestionar tu cartera de propiedades hoy mismo.
                   </p>
                   <Button
-                    onClick={() => setIsPropertyDialogOpen(true)}
+                    onClick={() => {
+                      if (!agency) {
+                        setShowRegistration(true);
+                      } else {
+                        setIsPropertyDialogOpen(true);
+                      }
+                    }}
                     data-testid="add-first-property"
                     className="shadow-lg"
                   >
@@ -405,109 +412,107 @@ function RegistrationForm() {
   };
 
   return (
-    <RequireCompletedRegistration>
-      <div className="min-h-screen bg-background pt-28">
-        <Header />
-        <div className="py-8 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl mx-auto">
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl">Registrar Inmobiliaria</CardTitle>
-                <p className="text-muted-foreground">
-                  Completa los datos para crear tu inmobiliaria
-                </p>
-              </CardHeader>
-              <CardContent>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmitAgency)} className="space-y-6">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nombre de la Inmobiliaria</FormLabel>
-                          <FormControl>
-                            <Input {...field} data-testid="input-name" placeholder="Ej: Inmobiliaria ABC" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+    <div className="min-h-screen bg-background pt-28">
+      <Header />
+      <div className="py-8 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-2xl">Registrar Inmobiliaria</CardTitle>
+              <p className="text-muted-foreground">
+                Completa los datos para crear tu inmobiliaria
+              </p>
+            </CardHeader>
+            <CardContent>
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmitAgency)} className="space-y-6">
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nombre de la Inmobiliaria</FormLabel>
+                        <FormControl>
+                          <Input {...field} data-testid="input-name" placeholder="Ej: Inmobiliaria ABC" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Email</FormLabel>
-                          <FormControl>
-                            <Input {...field} type="email" data-testid="input-email" placeholder="Ej: contacto@inmobiliaria.com" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input {...field} type="email" data-testid="input-email" placeholder="Ej: contacto@inmobiliaria.com" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Teléfono</FormLabel>
-                          <FormControl>
-                            <Input {...field} data-testid="input-phone" placeholder="Ej: 2914567890" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Teléfono</FormLabel>
+                        <FormControl>
+                          <Input {...field} data-testid="input-phone" placeholder="Ej: 2914567890" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="address"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Dirección</FormLabel>
-                          <FormControl>
-                            <Input {...field} data-testid="input-address" placeholder="Ej: Calle Principal 123" />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Dirección</FormLabel>
+                        <FormControl>
+                          <Input {...field} data-testid="input-address" placeholder="Ej: Calle Principal 123" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Descripción (opcional)</FormLabel>
-                          <FormControl>
-                            <Textarea {...field} data-testid="textarea-description" placeholder="Describe tu inmobiliaria..." rows={4} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                  <FormField
+                    control={form.control}
+                    name="description"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Descripción (opcional)</FormLabel>
+                        <FormControl>
+                          <Textarea {...field} data-testid="textarea-description" placeholder="Describe tu inmobiliaria..." rows={4} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                    <div className="flex gap-4">
-                      <Button
-                        type="submit"
-                        disabled={createAgencyMutation.isPending}
-                        data-testid="button-submit"
-                        className="flex-1"
-                      >
-                        {createAgencyMutation.isPending ? "Procesando..." : "Continuar a Suscripción"}
-                      </Button>
-                    </div>
-                  </form>
-                </Form>
-              </CardContent>
-            </Card>
-          </div>
+                  <div className="flex gap-4">
+                    <Button
+                      type="submit"
+                      disabled={createAgencyMutation.isPending}
+                      data-testid="button-submit"
+                      className="flex-1"
+                    >
+                      {createAgencyMutation.isPending ? "Procesando..." : "Continuar a Suscripción"}
+                    </Button>
+                  </div>
+                </form>
+              </Form>
+            </CardContent>
+          </Card>
         </div>
       </div>
-    </RequireCompletedRegistration>
+    </div>
   );
 }
 
