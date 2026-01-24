@@ -111,6 +111,7 @@ export const properties = pgTable("properties", {
   address: text("address"),
   latitude: decimal("latitude", { precision: 10, scale: 7 }),
   longitude: decimal("longitude", { precision: 10, scale: 7 }),
+  videoUrl: text("video_url"), // URL for video (YouTube, Vimeo, etc.)
   images: text("images").array(), // Array of image URLs
   operationType: operationTypeEnum("operation_type").notNull(),
   developmentStatus: developmentStatusEnum("development_status"), // Only for developments/edificios

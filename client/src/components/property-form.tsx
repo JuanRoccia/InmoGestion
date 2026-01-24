@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, DollarSign, Home, Camera, Building2 } from "lucide-react";
+import { MapPin, DollarSign, Home, Camera, Building2, Video } from "lucide-react";
 import LocationPicker from "@/components/location-picker";
 
 const propertyFormSchema = insertPropertySchema.extend({
@@ -23,6 +23,7 @@ const propertyFormSchema = insertPropertySchema.extend({
   bedrooms: z.string().optional(),
   bathrooms: z.string().optional(),
   garages: z.string().optional(),
+  videoUrl: z.string().optional(),
   latitude: z.string().optional(),
   longitude: z.string().optional(),
   isCreditSuitable: z.boolean().optional(),
@@ -62,6 +63,7 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
       isActive: property?.isActive !== false,
       locationId: property?.locationId || "",
       categoryId: property?.categoryId || "",
+      videoUrl: property?.videoUrl || "",
       latitude: property?.latitude?.toString() || "",
       longitude: property?.longitude?.toString() || "",
       isCreditSuitable: property?.isCreditSuitable || false,
@@ -96,6 +98,7 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
         images: imageUrls,
         locationId: data.locationId && data.locationId !== "none" ? data.locationId : null,
         categoryId: data.categoryId && data.categoryId !== "none" ? data.categoryId : null,
+        videoUrl: data.videoUrl || null,
         latitude: data.latitude ? data.latitude.toString() : null,
         longitude: data.longitude ? data.longitude.toString() : null,
         developmentStatus: isConstructora && data.developmentStatus ? data.developmentStatus : null, // Ensure sent only if valid
@@ -513,6 +516,26 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
               >
                 Agregar Imagen
               </Button>
+            </div>
+
+            <div className="mt-6">
+              <div className="flex items-center mb-4">
+                <Video className="h-5 w-5 text-primary mr-2" />
+                <h3 className="text-lg font-semibold">Video (Opcional)</h3>
+              </div>
+              <FormField
+                control={form.control}
+                name="videoUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>URL del Video</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ej: https://youtube.com/watch?v=..." {...field} data-testid="property-video-url" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
           </CardContent>
         </Card>
