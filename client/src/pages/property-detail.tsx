@@ -5,7 +5,7 @@ import Header from "@/components/header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Bed, Bath, Car, Square, Phone, Mail, ExternalLink, Video } from "lucide-react";
+import { MapPin, Bed, Bath, Car, Square, Phone, Mail, ExternalLink, Video, Check } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import FooterInmo from "@/components/footer-inmo";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
@@ -302,6 +302,23 @@ export default function PropertyDetail() {
                   <p className="text-muted-foreground leading-relaxed whitespace-pre-line" data-testid="property-description">
                     {property.description}
                   </p>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Services */}
+            {property.services && property.services.length > 0 && (
+              <Card>
+                <CardContent className="p-6">
+                  <h2 className="text-xl font-semibold mb-4">Servicios</h2>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-y-3 gap-x-6">
+                    {property.services.map((service: string, index: number) => (
+                      <div key={index} className="flex items-center text-muted-foreground">
+                        <Check className="h-4 w-4 text-green-500 mr-2 flex-shrink-0" />
+                        <span>{service}</span>
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             )}

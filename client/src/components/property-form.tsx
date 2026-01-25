@@ -28,7 +28,22 @@ const propertyFormSchema = insertPropertySchema.extend({
   longitude: z.string().optional(),
   isCreditSuitable: z.boolean().optional(),
   developmentStatus: z.enum(['pozo', 'construccion', 'terminado']).optional().nullable(),
+  services: z.array(z.string()).optional(),
 });
+const AVAILABLE_SERVICES = [
+  "Agua Corriente",
+  "Cloaca",
+  "Gas Natural",
+  "Internet",
+  "Electricidad",
+  "Pavimento",
+  "Cable",
+  "Wifi",
+  "Seguridad",
+  "Teléfono",
+  "Aire Acondicionado",
+  "Calefacción",
+];
 
 type PropertyFormData = z.infer<typeof propertyFormSchema>;
 
@@ -67,7 +82,9 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
       latitude: property?.latitude?.toString() || "",
       longitude: property?.longitude?.toString() || "",
       isCreditSuitable: property?.isCreditSuitable || false,
+      isCreditSuitable: property?.isCreditSuitable || false,
       developmentStatus: property?.developmentStatus || null,
+      services: property?.services || [],
     },
   });
 
@@ -101,7 +118,9 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
         videoUrl: data.videoUrl || null,
         latitude: data.latitude ? data.latitude.toString() : null,
         longitude: data.longitude ? data.longitude.toString() : null,
+        longitude: data.longitude ? data.longitude.toString() : null,
         developmentStatus: isConstructora && data.developmentStatus ? data.developmentStatus : null, // Ensure sent only if valid
+        services: data.services || [],
       };
 
       if (property) {
@@ -532,6 +551,59 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
                     <FormControl>
                       <Input placeholder="Ej: https://youtube.com/watch?v=..." {...field} data-testid="property-video-url" />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Services */}
+        <Card>
+          <CardContent className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Servicios</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <FormField
+                control={form.control}
+                name="services"
+                render={() => (
+                  <FormItem className="col-span-full">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {AVAILABLE_SERVICES.map((service) => (
+                        <FormField
+                          key={service}
+                          control={form.control}
+                          name="services"
+                          render={({ field }) => {
+                            return (
+                              <FormItem
+                                key={service}
+                                className="flex flex-row items-start space-x-3 space-y-0"
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(service)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([...(field.value || []), service])
+                                        : field.onChange(
+                                          field.value?.filter(
+                                            (value) => value !== service
+                                          )
+                                        )
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="font-normal">
+                                  {service}
+                                </FormLabel>
+                              </FormItem>
+                            )
+                          }}
+                        />
+                      ))}
+                    </div>
                     <FormMessage />
                   </FormItem>
                 )}
