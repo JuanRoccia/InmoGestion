@@ -63,9 +63,9 @@ export default function PropertiesMap({ properties, focusedLocation }: Propertie
     const defaultCenter: [number, number] = [-34.6037, -58.3816];
 
     // Filter only valid coords
-    const validProperties = properties.filter(
+    const validProperties = Array.isArray(properties) ? properties.filter(
         (p) => p.latitude && p.longitude
-    );
+    ) : [];
 
     return (
         <MapContainer

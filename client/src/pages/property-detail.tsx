@@ -106,14 +106,16 @@ export default function PropertyDetail() {
       <div className="py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Left Column: Media + Details */}
-            <div className="lg:col-span-2 space-y-8">
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+            {/* Left Column: Media */}
+            <div className="lg:col-span-2">
 
               {/* Media Section */}
               <div className="bg-card rounded-lg overflow-hidden shadow-sm border">
                 {/* Main Media */}
                 <div className="aspect-video w-full bg-black relative flex items-center justify-center">
+                  {/* ... (media code remains same) ... */}
                   {activeMedia ? (
                     activeMedia.type === 'video' ? (
                       <iframe
@@ -137,6 +139,7 @@ export default function PropertyDetail() {
 
                 {/* Thumbnails */}
                 <div className="p-4 flex gap-2 overflow-x-auto">
+                  {/* ... (thumbnails code remains same) ... */}
                   {property.videoUrl && (
                     <div
                       className={`flex-shrink-0 w-24 h-16 rounded cursor-pointer overflow-hidden border-2 relative ${isVideo ? 'border-primary' : 'border-transparent'}`}
@@ -159,10 +162,22 @@ export default function PropertyDetail() {
                 </div>
               </div>
 
+              {/* Basic Info (Title, Price, Address) - Below Media */}
+              <div className="mt-4">
+                <h1 className="text-2xl font-bold text-foreground mb-2 leading-tight" data-testid="property-title">
+                  {property.title}
+                </h1>
 
-              {/* Property Details Header & Features */}
-              <div>
-                <div className="flex items-center gap-2 mb-4">
+                <div className="text-3xl font-bold text-primary mb-2" data-testid="property-price">
+                  {property.currency} {parseFloat(property.price).toLocaleString()}
+                </div>
+
+                <div className="flex items-center text-muted-foreground mb-4">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  <span data-testid="property-address">{property.address}</span>
+                </div>
+
+                <div className="flex flex-wrap gap-2 mb-4">
                   <Badge variant="secondary" data-testid="operation-type">
                     {property.operationType}
                   </Badge>
@@ -175,63 +190,6 @@ export default function PropertyDetail() {
                     </Badge>
                   )}
                 </div>
-
-                <h1 className="text-3xl font-bold text-foreground mb-2" data-testid="property-title">
-                  {property.title}
-                </h1>
-
-                <div className="flex items-center text-muted-foreground mb-4">
-                  <MapPin className="h-4 w-4 mr-1" />
-                  <span data-testid="property-address">{property.address}</span>
-                </div>
-
-                <div className="text-3xl font-bold text-primary mb-6" data-testid="property-price">
-                  {property.currency} {parseFloat(property.price).toLocaleString()}
-                </div>
-
-                <Card className="mb-6">
-                  <CardContent className="p-6">
-                    <h2 className="text-xl font-semibold mb-4">Características</h2>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      {property.area && (
-                        <div className="flex items-center" data-testid="property-area">
-                          <Square className="h-5 w-5 text-primary mr-2" />
-                          <span>{property.area} m²</span>
-                        </div>
-                      )}
-                      {property.bedrooms && (
-                        <div className="flex items-center" data-testid="property-bedrooms">
-                          <Bed className="h-5 w-5 text-primary mr-2" />
-                          <span>{property.bedrooms} dormitorios</span>
-                        </div>
-                      )}
-                      {property.bathrooms && (
-                        <div className="flex items-center" data-testid="property-bathrooms">
-                          <Bath className="h-5 w-5 text-primary mr-2" />
-                          <span>{property.bathrooms} baños</span>
-                        </div>
-                      )}
-                      {property.garages && (
-                        <div className="flex items-center" data-testid="property-garages">
-                          <Car className="h-5 w-5 text-primary mr-2" />
-                          <span>{property.garages} garajes</span>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Description */}
-                {property.description && (
-                  <Card>
-                    <CardContent className="p-6">
-                      <h2 className="text-xl font-semibold mb-4">Descripción</h2>
-                      <p className="text-muted-foreground leading-relaxed whitespace-pre-line" data-testid="property-description">
-                        {property.description}
-                      </p>
-                    </CardContent>
-                  </Card>
-                )}
               </div>
             </div>
 
@@ -267,7 +225,11 @@ export default function PropertyDetail() {
 
                   {/* Map Preview */}
                   {(property.latitude && property.longitude) && (
-                    <div className="w-full h-48 rounded-lg overflow-hidden border mt-6 relative z-0">
+                    <div
+                      className="w-full h-48 rounded-lg overflow-hidden border mt-6 relative z-0 cursor-pointer group"
+                      onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${property.latitude},${property.longitude}`, '_blank')}
+                      title="Ver en Google Maps"
+                    >
                       <MapContainer
                         center={[parseFloat(property.latitude), parseFloat(property.longitude)]}
                         zoom={15}
@@ -283,9 +245,10 @@ export default function PropertyDetail() {
                         />
                         <Marker position={[parseFloat(property.latitude), parseFloat(property.longitude)]} />
                       </MapContainer>
-                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-2 text-white text-xs text-center pointer-events-none z-[400]">
-                        <span className="flex items-center justify-center gap-1">
-                          <MapPin className="h-3 w-3" /> Ver en mapa
+                      <div className="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors z-[300]" />
+                      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-2 text-white text-xs text-center pointer-events-none z-[400]">
+                        <span className="flex items-center justify-center gap-1 font-semibold">
+                          <MapPin className="h-3 w-3" /> Ver en Google Maps
                         </span>
                       </div>
                     </div>
@@ -294,7 +257,54 @@ export default function PropertyDetail() {
                 </CardContent>
               </Card>
             </div>
+          </div>
 
+          {/* Full Width Details Section */}
+          <div className="grid grid-cols-1 gap-8">
+            {/* Property Features */}
+            <Card>
+              <CardContent className="p-6">
+                <h2 className="text-xl font-semibold mb-4">Características</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {property.area && (
+                    <div className="flex items-center" data-testid="property-area">
+                      <Square className="h-5 w-5 text-primary mr-2" />
+                      <span>{property.area} m²</span>
+                    </div>
+                  )}
+                  {property.bedrooms && (
+                    <div className="flex items-center" data-testid="property-bedrooms">
+                      <Bed className="h-5 w-5 text-primary mr-2" />
+                      <span>{property.bedrooms} dormitorios</span>
+                    </div>
+                  )}
+                  {property.bathrooms && (
+                    <div className="flex items-center" data-testid="property-bathrooms">
+                      <Bath className="h-5 w-5 text-primary mr-2" />
+                      <span>{property.bathrooms} baños</span>
+                    </div>
+                  )}
+                  {property.garages && (
+                    <div className="flex items-center" data-testid="property-garages">
+                      <Car className="h-5 w-5 text-primary mr-2" />
+                      <span>{property.garages} garajes</span>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Description */}
+            {property.description && (
+              <Card>
+                <CardContent className="p-6">
+                  <h2 className="text-xl font-semibold mb-4">Descripción</h2>
+                  <p className="text-muted-foreground leading-relaxed whitespace-pre-line" data-testid="property-description">
+                    {property.description}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </div>
