@@ -31,18 +31,44 @@ const propertyFormSchema = insertPropertySchema.extend({
   services: z.array(z.string()).optional(),
 });
 const AVAILABLE_SERVICES = [
+  // Servicios Básicos
   "Agua Corriente",
   "Cloaca",
   "Gas Natural",
-  "Internet",
   "Electricidad",
   "Pavimento",
+  // Conectividad
+  "Internet",
   "Cable",
   "Wifi",
-  "Seguridad",
   "Teléfono",
+  // Climatización
   "Aire Acondicionado",
+  "Preinstalación de A/C",
   "Calefacción",
+  "Calefacción Individual",
+  "Calefacción por Aire",
+  "Agua Caliente Individual",
+  // Seguridad
+  "Seguridad",
+  "Portería 24hs",
+  "Escaleras de Emergencia",
+  // Amenities
+  "Gimnasio",
+  "Pileta",
+  "Parrilla",
+  "Quincho",
+  "Sauna",
+  "Solarium",
+  "SUM",
+  "Laundry",
+  // Edificio
+  "Ascensor",
+  "Ascensor de Servicio",
+  "Cochera Subterránea",
+  // Características
+  "Luminoso",
+  "Apto Mascotas",
 ];
 
 type PropertyFormData = z.infer<typeof propertyFormSchema>;
