@@ -35,6 +35,9 @@ export default function PropertyDetail() {
     enabled: !!id,
   });
 
+  console.log("Property Data:", property); // DEBUG: Check services field
+
+
   useEffect(() => {
     if (property) {
       if (property.videoUrl) {
