@@ -16,6 +16,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Card, CardContent } from "@/components/ui/card";
 import { MapPin, DollarSign, Home, Camera, Building2, Video } from "lucide-react";
 import LocationPicker from "@/components/location-picker";
+import { lazy, Suspense } from "react";
+// Lazy load BuildingUnitsCard to avoid circular dependency
+const BuildingUnitsCard = lazy(() => import("./building-units-card"));
 
 const propertyFormSchema = insertPropertySchema.extend({
   price: z.string().min(1, "El precio es requerido"),
@@ -82,9 +85,10 @@ interface PropertyFormProps {
   agency?: any;
   onSuccess: () => void;
   onCancel: () => void;
+  parentId?: string; // New prop for creating units
 }
 
-export default function PropertyForm({ property, agency, onSuccess, onCancel }: PropertyFormProps) {
+export default function PropertyForm({ property, agency, onSuccess, onCancel, parentId }: PropertyFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [imageUrls, setImageUrls] = useState<string[]>(property?.images || []);
@@ -118,7 +122,7 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
       services: property?.services || [],
       unitIdentifier: property?.unitIdentifier || "",
       rentPrice: property?.rentPrice?.toString() || "",
-      parentPropertyId: property?.parentPropertyId || null,
+      parentPropertyId: property?.parentPropertyId || parentId || null,
     },
   });
 
@@ -280,11 +284,13 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
                       </FormControl>
                       <SelectContent>
                         <SelectItem value="none">Sin categoría</SelectItem>
-                        {categories.map((category: any) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
+                        {categories
+                          .filter((c: any) => (!parentId && !isUnit) || c.slug !== 'edificio') // Filter out "Edificio" if it's a unit
+                          .map((category: any) => (
+                            <SelectItem key={category.id} value={category.id}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -362,6 +368,19 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
                 )}
               />
 
+              <FormField
+                control={form.control}
+                name="rentPrice"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Precio Alquiler (Opcional)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="0" {...field} data-testid="property-rent-price" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="currency"
@@ -728,6 +747,13 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
             </div>
           </CardContent>
         </Card>
+
+        {/* Building Units Management (Only for existing buildings, not units themselves) */}
+        {property && isBuilding && !isUnit && (
+          <Suspense fallback={<div>Cargando gestión de unidades...</div>}>
+            <BuildingUnitsCard buildingId={property.id} agencyId={agency?.id || property.agencyId} />
+          </Suspense>
+        )}
 
         {/* Form Actions */}
         <div className="flex justify-end space-x-4">
