@@ -70,6 +70,8 @@ export interface IStorage {
   updateProperty(id: string, property: Partial<InsertProperty>): Promise<Property>;
   deleteProperty(id: string): Promise<void>;
   getFeaturedProperties(operationType?: string, limit?: number): Promise<Property[]>;
+  getPropertyUnits(parentPropertyId: string): Promise<Property[]>;
+  countPropertyUnits(parentPropertyId: string): Promise<number>;
 
   // Location operations
   getLocations(): Promise<Location[]>;
@@ -77,6 +79,7 @@ export interface IStorage {
 
   // Category operations
   getPropertyCategories(): Promise<PropertyCategory[]>;
+  getPropertyCategory(id: string): Promise<PropertyCategory | undefined>;
 
   // Banner operations
   getActiveBanners(position?: string, size?: string): Promise<Banner[]>;
@@ -214,7 +217,10 @@ export class DatabaseStorage implements IStorage {
     console.log("getProperties filters:", filters);
     fs.writeFileSync('debug-query.txt', JSON.stringify({ timestamp: new Date(), filters }, null, 2));
 
-    const conditions = [eq(properties.isActive, true)];
+    const conditions = [
+      eq(properties.isActive, true),
+      sql`${properties.parentPropertyId} IS NULL`, // Exclude units from general listing
+    ];
 
     if (filters?.operationType) {
       conditions.push(eq(properties.operationType, filters.operationType as any));
@@ -363,6 +369,38 @@ export class DatabaseStorage implements IStorage {
   // Category operations
   async getPropertyCategories(): Promise<PropertyCategory[]> {
     return await db.select().from(propertyCategories).orderBy(asc(propertyCategories.name));
+  }
+
+  async getPropertyCategory(id: string): Promise<PropertyCategory | undefined> {
+    const [category] = await db.select().from(propertyCategories).where(eq(propertyCategories.id, id));
+    return category;
+  }
+
+  // Property units operations
+  async getPropertyUnits(parentPropertyId: string): Promise<Property[]> {
+    return await db
+      .select()
+      .from(properties)
+      .where(
+        and(
+          eq(properties.parentPropertyId, parentPropertyId),
+          eq(properties.isActive, true)
+        )
+      )
+      .orderBy(asc(properties.price));
+  }
+
+  async countPropertyUnits(parentPropertyId: string): Promise<number> {
+    const result = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(properties)
+      .where(
+        and(
+          eq(properties.parentPropertyId, parentPropertyId),
+          eq(properties.isActive, true)
+        )
+      );
+    return result[0]?.count ?? 0;
   }
 
   // Banner operations

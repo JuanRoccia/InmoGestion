@@ -20,6 +20,7 @@ import LocationPicker from "@/components/location-picker";
 const propertyFormSchema = insertPropertySchema.extend({
   price: z.string().min(1, "El precio es requerido"),
   area: z.string().optional(),
+  coveredArea: z.string().optional(),
   bedrooms: z.string().optional(),
   bathrooms: z.string().optional(),
   garages: z.string().optional(),
@@ -29,6 +30,9 @@ const propertyFormSchema = insertPropertySchema.extend({
   isCreditSuitable: z.boolean().optional(),
   developmentStatus: z.enum(['pozo', 'construccion', 'terminado']).optional().nullable(),
   services: z.array(z.string()).optional(),
+  unitIdentifier: z.string().optional(),
+  rentPrice: z.string().optional(),
+  parentPropertyId: z.string().optional().nullable(),
 });
 const AVAILABLE_SERVICES = [
   // Servicios Básicos
@@ -86,6 +90,7 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
   const [imageUrls, setImageUrls] = useState<string[]>(property?.images || []);
 
   const isConstructora = agency?.type === 'constructora';
+  const isUnit = !!property?.parentPropertyId;  // Is this a unit of a building?
 
   const form = useForm<PropertyFormData>({
     resolver: zodResolver(propertyFormSchema),
@@ -95,6 +100,7 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
       price: property?.price || "",
       currency: property?.currency || "USD",
       area: property?.area?.toString() || "",
+      coveredArea: property?.coveredArea?.toString() || "",
       bedrooms: property?.bedrooms?.toString() || "",
       bathrooms: property?.bathrooms?.toString() || "",
       garages: property?.garages?.toString() || "",
@@ -108,9 +114,11 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
       latitude: property?.latitude?.toString() || "",
       longitude: property?.longitude?.toString() || "",
       isCreditSuitable: property?.isCreditSuitable || false,
-      isCreditSuitable: property?.isCreditSuitable || false,
       developmentStatus: property?.developmentStatus || null,
       services: property?.services || [],
+      unitIdentifier: property?.unitIdentifier || "",
+      rentPrice: property?.rentPrice?.toString() || "",
+      parentPropertyId: property?.parentPropertyId || null,
     },
   });
 
@@ -121,6 +129,10 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
   const { data: categories = [] } = useQuery({
     queryKey: ["/api/categories"],
   });
+
+  // Check if selected category is "Edificio"
+  const selectedCategoryId = form.watch("categoryId");
+  const isBuilding = categories.find((c: any) => c.id === selectedCategoryId)?.slug === 'edificio';
 
   // Calculate city location for map centering based on selected locationId
   const selectedLocationId = form.watch("locationId");
@@ -135,6 +147,7 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
         ...data,
         price: parseFloat(data.price),
         area: data.area ? parseInt(data.area) : null,
+        coveredArea: data.coveredArea ? parseInt(data.coveredArea) : null,
         bedrooms: data.bedrooms ? parseInt(data.bedrooms) : null,
         bathrooms: data.bathrooms ? parseInt(data.bathrooms) : null,
         garages: data.garages ? parseInt(data.garages) : null,
@@ -147,6 +160,9 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
         longitude: data.longitude ? data.longitude.toString() : null,
         developmentStatus: isConstructora && data.developmentStatus ? data.developmentStatus : null, // Ensure sent only if valid
         services: data.services || [],
+        unitIdentifier: data.unitIdentifier || null,
+        rentPrice: data.rentPrice ? parseFloat(data.rentPrice) : null,
+        parentPropertyId: data.parentPropertyId || null,
       };
 
       if (property) {
@@ -374,9 +390,23 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
                 name="area"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Área (m²)</FormLabel>
+                    <FormLabel>Superficie Total (m²)</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="0" {...field} data-testid="property-area" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="coveredArea"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Superficie Cubierta (m²)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="0" {...field} data-testid="property-covered-area" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -471,6 +501,20 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel }: 
                     <FormLabel>Dirección</FormLabel>
                     <FormControl>
                       <Input placeholder="Dirección completa" {...field} data-testid="property-address" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="unitIdentifier"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Identificador de Unidad</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ej: UF1108, Piso 3 - A" {...field} data-testid="property-unit-id" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

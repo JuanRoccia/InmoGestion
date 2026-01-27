@@ -326,10 +326,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!property) {
         return res.status(404).json({ message: "Property not found" });
       }
-      res.json(property);
+
+      // Get related data
+      const agency = property.agencyId ? await storage.getAgency(property.agencyId) : null;
+      const category = property.categoryId ? await storage.getPropertyCategory(property.categoryId) : null;
+      const location = property.locationId ? await storage.getLocation(property.locationId) : null;
+
+      // If it's a building, include units count
+      let unitsCount = 0;
+      if (category?.slug === 'edificio') {
+        unitsCount = await storage.countPropertyUnits(property.id);
+      }
+
+      res.json({
+        ...property,
+        agency,
+        category,
+        location,
+        unitsCount
+      });
     } catch (error) {
       console.error("Error fetching property:", error);
       res.status(500).json({ message: "Failed to fetch property" });
+    }
+  });
+
+  // Get units of a building
+  app.get('/api/properties/:id/units', async (req, res) => {
+    try {
+      const units = await storage.getPropertyUnits(req.params.id);
+      res.json(units);
+    } catch (error) {
+      console.error("Error fetching property units:", error);
+      res.status(500).json({ message: "Failed to fetch property units" });
     }
   });
 

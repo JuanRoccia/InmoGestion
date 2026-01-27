@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-01-27T00:52:31.076Z",
+  "timestamp": "2026-01-27T19:33:03.945Z",
   "filters": {
     "agencyId": "67fde727-2083-42ca-bde5-47c19c4df98b",
     "isCreditSuitable": false,

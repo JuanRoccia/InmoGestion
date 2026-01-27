@@ -5,9 +5,10 @@ import Header from "@/components/header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Bed, Bath, Car, Square, Phone, Mail, ExternalLink, Video, Check } from "lucide-react";
+import { MapPin, Bed, Bath, Car, Square, Phone, Mail, ExternalLink, Video, Check, Building2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import FooterInmo from "@/components/footer-inmo";
+import BuildingUnitsTable from "@/components/building-units-table";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
@@ -33,6 +34,19 @@ export default function PropertyDetail() {
   const { data: property, isLoading } = useQuery<any>({
     queryKey: ["/api/properties", id],
     enabled: !!id,
+  });
+
+  // Check if property is a building (edificio) to fetch units
+  const isBuilding = property?.category?.slug === 'edificio';
+
+  const { data: units = [] } = useQuery<any[]>({
+    queryKey: ["/api/properties", id, "units"],
+    queryFn: async () => {
+      const response = await fetch(`/api/properties/${id}/units`);
+      if (!response.ok) throw new Error('Failed to fetch units');
+      return response.json();
+    },
+    enabled: !!id && isBuilding,
   });
 
   console.log("Property Data:", property); // DEBUG: Check services field
@@ -322,6 +336,20 @@ export default function PropertyDetail() {
                       </div>
                     ))}
                   </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Building Units */}
+            {isBuilding && units.length > 0 && (
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center mb-4">
+                    <Building2 className="h-5 w-5 text-primary mr-2" />
+                    <h2 className="text-xl font-semibold">Unidades</h2>
+                    <Badge variant="secondary" className="ml-2">{units.length}</Badge>
+                  </div>
+                  <BuildingUnitsTable units={units} />
                 </CardContent>
               </Card>
             )}

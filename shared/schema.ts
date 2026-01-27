@@ -104,17 +104,20 @@ export const properties = pgTable("properties", {
   description: text("description"),
   price: decimal("price", { precision: 12, scale: 2 }).notNull(),
   currency: varchar("currency", { length: 3 }).default('USD'),
-  area: integer("area"), // in square meters
+  area: integer("area"), // Superficie total in square meters
+  coveredArea: integer("covered_area"), // Superficie cubierta in square meters
   bedrooms: integer("bedrooms"),
   bathrooms: integer("bathrooms"),
   garages: integer("garages"),
   address: text("address"),
+  unitIdentifier: varchar("unit_identifier", { length: 50 }), // Unit identifier e.g. "UF1108", "Piso 3 - A"
   latitude: decimal("latitude", { precision: 10, scale: 7 }),
   longitude: decimal("longitude", { precision: 10, scale: 7 }),
   videoUrl: text("video_url"), // URL for video (YouTube, Vimeo, etc.)
   images: text("images").array(), // Array of image URLs
   services: text("services").array(), // Array of services
   operationType: operationTypeEnum("operation_type").notNull(),
+  rentPrice: decimal("rent_price", { precision: 12, scale: 2 }), // Separate rent price for units
   developmentStatus: developmentStatusEnum("development_status"), // Only for developments/edificios
   isFeatured: boolean("is_featured").default(false),
   isCreditSuitable: boolean("is_credit_suitable").default(false),
@@ -122,6 +125,7 @@ export const properties = pgTable("properties", {
   agencyId: varchar("agency_id").references(() => agencies.id).notNull(),
   locationId: varchar("location_id").references(() => locations.id),
   categoryId: varchar("category_id").references(() => propertyCategories.id),
+  parentPropertyId: varchar("parent_property_id"), // FK to parent building (for units)
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -158,7 +162,7 @@ export const agenciesRelations = relations(agencies, ({ one, many }) => ({
   banners: many(banners),
 }));
 
-export const propertiesRelations = relations(properties, ({ one }) => ({
+export const propertiesRelations = relations(properties, ({ one, many }) => ({
   agency: one(agencies, {
     fields: [properties.agencyId],
     references: [agencies.id],
@@ -170,6 +174,14 @@ export const propertiesRelations = relations(properties, ({ one }) => ({
   category: one(propertyCategories, {
     fields: [properties.categoryId],
     references: [propertyCategories.id],
+  }),
+  parentProperty: one(properties, {
+    fields: [properties.parentPropertyId],
+    references: [properties.id],
+    relationName: "building_units",
+  }),
+  units: many(properties, {
+    relationName: "building_units",
   }),
 }));
 
