@@ -46,15 +46,17 @@ export default function PropertyDetail({ initialData }: PropertyDetailProps) {
   // Check if property is a building (edificio) to fetch units
   const isBuilding = property?.category?.slug === 'edificio';
 
-  const { data: units = [] } = useQuery<any[]>({
+  const { data: fetchedUnits = [] } = useQuery<any[]>({
     queryKey: ["/api/properties", id, "units"],
     queryFn: async () => {
       const response = await fetch(`/api/properties/${id}/units`);
       if (!response.ok) throw new Error('Failed to fetch units');
       return response.json();
     },
-    enabled: !!id && isBuilding,
+    enabled: !!id && isBuilding && !initialData,
   });
+
+  const units = initialData?.units || fetchedUnits;
 
   console.log("Property Data:", property); // DEBUG: Check services field
 
