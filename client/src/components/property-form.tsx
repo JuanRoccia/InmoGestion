@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { isUnauthorizedError } from "@/lib/authUtils";
 import { insertPropertySchema } from "@shared/schema";
 import { z } from "zod";
@@ -16,12 +15,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, DollarSign, Home, Camera, Building2, Video, Eye, Plus, Pencil, ArrowRight } from "lucide-react";
+import { MapPin, DollarSign, Home, Camera, Building2, Video, Eye } from "lucide-react";
 import LocationPicker from "@/components/location-picker";
 import { lazy, Suspense } from "react";
 // Lazy load BuildingUnitsCard to avoid circular dependency
 const BuildingUnitsCard = lazy(() => import("./building-units-card"));
-import BuildingUnitsTable from "./building-units-table";
 
 const propertyFormSchema = insertPropertySchema.extend({
   price: z.string().min(1, "El precio es requerido"),
@@ -96,9 +94,6 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel, pa
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [imageUrls, setImageUrls] = useState<string[]>(property?.images || []);
-  const [draftUnits, setDraftUnits] = useState<any[]>([]);
-  const [isUnitDialogOpen, setIsUnitDialogOpen] = useState(false);
-  const [step, setStep] = useState<'details' | 'units'>('details'); // New state for sequential flow
 
   const isConstructora = agency?.type === 'constructora';
   const isUnit = !!property?.parentPropertyId;  // Is this a unit of a building?
@@ -218,10 +213,37 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel, pa
   const [_, setLocation] = useLocation();
 
   const handlePreview = () => {
-    // Validate only basic fields if we are just moving steps?
-    // Ideally we trigger validation, but getValues returns current data.
-    // Let's assume user fills inputs.
     const data = form.getValues();
+
+    // Determine if we need to generate mock units
+    const isBuildingType = categories.find((c: any) => c.slug === 'edificio' && c.id === data.categoryId);
+    let previewUnits: any[] = [];
+
+    if (isBuildingType && !property) {
+      // Generate 5-8 random units
+      const count = Math.floor(Math.random() * 4) + 5;
+      for (let i = 0; i < count; i++) {
+        const bedrooms = Math.floor(Math.random() * 4) + 1; // 1 to 4
+        const area = 40 + Math.floor(Math.random() * 100);
+        const price = 80000 + Math.floor(Math.random() * 200000);
+
+        previewUnits.push({
+          id: `mock-unit-${i}`,
+          title: `Unidad ${i + 1}`,
+          unitIdentifier: `${Math.floor(i / 4) + 1}0${(i % 4) + 1}`, // e.g. 101, 102
+          address: data.address,
+          bedrooms: bedrooms,
+          bathrooms: Math.max(1, Math.floor(bedrooms / 2)),
+          coveredArea: area,
+          area: area + 5,
+          price: price.toString(),
+          currency: data.currency || "USD",
+          operationType: data.operationType || "venta",
+          garages: Math.random() > 0.5 ? 1 : 0,
+        });
+      }
+    }
+
     const previewData = {
       ...data,
       id: "preview",
@@ -229,28 +251,14 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel, pa
       agency: agency || { name: "Tu Inmobiliaria", email: "tu@email.com", phone: "12345678" },
       location: locations.find((l: any) => l.id === data.locationId) || null,
       services: data.services || [],
-      units: draftUnits,
+      units: previewUnits.length > 0 ? previewUnits : [],
     };
 
-    // Save draft at every action
     localStorage.setItem("draft_property", JSON.stringify(previewData));
-
-    // Sequential Flow Logic
-    const isBuildingType = categories.find((c: any) => c.slug === 'edificio' && c.id === data.categoryId);
-
-    // If we are creating a building and currently on details step
-    if (isBuildingType && step === 'details' && !property) {
-      setStep('units');
-      return;
-    }
-
-    // Otherwise (Not building, OR is building and we are done with units) -> Go to preview
     setLocation("/property/preview");
   };
 
-  const handleStepBack = () => {
-    setStep('details');
-  };
+
 
   const handleRemoveImage = (index: number) => {
     setImageUrls(imageUrls.filter((_, i) => i !== index));
@@ -262,17 +270,6 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel, pa
       return;
     }
 
-    if (onAddUnit) {
-      // We are in a recursive call (Unit Form), just pass data back
-      onAddUnit({
-        ...data,
-        id: `draft-${Date.now()}`,
-        images: imageUrls,
-        // Mock ID logic or UUID
-      });
-      return;
-    }
-
     createPropertyMutation.mutate(data);
   };
 
@@ -280,634 +277,547 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel, pa
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         {/* Basic Information */}
-        {step === 'details' && (
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-4">
-                <Home className="h-5 w-5 text-primary mr-2" />
-                <h3 className="text-lg font-semibold">Información Básica</h3>
-              </div>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center mb-4">
+              <Home className="h-5 w-5 text-primary mr-2" />
+              <h3 className="text-lg font-semibold">Información Básica</h3>
+            </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <FormField
-                  control={form.control}
-                  name="title"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Título *</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Ej: Edificio Torres del Sol" {...field} data-testid="property-title" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="operationType"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Tipo de Operación *</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger data-testid="operation-type">
-                            <SelectValue placeholder="Selecciona el tipo" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="venta">Venta</SelectItem>
-                          <SelectItem value="alquiler">Alquiler</SelectItem>
-                          <SelectItem value="temporario">Temporario</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="categoryId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Categoría</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger data-testid="category-select">
-                            <SelectValue placeholder="Selecciona categoría" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="none">Sin categoría</SelectItem>
-                          {categories
-                            .filter((c: any) => (!parentId && !isUnit) || c.slug !== 'edificio') // Filter out "Edificio" if it's a unit
-                            .map((category: any) => (
-                              <SelectItem key={category.id} value={category.id}>
-                                {category.name}
-                              </SelectItem>
-                            ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {isConstructora && (
-                  <FormField
-                    control={form.control}
-                    name="developmentStatus"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Estado del Desarrollo *</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value || undefined} required>
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Selecciona estado" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="pozo">En Pozo</SelectItem>
-                            <SelectItem value="construccion">En Construcción</SelectItem>
-                            <SelectItem value="terminado">Terminado</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel>Título *</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ej: Edificio Torres del Sol" {...field} data-testid="property-title" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
+              />
 
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem className="md:col-span-2">
-                      <FormLabel>Descripción</FormLabel>
+              <FormField
+                control={form.control}
+                name="operationType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo de Operación *</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <Textarea
-                          placeholder="Describe la propiedad en detalle..."
-                          className="min-h-[100px]"
-                          {...field}
-                          value={field.value || ''}
-                          data-testid="property-description"
-                        />
+                        <SelectTrigger data-testid="operation-type">
+                          <SelectValue placeholder="Selecciona el tipo" />
+                        </SelectTrigger>
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                      <SelectContent>
+                        <SelectItem value="venta">Venta</SelectItem>
+                        <SelectItem value="alquiler">Alquiler</SelectItem>
+                        <SelectItem value="temporario">Temporario</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        {/* Price and Features */}
-        {step === 'details' && (
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-4">
-                <DollarSign className="h-5 w-5 text-primary mr-2" />
-                <h3 className="text-lg font-semibold">Precio y Características</h3>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <FormField
-                  control={form.control}
-                  name="price"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Precio *</FormLabel>
+              <FormField
+                control={form.control}
+                name="categoryId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Categoría</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <FormControl>
-                        <Input type="number" placeholder="0" {...field} data-testid="property-price" />
+                        <SelectTrigger data-testid="category-select">
+                          <SelectValue placeholder="Selecciona categoría" />
+                        </SelectTrigger>
                       </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="rentPrice"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Precio Alquiler (Opcional)</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="0" {...field} data-testid="property-rent-price" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="currency"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Moneda</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
-                        <FormControl>
-                          <SelectTrigger data-testid="currency-select">
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="USD">USD</SelectItem>
-                          <SelectItem value="ARS">ARS</SelectItem>
-                          <SelectItem value="EUR">EUR</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="area"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Superficie Total (m²)</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="0" {...field} data-testid="property-area" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="coveredArea"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Superficie Cubierta (m²)</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="0" {...field} data-testid="property-covered-area" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="bedrooms"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Dormitorios</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="0" {...field} data-testid="property-bedrooms" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="bathrooms"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Baños</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="0" {...field} data-testid="property-bathrooms" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="garages"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Garajes</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="0" {...field} data-testid="property-garages" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Location */}
-        {step === 'details' && (
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center mb-4">
-                <MapPin className="h-5 w-5 text-primary mr-2" />
-                <h3 className="text-lg font-semibold">Ubicación</h3>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <FormField
-                  control={form.control}
-                  name="locationId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Localidad</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger data-testid="location-select">
-                            <SelectValue placeholder="Selecciona localidad" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="none">Sin localidad</SelectItem>
-                          {locations.map((location: any) => (
-                            <SelectItem key={location.id} value={location.id}>
-                              {location.name}
+                      <SelectContent>
+                        <SelectItem value="none">Sin categoría</SelectItem>
+                        {categories
+                          .filter((c: any) => (!parentId && !isUnit) || c.slug !== 'edificio') // Filter out "Edificio" if it's a unit
+                          .map((category: any) => (
+                            <SelectItem key={category.id} value={category.id}>
+                              {category.name}
                             </SelectItem>
                           ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {isConstructora && (
+                <FormField
+                  control={form.control}
+                  name="developmentStatus"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Estado del Desarrollo *</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value || undefined} required>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecciona estado" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="pozo">En Pozo</SelectItem>
+                          <SelectItem value="construccion">En Construcción</SelectItem>
+                          <SelectItem value="terminado">Terminado</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+              )}
 
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel>Descripción</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Describe la propiedad en detalle..."
+                        className="min-h-[100px]"
+                        {...field}
+                        value={field.value || ''}
+                        data-testid="property-description"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Price and Features */}
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center mb-4">
+              <DollarSign className="h-5 w-5 text-primary mr-2" />
+              <h3 className="text-lg font-semibold">Precio y Características</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Precio *</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="0" {...field} data-testid="property-price" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="rentPrice"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Precio Alquiler (Opcional)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="0" {...field} data-testid="property-rent-price" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="currency"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Moneda</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value || undefined}>
+                      <FormControl>
+                        <SelectTrigger data-testid="currency-select">
+                          <SelectValue />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="USD">USD</SelectItem>
+                        <SelectItem value="ARS">ARS</SelectItem>
+                        <SelectItem value="EUR">EUR</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="area"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Superficie Total (m²)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="0" {...field} data-testid="property-area" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="coveredArea"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Superficie Cubierta (m²)</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="0" {...field} data-testid="property-covered-area" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="bedrooms"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Dormitorios</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="0" {...field} data-testid="property-bedrooms" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="bathrooms"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Baños</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="0" {...field} data-testid="property-bathrooms" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="garages"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Garajes</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="0" {...field} data-testid="property-garages" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Location */}
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center mb-4">
+              <MapPin className="h-5 w-5 text-primary mr-2" />
+              <h3 className="text-lg font-semibold">Ubicación</h3>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <FormField
+                control={form.control}
+                name="locationId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Localidad</FormLabel>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <FormControl>
+                        <SelectTrigger data-testid="location-select">
+                          <SelectValue placeholder="Selecciona localidad" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">Sin localidad</SelectItem>
+                        {locations.map((location: any) => (
+                          <SelectItem key={location.id} value={location.id}>
+                            {location.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Dirección</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Dirección completa" {...field} value={field.value || ''} data-testid="property-address" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="unitIdentifier"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Identificador de Unidad</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ej: UF1108, Piso 3 - A" {...field} data-testid="property-unit-id" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Map Picker */}
+            <div className="mt-4">
+              <FormLabel>Ubicación en Mapa (Opcional)</FormLabel>
+              <div className="mt-2 border rounded-lg overflow-hidden h-[300px]">
+                <LocationPicker
+                  latitude={form.watch("latitude") ? parseFloat(form.watch("latitude")!) : undefined}
+                  longitude={form.watch("longitude") ? parseFloat(form.watch("longitude")!) : undefined}
+                  cityLocation={cityLocation}
+                  onLocationSelect={(lat, lng) => {
+                    form.setValue("latitude", lat.toString());
+                    form.setValue("longitude", lng.toString());
+                  }}
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-2">
                 <FormField
                   control={form.control}
-                  name="address"
+                  name="latitude"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Dirección</FormLabel>
+                      <FormLabel className="text-xs text-muted-foreground">Latitud</FormLabel>
                       <FormControl>
-                        <Input placeholder="Dirección completa" {...field} value={field.value || ''} data-testid="property-address" />
+                        <Input {...field} readOnly className="h-8 text-xs bg-gray-50" />
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
-
                 <FormField
                   control={form.control}
-                  name="unitIdentifier"
+                  name="longitude"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Identificador de Unidad</FormLabel>
+                      <FormLabel className="text-xs text-muted-foreground">Longitud</FormLabel>
                       <FormControl>
-                        <Input placeholder="Ej: UF1108, Piso 3 - A" {...field} data-testid="property-unit-id" />
+                        <Input {...field} readOnly className="h-8 text-xs bg-gray-50" />
                       </FormControl>
-                      <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
+            </div>
 
-              {/* Map Picker */}
-              <div className="mt-4">
-                <FormLabel>Ubicación en Mapa (Opcional)</FormLabel>
-                <div className="mt-2 border rounded-lg overflow-hidden h-[300px]">
-                  <LocationPicker
-                    latitude={form.watch("latitude") ? parseFloat(form.watch("latitude")!) : undefined}
-                    longitude={form.watch("longitude") ? parseFloat(form.watch("longitude")!) : undefined}
-                    cityLocation={cityLocation}
-                    onLocationSelect={(lat, lng) => {
-                      form.setValue("latitude", lat.toString());
-                      form.setValue("longitude", lng.toString());
-                    }}
-                  />
-                </div>
-                <div className="grid grid-cols-2 gap-4 mt-2">
-                  <FormField
-                    control={form.control}
-                    name="latitude"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs text-muted-foreground">Latitud</FormLabel>
-                        <FormControl>
-                          <Input {...field} readOnly className="h-8 text-xs bg-gray-50" />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="longitude"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="text-xs text-muted-foreground">Longitud</FormLabel>
-                        <FormControl>
-                          <Input {...field} readOnly className="h-8 text-xs bg-gray-50" />
-                        </FormControl>
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-
-            </CardContent>
-          </Card>
-        )}
+          </CardContent>
+        </Card>
 
         {/* Images */}
-        {step === 'details' && (
-          <Card>
-            <CardContent className="p-6">
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center mb-4">
+              <Camera className="h-5 w-5 text-primary mr-2" />
+              <h3 className="text-lg font-semibold">Imágenes</h3>
+            </div>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {imageUrls.map((url, index) => (
+                  <div key={index} className="relative group">
+                    <img
+                      src={url}
+                      alt={`Imagen ${index + 1}`}
+                      className="w-full h-24 object-cover rounded-lg border"
+                      data-testid={`property-image-${index}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(index)}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                      data-testid={`remove-image-${index}`}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleAddImage}
+                data-testid="add-image-button"
+              >
+                Agregar Imagen
+              </Button>
+            </div>
+
+            <div className="mt-6">
               <div className="flex items-center mb-4">
-                <Camera className="h-5 w-5 text-primary mr-2" />
-                <h3 className="text-lg font-semibold">Imágenes</h3>
+                <Video className="h-5 w-5 text-primary mr-2" />
+                <h3 className="text-lg font-semibold">Video (Opcional)</h3>
               </div>
-
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {imageUrls.map((url, index) => (
-                    <div key={index} className="relative group">
-                      <img
-                        src={url}
-                        alt={`Imagen ${index + 1}`}
-                        className="w-full h-24 object-cover rounded-lg border"
-                        data-testid={`property-image-${index}`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                        data-testid={`remove-image-${index}`}
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleAddImage}
-                  data-testid="add-image-button"
-                >
-                  Agregar Imagen
-                </Button>
-              </div>
-
-              <div className="mt-6">
-                <div className="flex items-center mb-4">
-                  <Video className="h-5 w-5 text-primary mr-2" />
-                  <h3 className="text-lg font-semibold">Video (Opcional)</h3>
-                </div>
-                <FormField
-                  control={form.control}
-                  name="videoUrl"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>URL del Video</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Ej: https://youtube.com/watch?v=..." {...field} data-testid="property-video-url" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        )}
+              <FormField
+                control={form.control}
+                name="videoUrl"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>URL del Video</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ej: https://youtube.com/watch?v=..." {...field} data-testid="property-video-url" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Services */}
-        {step === 'details' && (
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Servicios</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <FormField
-                  control={form.control}
-                  name="services"
-                  render={() => (
-                    <FormItem className="col-span-full">
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        {AVAILABLE_SERVICES.map((service) => (
-                          <FormField
-                            key={service}
-                            control={form.control}
-                            name="services"
-                            render={({ field }) => {
-                              return (
-                                <FormItem
-                                  key={service}
-                                  className="flex flex-row items-start space-x-3 space-y-0"
-                                >
-                                  <FormControl>
-                                    <Checkbox
-                                      checked={field.value?.includes(service)}
-                                      onCheckedChange={(checked) => {
-                                        return checked
-                                          ? field.onChange([...(field.value || []), service])
-                                          : field.onChange(
-                                            field.value?.filter(
-                                              (value) => value !== service
-                                            )
+        <Card>
+          <CardContent className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Servicios</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <FormField
+                control={form.control}
+                name="services"
+                render={() => (
+                  <FormItem className="col-span-full">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {AVAILABLE_SERVICES.map((service) => (
+                        <FormField
+                          key={service}
+                          control={form.control}
+                          name="services"
+                          render={({ field }) => {
+                            return (
+                              <FormItem
+                                key={service}
+                                className="flex flex-row items-start space-x-3 space-y-0"
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.includes(service)}
+                                    onCheckedChange={(checked) => {
+                                      return checked
+                                        ? field.onChange([...(field.value || []), service])
+                                        : field.onChange(
+                                          field.value?.filter(
+                                            (value) => value !== service
                                           )
-                                      }}
-                                    />
-                                  </FormControl>
-                                  <FormLabel className="font-normal">
-                                    {service}
-                                  </FormLabel>
-                                </FormItem>
-                              )
-                            }}
-                          />
-                        ))}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                                        )
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="font-normal">
+                                  {service}
+                                </FormLabel>
+                              </FormItem>
+                            )
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Settings */}
-        {step === 'details' && (
-          <Card>
-            <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4">Configuración</h3>
+        <Card>
+          <CardContent className="p-6">
+            <h3 className="text-lg font-semibold mb-4">Configuración</h3>
 
-              <div className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="isFeatured"
-                  render={({ field }) => (
-                    <FormItem className="flex items-center space-x-2">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          data-testid="property-featured"
-                        />
-                      </FormControl>
-                      <FormLabel className="text-sm font-normal">
-                        Marcar como propiedad destacada
-                      </FormLabel>
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="isActive"
-                  render={({ field }) => (
-                    <FormItem className="flex items-center space-x-2">
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                          data-testid="property-active"
-                        />
-                      </FormControl>
-                      <FormLabel className="text-sm font-normal">
-                        Propiedad activa (visible en búsquedas)
-                      </FormLabel>
-                    </FormItem>
-                  )}
-                />
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Building Summary (Only visible in 'units' step) */}
-        {step === 'units' && (
-          <Card className="mb-6 bg-muted/30">
-            <CardContent className="p-6 flex items-center justify-between">
-              <div>
-                <h3 className="font-semibold text-lg">{form.watch('title') || 'Edificio sin título'}</h3>
-                <p className="text-muted-foreground">{form.watch('address') || 'Sin dirección'}</p>
-                <div className="flex gap-2 mt-2">
-                  <div className="text-sm bg-primary/10 text-primary px-2 py-1 rounded">
-                    {locations.find((l: any) => l.id === form.watch('locationId'))?.name || 'Ubicación'}
-                  </div>
-                  <div className="text-sm bg-primary/10 text-primary px-2 py-1 rounded">
-                    {form.watch('developmentStatus') || 'Estado'}
-                  </div>
-                </div>
-              </div>
-              <Button variant="outline" size="sm" onClick={handleStepBack}>
-                <Pencil className="mr-2 h-4 w-4" />
-                Editar Edificio
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Draft Units Management (For new buildings) */}
-        {!property && isBuilding && !isUnit && step === 'units' && (
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center">
-                  <Building2 className="h-5 w-5 text-primary mr-2" />
-                  <h3 className="text-lg font-semibold">Unidades (Borrador)</h3>
-                  <span className="ml-2 text-sm text-muted-foreground">({draftUnits.length})</span>
-                </div>
-
-                <Dialog open={isUnitDialogOpen} onOpenChange={setIsUnitDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button size="sm" type="button">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Agregar Unidad
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-                    <DialogHeader>
-                      <DialogTitle>Nueva Unidad</DialogTitle>
-                    </DialogHeader>
-                    <div className="mt-4">
-                      <PropertyForm
-                        onSuccess={() => setIsUnitDialogOpen(false)}
-                        onCancel={() => setIsUnitDialogOpen(false)}
-                        agency={agency}
-                        parentId="draft-building"
-                        onAddUnit={(unit) => {
-                          setDraftUnits([...draftUnits, unit]);
-                          setIsUnitDialogOpen(false);
-                          toast({ title: "Unidad agregada al borrador" });
-                        }}
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="isFeatured"
+                render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        data-testid="property-featured"
                       />
-                    </div>
-                  </DialogContent>
-                </Dialog>
-              </div>
+                    </FormControl>
+                    <FormLabel className="text-sm font-normal">
+                      Marcar como propiedad destacada
+                    </FormLabel>
+                  </FormItem>
+                )}
+              />
 
-              {draftUnits.length > 0 ? (
-                <BuildingUnitsTable units={draftUnits} />
-              ) : (
-                <div className="text-center py-8 border-2 border-dashed rounded-lg">
-                  <p className="text-muted-foreground mb-4">No hay unidades cargadas en este borrador.</p>
-                  <Button variant="outline" type="button" onClick={() => setIsUnitDialogOpen(true)}>
-                    Agregar primera unidad
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
+              <FormField
+                control={form.control}
+                name="isActive"
+                render={({ field }) => (
+                  <FormItem className="flex items-center space-x-2">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        data-testid="property-active"
+                      />
+                    </FormControl>
+                    <FormLabel className="text-sm font-normal">
+                      Propiedad activa (visible en búsquedas)
+                    </FormLabel>
+                  </FormItem>
+                )}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+
+
+
 
         {/* Building Units Management (Only for existing buildings, not units themselves) */}
-        {property && isBuilding && !isUnit && (
-          <Suspense fallback={<div>Cargando gestión de unidades...</div>}>
-            <BuildingUnitsCard buildingId={property.id} agencyId={agency?.id || property.agencyId} />
-          </Suspense>
-        )}
+        {
+          property && isBuilding && !isUnit && (
+            <Suspense fallback={<div>Cargando gestión de unidades...</div>}>
+              <BuildingUnitsCard buildingId={property.id} agencyId={agency?.id || property.agencyId} />
+            </Suspense>
+          )
+        }
 
         {/* Form Actions */}
         <div className="flex justify-end space-x-4">
           <Button type="button" variant="secondary" onClick={handlePreview} className="mr-auto">
-            {step === 'details' && !property && isBuilding ? (
-              <>Continuar a Unidades <ArrowRight className="ml-2 h-4 w-4" /></>
-            ) : (
-              <><Eye className="mr-2 h-4 w-4" /> Vista Previa</>
-            )}
+            <Eye className="mr-2 h-4 w-4" /> Vista Previa
           </Button>
           <Button type="button" variant="outline" onClick={onCancel} data-testid="cancel-button">
             Cancelar
@@ -925,7 +835,7 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel, pa
             }
           </Button>
         </div>
-      </form>
-    </Form>
+      </form >
+    </Form >
   );
 }
