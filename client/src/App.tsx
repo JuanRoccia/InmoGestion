@@ -10,6 +10,7 @@ import Landing from "@/pages/landing";
 import Home from "@/pages/home";
 import Properties from "@/pages/properties";
 import PropertyDetail from "@/pages/property-detail";
+import PropertyPreviewPage from "@/pages/property-preview-page";
 import SolicitarInmueble from "@/pages/solicitar-inmueble";
 import AdminDashboard from "@/pages/admin-dashboard";
 import AgencyDashboard from "@/pages/agency-dashboard";
@@ -27,6 +28,7 @@ function Router() {
       <Route path="/" component={Landing} />
       <Route path="/solicitar-inmueble" component={SolicitarInmueble} />
       <Route path="/properties" component={Properties} />
+      <Route path="/property/preview" component={PropertyPreviewPage} />
       <Route path="/properties/:id" component={PropertyDetail} />
       <Route path="/inmobiliarias" component={Agencies} />
       <Route path="/agencies" component={Agencies} />

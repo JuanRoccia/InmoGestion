@@ -27,14 +27,21 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-export default function PropertyDetail() {
+interface PropertyDetailProps {
+  initialData?: any;
+  params?: any;
+}
+
+export default function PropertyDetail({ initialData }: PropertyDetailProps) {
   const { id } = useParams<{ id: string }>();
   const [activeMedia, setActiveMedia] = useState<{ type: 'image' | 'video', url: string } | null>(null);
 
-  const { data: property, isLoading } = useQuery<any>({
+  const { data: fetchedProperty, isLoading } = useQuery<any>({
     queryKey: ["/api/properties", id],
-    enabled: !!id,
+    enabled: !!id && !initialData,
   });
+
+  const property = initialData || fetchedProperty;
 
   // Check if property is a building (edificio) to fetch units
   const isBuilding = property?.category?.slug === 'edificio';

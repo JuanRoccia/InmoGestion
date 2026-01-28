@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -14,7 +15,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent } from "@/components/ui/card";
-import { MapPin, DollarSign, Home, Camera, Building2, Video } from "lucide-react";
+import { MapPin, DollarSign, Home, Camera, Building2, Video, Eye } from "lucide-react";
 import LocationPicker from "@/components/location-picker";
 import { lazy, Suspense } from "react";
 // Lazy load BuildingUnitsCard to avoid circular dependency
@@ -126,7 +127,7 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel, pa
     },
   });
 
-  const { data: locations = [] } = useQuery({
+  const { data: locations = [] } = useQuery<any[]>({
     queryKey: ["/api/locations"],
   });
 
@@ -207,6 +208,25 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel, pa
     if (url && url.trim()) {
       setImageUrls([...imageUrls, url.trim()]);
     }
+  };
+
+  const [_, setLocation] = useLocation();
+
+  const handlePreview = () => {
+    const data = form.getValues();
+    const previewData = {
+      ...data,
+      id: "preview",
+      images: imageUrls,
+      agency: agency || { name: "Tu Inmobiliaria", email: "tu@email.com", phone: "12345678" },
+      location: locations.find((l: any) => l.id === data.locationId) || null,
+      services: data.services || [],
+      // Ensure numeric values are numbers for the preview if needed, though getValues returns strings usually
+      // PropertyDetail uses parseFloat so strings are fine usually, but let's be safe if simple display.
+    };
+
+    localStorage.setItem("draft_property", JSON.stringify(previewData));
+    setLocation("/property/preview");
   };
 
   const handleRemoveImage = (index: number) => {
@@ -757,6 +777,10 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel, pa
 
         {/* Form Actions */}
         <div className="flex justify-end space-x-4">
+          <Button type="button" variant="secondary" onClick={handlePreview} className="mr-auto">
+            <Eye className="mr-2 h-4 w-4" />
+            Vista Previa
+          </Button>
           <Button type="button" variant="outline" onClick={onCancel} data-testid="cancel-button">
             Cancelar
           </Button>
