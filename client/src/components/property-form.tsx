@@ -21,7 +21,7 @@ import { lazy, Suspense } from "react";
 // Lazy load BuildingUnitsCard to avoid circular dependency
 const BuildingUnitsCard = lazy(() => import("./building-units-card"));
 
-const propertyFormSchema = insertPropertySchema.extend({
+const propertyFormSchema = insertPropertySchema.omit({ agencyId: true }).extend({
   price: z.string().min(1, "El precio es requerido"),
   area: z.string().optional(),
   coveredArea: z.string().optional(),
@@ -151,7 +151,7 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel, pa
     mutationFn: async (data: PropertyFormData) => {
       const payload = {
         ...data,
-        price: parseFloat(data.price),
+        price: data.price,
         area: data.area ? parseInt(data.area) : null,
         coveredArea: data.coveredArea ? parseInt(data.coveredArea) : null,
         bedrooms: data.bedrooms ? parseInt(data.bedrooms) : null,
@@ -166,7 +166,7 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel, pa
         developmentStatus: isConstructora && data.developmentStatus ? data.developmentStatus : null, // Ensure sent only if valid
         services: data.services || [],
         unitIdentifier: data.unitIdentifier || null,
-        rentPrice: data.rentPrice ? parseFloat(data.rentPrice) : null,
+        rentPrice: data.rentPrice || null,
         parentPropertyId: data.parentPropertyId || null,
       };
 
@@ -177,10 +177,20 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel, pa
       }
     },
     onSuccess: () => {
-      toast({
-        title: "Éxito",
-        description: property ? "Propiedad actualizada correctamente" : "Propiedad creada correctamente",
-      });
+      const isRestricted = agency?.subscriptionStatus !== 'active';
+
+      if (isRestricted) {
+        toast({
+          title: "Acceso Restringido",
+          description: "Debes completar el registro y suscripción para activar la propiedad.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Éxito",
+          description: property ? "Propiedad actualizada correctamente" : "Propiedad creada correctamente",
+        });
+      }
       onSuccess();
     },
     onError: (error: any) => {
@@ -251,6 +261,7 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel, pa
       agency: agency || { name: "Tu Inmobiliaria", email: "tu@email.com", phone: "12345678" },
       location: locations.find((l: any) => l.id === data.locationId) || null,
       services: data.services || [],
+      category: categories.find((c: any) => c.id === data.categoryId) || null,
       units: previewUnits.length > 0 ? previewUnits : [],
     };
 
@@ -267,6 +278,16 @@ export default function PropertyForm({ property, agency, onSuccess, onCancel, pa
   const onSubmit = (data: PropertyFormData) => {
     if (isConstructora && !data.developmentStatus) {
       form.setError("developmentStatus", { message: "El estado del desarrollo es requerido para constructoras" });
+      return;
+    }
+
+    // If user has no agency (pre-registered), behave as if success but do not call backend yet.
+    // Instead, save to local storage (optional) and trigger onSuccess to redirect to registration.
+    if (!agency) {
+      console.log("No agency found. Redirecting to registration.");
+      // Ideally save draft to persist data while registering
+      localStorage.setItem("pending_property_data", JSON.stringify(data));
+      onSuccess();
       return;
     }
 

@@ -23,7 +23,17 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Edit, Trash2, Building2, Mail } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogAction,
+  AlertDialogHeader,
+  AlertDialogCancel
+} from "@/components/ui/alert-dialog";
+import { Plus, Edit, Trash2, Building2, Mail, AlertTriangle } from "lucide-react";
 import RequireCompletedRegistration from "@/components/ProtectedRoute";
 
 // Use shared schema but omit fields that will be set server-side
@@ -44,6 +54,7 @@ export default function AgencyDashboard() {
   const search = useSearch();
   const [isPropertyDialogOpen, setIsPropertyDialogOpen] = useState(false);
   const [editingProperty, setEditingProperty] = useState<any>(null);
+  const [showRestrictionAlert, setShowRestrictionAlert] = useState(false);
 
   // Verify subscription if returning from payment
   useEffect(() => {
@@ -64,6 +75,14 @@ export default function AgencyDashboard() {
         });
     }
   }, [search, queryClient, toast, setLocation]);
+
+  // Handle /agency-dashboard?register=true
+  useEffect(() => {
+    const params = new URLSearchParams(search);
+    if (params.get('register') === 'true') {
+      setShowRegistration(true);
+    }
+  }, [search]);
 
   // Redirect to home if not authenticated
   const { setIsOpen } = useAuthModalStore();
@@ -135,6 +154,12 @@ export default function AgencyDashboard() {
     queryClient.invalidateQueries({ queryKey: ["/api/properties", { agencyId: agency?.id }], refetchType: 'all' });
     queryClient.invalidateQueries({ queryKey: ["/api/properties"], refetchType: 'all' });
     queryClient.invalidateQueries({ queryKey: ["/api/agencies"], refetchType: 'all' });
+
+    // If restricted, guide to registration
+    if (agency?.subscriptionStatus !== 'active' || (user as any)?.registrationStatus !== 'completed') {
+      setShowRestrictionAlert(true);
+      setShowRegistration(true);
+    }
   };
 
   if (isLoading) {
@@ -158,7 +183,7 @@ export default function AgencyDashboard() {
   // Simplifying: If no agency, show registration component (kept from original code but wrapped neatly)
 
   if (showRegistration) {
-    return <RegistrationView />;
+    return <RegistrationView showAlert={showRestrictionAlert} />;
   }
 
   return (
@@ -185,19 +210,8 @@ export default function AgencyDashboard() {
               setShowRegistration(true);
               return;
             }
-
-            if (registrationStatus !== 'completed' || agency?.subscriptionStatus !== 'active') {
-              toast({
-                title: "Acceso Restringido",
-                description: "Debes completar tu registro y suscripción para publicar propiedades.",
-                variant: "destructive",
-              });
-              // Optional: redirect to subscribe if they are strictly not registered
-              if (registrationStatus !== 'completed') {
-                setLocation('/subscribe');
-              }
-              return;
-            }
+            // Removed pre-emptive check. Allow drafting/previewing.
+            // Restriction applies after saving.
             setEditingProperty(null);
             setIsPropertyDialogOpen(true);
           }} />
@@ -298,6 +312,7 @@ export default function AgencyDashboard() {
                       if (!agency) {
                         setShowRegistration(true);
                       } else {
+                        // Removed pre-emptive check. Allow drafting.
                         setIsPropertyDialogOpen(true);
                       }
                     }}
@@ -340,9 +355,8 @@ export default function AgencyDashboard() {
 }
 
 // Sub-component for Registration (extracted for cleanliness)
-function RegistrationView() {
+function RegistrationView({ showAlert }: { showAlert?: boolean }) {
   const { toast } = useToast();
-  const { setLocation } = useLocation(); // Hook usage must be valid here as it is inside a component
   // ... needs context form hooks ...
   // To avoid complexity of passing too many props or redefining hooks, I'll inline the logic BUT simplify the UI.
   // REVISITING: The original file had logic inside the main component. 
@@ -362,13 +376,19 @@ function RegistrationView() {
 
   // Actually, for simplicity and to avoid hook errors, I'll move the registration form logic 
   // into a separate component defined in the same file.
-  return <RegistrationForm />;
+  return <RegistrationForm showAlert={showAlert} />;
 }
 
-function RegistrationForm() {
+function RegistrationForm({ showAlert }: { showAlert?: boolean }) {
   const { toast } = useToast();
   const [location, setLocation] = useLocation();
   const queryClient = useQueryClient();
+  const [isAlertOpen, setIsAlertOpen] = useState(showAlert || false);
+
+  // Sync internal state with prop just in case, though usually initial is fine
+  useEffect(() => {
+    if (showAlert) setIsAlertOpen(true);
+  }, [showAlert]);
 
   const form = useForm({
     resolver: zodResolver(agencyFormSchema),
@@ -413,9 +433,48 @@ function RegistrationForm() {
 
   return (
     <div className="min-h-screen bg-background pt-28">
+      {/* Alert Dialog for Restricted Access */}
+      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+        <AlertDialogContent className="border-red-200 bg-red-50">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2 text-red-700">
+              <AlertTriangle className="h-5 w-5 text-red-600" />
+              Acceso Restringido
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-red-800 font-medium">
+              Para continuar con la publicación y activar tu propiedad, debes completar el registro de tu inmobiliaria.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction
+              onClick={() => setIsAlertOpen(false)}
+              className="bg-red-600 hover:bg-red-700 text-white border-0"
+            >
+              Continuar a Registro
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Header />
       <div className="py-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl mx-auto">
+          {/* Restricted Access Alert */}
+          <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <p className="text-sm text-yellow-700">
+                  <span className="font-bold">Acceso Restringido:</span> Para continuar con la publicación, debes completar el registro de tu inmobiliaria.
+                </p>
+              </div>
+            </div>
+          </div>
+
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Registrar Inmobiliaria</CardTitle>

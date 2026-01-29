@@ -37,22 +37,16 @@ export default function PropertyPreviewPage() {
     };
 
     const handleContinue = () => {
-        // Navigate to subscribe or registration completion
-        // Given the user flow context: "guiarlo a terminar el registro completo y luego elegir una suscripcion"
-        // We should probably check their auth status. 
-        // For now, let's route to /subscribe as requested in the "future flow" description, 
-        // or maybe an intermediate "Finish Registration" page if that exists.
-        // The prompt says: "luego lo siuiente seria guiarlo a terminar el registro completo y luego elegir una suscripcion"
-        // Let's send to /subscribe for now, as that's often the gateway.
-        setLocation("/subscribe");
+        // Redirect to agency registration which precedes subscription
+        setLocation("/agency-dashboard?register=true");
     };
 
     if (!propertyData) return <div>Cargando vista previa...</div>;
 
     return (
-        <div className="relative">
-            {/* Top Banner */}
-            <div className="bg-primary/10 border-b border-primary/20 p-4 sticky top-[72px] z-40 backdrop-blur-sm">
+        <div className="pt-[100px] min-h-screen bg-gray-50">
+            {/* Top Banner - Integrated into flow */}
+            <div className="bg-white border-b border-primary/20 p-4 mb-6 shadow-sm">
                 <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div className="text-center sm:text-left">
                         <h2 className="font-semibold text-primary">Vista Previa de la Propiedad</h2>
@@ -72,7 +66,7 @@ export default function PropertyPreviewPage() {
             </div>
 
             {/* Property Detail Component reusing the logic */}
-            <PropertyDetail initialData={propertyData} />
+            <PropertyDetail initialData={propertyData} className="pt-0" />
         </div>
     );
 }

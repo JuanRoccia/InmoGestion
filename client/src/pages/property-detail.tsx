@@ -12,6 +12,7 @@ import BuildingUnitsTable from "@/components/building-units-table";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
+import { cn } from "@/lib/utils";
 
 // Fix for default marker icon in Leaflet + React
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
@@ -30,9 +31,10 @@ L.Icon.Default.mergeOptions({
 interface PropertyDetailProps {
   initialData?: any;
   params?: any;
+  className?: string; // Allow custom classes
 }
 
-export default function PropertyDetail({ initialData }: PropertyDetailProps) {
+export default function PropertyDetail({ initialData, className }: PropertyDetailProps) {
   const { id } = useParams<{ id: string }>();
   const [activeMedia, setActiveMedia] = useState<{ type: 'image' | 'video', url: string } | null>(null);
 
@@ -126,7 +128,7 @@ export default function PropertyDetail({ initialData }: PropertyDetailProps) {
   const isVideo = activeMedia?.type === 'video';
 
   return (
-    <div className="min-h-screen bg-background pt-28">
+    <div className={cn("min-h-screen bg-background pt-28", className)}>
       <Header />
 
       <div className="py-8 px-4 sm:px-6 lg:px-8">
