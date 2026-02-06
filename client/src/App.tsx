@@ -18,6 +18,10 @@ import Subscribe from "@/pages/subscribe";
 import Agencies from "@/pages/agencies";
 import Contact from "@/pages/contact";
 import MapSearch from "@/pages/map-search";
+import Terms from "@/pages/terms";
+import Privacy from "@/pages/privacy";
+import Cookies from "@/pages/cookies";
+import Accessibility from "@/pages/accessibility";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -42,6 +46,10 @@ function Router() {
       )}
       <Route path="/subscribe" component={Subscribe} />
       <Route path="/mapa" component={MapSearch} />
+      <Route path="/terms" component={Terms} />
+      <Route path="/privacy" component={Privacy} />
+      <Route path="/cookies" component={Cookies} />
+      <Route path="/accessibility" component={Accessibility} />
       <Route component={NotFound} />
     </Switch>
   );
