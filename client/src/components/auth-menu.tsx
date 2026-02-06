@@ -235,12 +235,12 @@ export default function AuthMenu() {
           Acceder
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[800px] w-full max-h-[90vh] overflow-y-auto">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full">
-          <div className="flex flex-col md:flex-row gap-6 h-full">
+      <DialogContent className="sm:max-w-[680px] w-[95vw] max-h-[85vh] overflow-visible">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <div className="flex flex-col md:flex-row gap-4">
             {/* COLUMNA IZQUIERDA - 40% - Desktop Only */}
-            <div className="hidden md:flex md:w-[40%] flex-col justify-center p-6 bg-gradient-to-br from-orange-50 to-red-50 rounded-l-lg">
-              <div className="space-y-4">
+            <div className="hidden md:flex md:w-[40%] flex-col justify-center p-4 bg-gradient-to-br from-orange-50 to-red-50 rounded-l-lg">
+              <div className="space-y-3">
                 <div className="flex items-center space-x-2">
                   <div className="w-8 h-8 bg-[#ff2e06] rounded-lg flex items-center justify-center">
                     <Building2 className="h-5 w-5 text-white" />
@@ -248,16 +248,16 @@ export default function AuthMenu() {
                   <span className="text-xl font-bold text-gray-900">BuscoInmueble.click</span>
                 </div>
                 <div className="space-y-2">
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2 className="text-xl font-bold text-gray-900">
                     Acceder a BuscoInmuebles.click
                   </h2>
-                  <p className="text-gray-600 text-sm leading-relaxed">
+                  <p className="text-gray-600 text-xs leading-relaxed">
                     Para conocer las funcionalidades de nuestra plataforma realice un pre registro.
                   </p>
                 </div>
-                <div className="pt-4">
-                  <div className="flex items-center space-x-2 text-sm text-gray-500">
-                    <Building2 className="h-2 w-4" />
+                <div className="pt-2">
+                  <div className="flex items-center space-x-2 text-xs text-gray-500">
+                    <Building2 className="h-4 w-4" />
                     <span>Plataforma inmobiliaria líder</span>
                   </div>
                 </div>
@@ -265,9 +265,9 @@ export default function AuthMenu() {
             </div>
 
             {/* COLUMNA DERECHA - 60% - Formularios */}
-            <div className="flex-1 p-6">
+            <div className="flex-1 p-4">
               {/* Header Mobile */}
-              <div className="md:hidden mb-6 text-center">
+              <div className="md:hidden mb-4 text-center">
                 <DialogTitle className="text-xl font-bold text-gray-900 mb-2">
                   Acceder a BuscoInmuebles.click
                 </DialogTitle>
@@ -276,13 +276,13 @@ export default function AuthMenu() {
                 </DialogDescription>
               </div>
 
-              <TabsList className="grid w-full grid-cols-2 mb-6">
+              <TabsList className="grid w-full grid-cols-2 mb-4">
                 <TabsTrigger value="login">Iniciar Sesión</TabsTrigger>
                 <TabsTrigger value="register">Registrarse</TabsTrigger>
               </TabsList>
               
               <TabsContent value="login" className="mt-0">
-                <form id="login-form" onSubmit={handleLocalLogin} className="space-y-4">
+                <form id="login-form" onSubmit={handleLocalLogin} className="space-y-3">
                   <div className="space-y-2">
                     <Label htmlFor="email">Correo electrónico</Label>
                     <Input
@@ -331,7 +331,7 @@ export default function AuthMenu() {
               </TabsContent>
               
               <TabsContent value="register" className="mt-0">
-                <form id="register-form" onSubmit={handlePreRegister} className="space-y-4">
+                <form id="register-form" onSubmit={handlePreRegister} className="space-y-3">
                   <div className="space-y-2">
                     <Label htmlFor="register-email">Correo electrónico</Label>
                     <Input
@@ -383,9 +383,9 @@ export default function AuthMenu() {
           </div>
 
           {/* SECCIÓN INFERIOR - Ancho completo */}
-          <div className="border-t bg-gray-50 px-6 py-4 rounded-b-lg">
+          <div className="border-t bg-gray-50 px-6 py-3 rounded-b-lg">
             <TabsContent value="login" className="mt-0">
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <Button
                   type="submit"
                   form="login-form"
@@ -419,14 +419,14 @@ export default function AuthMenu() {
                   Iniciar Sesión con Google
                 </Button>
                 
-                <p className="text-center text-xs text-muted-foreground">
+                <p className="text-center text-[10px] text-muted-foreground">
                   Al iniciar sesión, acepta nuestros términos y condiciones.
                 </p>
               </div>
             </TabsContent>
             
             <TabsContent value="register" className="mt-0">
-              <div className="space-y-3">
+              <div className="space-y-2">
                 <Button
                   type="submit"
                   form="register-form"
@@ -437,7 +437,7 @@ export default function AuthMenu() {
                   {registerLoading ? "Registrando..." : "Pre-registrarse"}
                 </Button>
                 
-                <p className="text-center text-xs text-muted-foreground">
+                <p className="text-center text-[10px] text-muted-foreground">
                   Al pre-registrarse, podrá explorar la plataforma. Más tarde podrá completar su registro y acceder al panel administrativo.
                 </p>
               </div>
