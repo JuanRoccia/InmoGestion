@@ -20,261 +20,223 @@ export default function Terms() {
                     <Card>
                         <CardContent className="p-8">
                             <div className="prose prose-sm max-w-none">
-                                {/* Introducción */}
+                                {/* 1. Objeto */}
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">1. Introducción y Aceptación</h2>
+                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">1. Objeto</h2>
                                     <p className="text-gray-700 mb-4">
-                                        Bienvenido a BuscoInmueble.click. Estos Términos y Condiciones (en adelante, "Términos") 
-                                        rigen el uso de nuestra plataforma inmobiliaria y los servicios que ofrecemos a agencias, 
-                                        constructoras y buscadores de propiedades en Argentina.
-                                    </p>
-                                    <p className="text-gray-700 mb-4">
-                                        Al acceder, registrarse o utilizar BuscoInmueble.click, usted acepta cumplir con estos 
-                                        Términos y nuestra Política de Privacidad. Si no está de acuerdo con estos términos, 
-                                        no debe utilizar nuestra plataforma.
-                                    </p>
-                                    <p className="text-gray-700">
-                                        BuscoInmueble.click se reserva el derecho de modificar estos Términos en cualquier momento. 
-                                        Las modificaciones entrarán en vigor al publicarse en esta plataforma.
+                                        Los presentes Términos y Condiciones regulan el acceso, suscripción, uso y permanencia de las 
+                                        inmobiliarias en el portal web www.buscoinmuebles.click (en adelante, "el Portal"), de propiedad y 
+                                        desarrollo de Hernández & Asociados, con domicilio legal en Irigoyen 381 Piso 10 en la ciudad de 
+                                        Bahía Blanca, en adelante, "la Empresa". La utilización de los servicios por parte de las inmobiliarias 
+                                        implica la aceptación plena y sin reservas de estos términos.
                                     </p>
                                 </section>
 
                                 <Separator className="my-8" />
 
-                                {/* Definiciones */}
+                                {/* 2. Definiciones */}
                                 <section className="mb-8">
                                     <h2 className="text-xl font-semibold text-gray-900 mb-4">2. Definiciones</h2>
                                     <div className="space-y-3 text-gray-700">
-                                        <p><strong>Plataforma:</strong> BuscoInmueble.click, incluyendo el sitio web, aplicaciones móviles y todos los servicios asociados.</p>
-                                        <p><strong>Usuario:</strong> Persona que utiliza la Plataforma, ya sea como agencia inmobiliaria, constructora o buscador de propiedades.</p>
-                                        <p><strong>Agencia:</strong> Usuario registrado como "inmobiliaria" que publica y gestiona propiedades.</p>
-                                        <p><strong>Constructora:</strong> Usuario registrado como "constructora" que publica desarrollos inmobiliarios.</p>
-                                        <p><strong>Propiedad:</strong> Inmueble publicado en la Plataforma, incluyendo venta, alquiler o desarrollos.</p>
-                                        <p><strong>Contenido:</strong> Toda información, texto, imágenes, datos y materiales disponibles en la Plataforma.</p>
+                                        <p><strong>Inmobiliaria:</strong> Toda persona física o jurídica debidamente registrada que accede al Portal para publicar propiedades con fines comerciales.</p>
+                                        <p><strong>Usuario final:</strong> Persona que navega el portal en búsqueda de propiedades.</p>
+                                        <p><strong>Servicios:</strong> Publicación, promoción y gestión de avisos inmobiliarios dentro del Portal.</p>
                                     </div>
                                 </section>
 
                                 <Separator className="my-8" />
 
-                                {/* Servicios */}
+                                {/* 3. Requisitos de Registro */}
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">3. Servicios de la Plataforma</h2>
+                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">3. Requisitos de Registro</h2>
                                     <div className="space-y-4 text-gray-700">
                                         <p>
-                                            BuscoInmueble.click ofrece los siguientes servicios:
+                                            Para formar parte del Portal, la Inmobiliaria deberá:
                                         </p>
                                         <ul className="list-disc pl-6 space-y-2">
-                                            <li>Publicación y gestión de propiedades para agencias inmobiliarias</li>
-                                            <li>Publicación de desarrollos inmobiliarios para constructoras</li>
-                                            <li>Búsqueda y filtrado de propiedades para interesados</li>
-                                            <li>Mapa interactivo de ubicaciones de propiedades</li>
-                                            <li>Dashboard de gestión para agencias y constructoras</li>
-                                            <li>Sistema de suscripción con diferentes planes de servicio</li>
-                                            <li>Comunicación entre usuarios y agencias</li>
-                                        </ul>
-                                        <p>
-                                            Los servicios están sujetos a disponibilidad y pueden modificarse según las necesidades del mercado.
-                                        </p>
-                                    </div>
-                                </section>
-
-                                <Separator className="my-8" />
-
-                                {/* Registro y Cuentas */}
-                                <section className="mb-8">
-                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">4. Registro y Cuentas de Usuario</h2>
-                                    <div className="space-y-4 text-gray-700">
-                                        <p>
-                                            Para utilizar ciertos servicios de la Plataforma, los usuarios deben registrarse y crear una cuenta. 
-                                            El registro requiere:
-                                        </p>
-                                        <ul className="list-disc pl-6 space-y-2">
-                                            <li>Proporcionar información veraz, completa y actualizada</li>
-                                            <li>Elegir una contraseña segura y mantenerla confidencial</li>
-                                            <li>Aceptar estos Términos y la Política de Privacidad</li>
-                                            <li>Contar con capacidad legal para contratar (mayores de 18 años)</li>
-                                        </ul>
-                                        <p>
-                                            El usuario es responsable de toda actividad que ocurra en su cuenta y debe notificar 
-                                            inmediatamente cualquier uso no autorizado.
-                                        </p>
-                                    </div>
-                                </section>
-
-                                <Separator className="my-8" />
-
-                                {/* Planes de Suscripción */}
-                                <section className="mb-8">
-                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">5. Planes de Suscripción y Pagos</h2>
-                                    <div className="space-y-4 text-gray-700">
-                                        <p>
-                                            BuscoInmueble.click opera bajo un modelo de suscripción mensual con los siguientes planes:
-                                        </p>
-                                        <ul className="list-disc pl-6 space-y-2">
-                                            <li><strong>Basic ($29/mes):</strong> Funcionalidades esenciales para pequeñas agencias</li>
-                                            <li><strong>Professional ($79/mes):</strong> Funcionalidades avanzadas y soporte prioritario</li>
-                                            <li><strong>Enterprise ($149/mes):</strong> Funcionalidad completa con soporte dedicado</li>
-                                        </ul>
-                                        <p>
-                                            Los pagos se procesan a través de Stripe y están sujetos a sus términos y condiciones. 
-                                            Las suscripciones se renuevan automáticamente cada mes y pueden cancelarse en cualquier momento.
-                                        </p>
-                                        <p>
-                                            No se realizarán reembolsos por períodos ya pagados, excepto en casos de incumplimiento 
-                                            grave del servicio por parte de BuscoInmueble.click.
-                                        </p>
-                                    </div>
-                                </section>
-
-                                <Separator className="my-8" />
-
-                                {/* Responsabilidades del Usuario */}
-                                <section className="mb-8">
-                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">6. Responsabilidades y Obligaciones del Usuario</h2>
-                                    <div className="space-y-4 text-gray-700">
-                                        <p>
-                                            Los usuarios se comprometen a:
-                                        </p>
-                                        <ul className="list-disc pl-6 space-y-2">
-                                            <li>Publicar solo información veraz y precisa sobre propiedades</li>
-                                            <li>No publicar contenido ilegal, ofensivo o que infrinja derechos de terceros</li>
-                                            <li>Respetar la propiedad intelectual y los derechos de autor</li>
-                                            <li>No realizar actividades fraudulentas o engañosas</li>
-                                            <li>No utilizar la plataforma para fines comerciales no autorizados</li>
-                                            <li>Mantener actualizada su información de contacto y perfil</li>
-                                            <li>Responder a las consultas de manera profesional y oportuna</li>
+                                            <li>Registrarse mediante el formulario habilitado, aportando datos verídicos y vigentes.</li>
+                                            <li>Contar con matrícula habilitante para ejercer la actividad inmobiliaria en su jurisdicción (cuando aplica).</li>
+                                            <li>Seleccionar un plan de suscripción mensual vigente.</li>
+                                            <li>Aceptar expresamente estos Términos y Condiciones.</li>
                                         </ul>
                                     </div>
                                 </section>
 
                                 <Separator className="my-8" />
 
-                                {/* Propiedad Intelectual */}
+                                {/* 4. Planes de Publicación */}
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">7. Propiedad Intelectual</h2>
+                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">4. Planes de Publicación</h2>
                                     <div className="space-y-4 text-gray-700">
                                         <p>
-                                            BuscoInmueble.click y todo su contenido, incluyendo但不限于 el diseño, logos, 
-                                            texto, software, imágenes y bases de datos, son propiedad de Hernández & Asociados 
-                                            Agencia de Publicidad y Productora de Contenidos y están protegidos por las leyes 
-                                            de propiedad intelectual de Argentina.
-                                        </p>
-                                        <p>
-                                            Al publicar contenido en la Plataforma, el usuario otorga a BuscoInmueble.click 
-                                            una licencia no exclusiva, gratuita y mundial para usar, reproducir y distribuir 
-                                            dicho contenido con fines de operación del servicio.
-                                        </p>
-                                        <p>
-                                            El usuario conserva los derechos sobre su contenido, pero es responsable de 
-                                            contar con todos los permisos necesarios para su publicación.
-                                        </p>
-                                    </div>
-                                </section>
-
-                                <Separator className="my-8" />
-
-                                {/* Privacidad y Datos */}
-                                <section className="mb-8">
-                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">8. Privacidad y Protección de Datos</h2>
-                                    <div className="space-y-4 text-gray-700">
-                                        <p>
-                                            El tratamiento de datos personales se rige por nuestra Política de Privacidad 
-                                            y la Ley de Protección de Datos Personales (LPDP) N° 25.326 de Argentina.
-                                        </p>
-                                        <p>
-                                            BuscoInmueble.click se compromete a proteger la información de los usuarios 
-                                            y a utilizarla únicamente para los fines descritos en nuestra Política de Privacidad.
-                                        </p>
-                                        <p>
-                                            Los usuarios tienen derecho a acceder, rectificar, actualizar o suprimir 
-                                            sus datos personales en cualquier momento.
-                                        </p>
-                                    </div>
-                                </section>
-
-                                <Separator className="my-8" />
-
-                                {/* Limitación de Responsabilidad */}
-                                <section className="mb-8">
-                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">9. Limitación de Responsabilidad</h2>
-                                    <div className="space-y-4 text-gray-700">
-                                        <p>
-                                            BuscoInmueble.click actúa como plataforma intermediaria y no es responsable de:
+                                            Las inmobiliarias podrán optar entre los siguientes planes:
                                         </p>
                                         <ul className="list-disc pl-6 space-y-2">
-                                            <li>La veracidad y exactitud de la información publicada por los usuarios</li>
-                                            <li>Las transacciones realizadas entre usuarios fuera de la plataforma</li>
-                                            <li>Daños directos o indirectos resultantes del uso del servicio</li>
-                                            <li>La calidad o estado de las propiedades publicadas</li>
-                                            <li>Disputas entre usuarios o con terceros</li>
+                                            <li><strong>Plan Económico:</strong> Publicación hasta 15 propiedades activas.</li>
+                                            <li><strong>Plan Básico:</strong> Publicación hasta 30 propiedades.</li>
+                                            <li><strong>Plan Avanzado:</strong> Publicación hasta 50 propiedades.</li>
+                                            <li><strong>Plan Premium:</strong> Publicaciones ilimitada de propiedades.</li>
                                         </ul>
                                         <p>
-                                            La responsabilidad máxima de BuscoInmueble.click se limita al monto pagado 
-                                            por el usuario en los últimos 3 meses de servicio.
+                                            La Empresa se reserva el derecho de modificar precios, beneficios o límites de cada plan, 
+                                            notificando a los suscriptores con al menos 7 días de antelación.
+                                        </p>
+                                        <p>
+                                            Los aumentos serán informados con anticipación, desde el mes de inicio de cobranza de los abonos.
                                         </p>
                                     </div>
                                 </section>
 
                                 <Separator className="my-8" />
 
-                                {/* Suspensión y Terminación */}
+                                {/* 5. Obligaciones y Conducta */}
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">10. Suspensión y Terminación</h2>
+                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">5. Obligaciones y Conducta</h2>
                                     <div className="space-y-4 text-gray-700">
                                         <p>
-                                            BuscoInmueble.click puede suspender o terminar cuentas de usuarios en caso de:
+                                            La Inmobiliaria se compromete a:
                                         </p>
                                         <ul className="list-disc pl-6 space-y-2">
-                                            <li>Incumplimiento de estos Términos</li>
-                                            <li>Actividad fraudulenta o ilegal</li>
-                                            <li>Uso abusivo de la plataforma</li>
-                                            <li>Violación de derechos de terceros</li>
-                                            <li>Falta de pago de suscripciones</li>
+                                            <li>Publicar únicamente propiedades reales, disponibles y con información veraz y comprobable.</li>
+                                            <li>Abstenerse de subir contenido engañoso, discriminatorio, ofensivo o que infrinja derechos de terceros.</li>
+                                            <li>Mantener actualizadas las propiedades y dar de baja aquellas ya comercializadas.</li>
+                                            <li>Gestionar las consultas de usuarios en tiempo razonable (máximo 72 hs).</li>
+                                            <li>Utilizar el Portal de manera diligente y conforme a la ley.</li>
                                         </ul>
                                         <p>
-                                            El usuario puede terminar su cuenta en cualquier momento mediante el panel 
-                                            de control o solicitándolo a soporte.
+                                            La Empresa podrá revisar, suspender o eliminar publicaciones que no cumplan con estas 
+                                            condiciones, sin derecho a reclamo por parte del anunciante.
                                         </p>
                                     </div>
                                 </section>
 
                                 <Separator className="my-8" />
 
-                                {/* Ley Aplicable y Jurisdicción */}
+                                {/* 6. Propiedad Intelectual */}
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">11. Ley Aplicable y Jurisdicción</h2>
+                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">6. Propiedad Intelectual</h2>
                                     <div className="space-y-4 text-gray-700">
                                         <p>
-                                            Estos Términos se rigen por las leyes de la República Argentina. 
-                                            Cualquier disputa será resuelta en los tribunales competentes de 
-                                            Bahía Blanca, Provincia de Buenos Aires.
-                                        </p>
-                                        <p>
-                                            Para cualquier consulta o controversia, los usuarios pueden contactar 
-                                            a nuestro equipo de soporte a través de los canales indicados en 
-                                            la sección de contacto.
+                                            Todos los derechos de propiedad intelectual del Portal, su diseño, marca, logotipo, software y 
+                                            elementos gráficos son propiedad exclusiva de Hernández & Asociados, y no podrán ser utilizados 
+                                            sin autorización expresa y por escrito.
                                         </p>
                                     </div>
                                 </section>
 
                                 <Separator className="my-8" />
 
-                                {/* Contacto */}
+                                {/* 7. Política de Pago y Facturacion */}
                                 <section className="mb-8">
-                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">12. Contacto y Soporte</h2>
+                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">7. Política de Pago y Facturación</h2>
                                     <div className="space-y-4 text-gray-700">
                                         <p>
-                                            Para cualquier pregunta sobre estos Términos y Condiciones, 
-                                            puede contactarnos a través de:
+                                            La utilización del Portal implica el pago mensual y por adelantado del abono correspondiente al 
+                                            plan contratado.
                                         </p>
-                                        <div className="bg-gray-50 p-4 rounded-lg">
-                                            <p><strong>Email:</strong> buscoinmuebles@buscoinmuebles.com.ar</p>
-                                            <p><strong>Teléfono:</strong> 291 4652552</p>
-                                            <p><strong>Dirección:</strong> 8000 Bahía Blanca, Provincia de Buenos Aires</p>
-                                        </div>
                                         <p>
-                                            Nuestro equipo de soporte está disponible de lunes a viernes 
-                                            en horario comercial para responder sus consultas.
+                                            Los pagos se gestionan exclusivamente mediante la plataforma Mercado Pago, a través de la 
+                                            modalidad de débito automático, que deberá ser autorizado por la Inmobiliaria al momento de su 
+                                            registro.
+                                        </p>
+                                        <p>
+                                            Esta modalidad de pago aplica a todos los planes y servicios ofrecidos en el Portal, sin excepción.
+                                        </p>
+                                        <p>
+                                            La gestión de cobros, notificaciones de vencimiento, actualizaciones de datos de pago, 
+                                            procesamiento de débitos y tareas administrativas relacionadas estará a cargo de Hernández & Asociados, 
+                                            en su calidad de titular y administrador del Portal.
+                                        </p>
+                                        <p>
+                                            La empresa podrá enviar comunicaciones al correo electrónico registrado para informar sobre:
+                                        </p>
+                                        <ul className="list-disc pl-6 space-y-2">
+                                            <li>Avisos de débito programado.</li>
+                                            <li>Rechazo de pagos.</li>
+                                            <li>Cambios en el plan o monto facturado.</li>
+                                            <li>Regularización de abonos en mora.</li>
+                                        </ul>
+                                        <p>
+                                            El abono se renovará automáticamente cada mes, salvo notificación expresa de cancelación por 
+                                            parte del suscriptor, enviada con al menos 5 días hábiles de antelación al próximo vencimiento.
+                                        </p>
+                                        <p>
+                                            La falta de pago o rechazo del débito podrá derivar en la suspensión temporal de la cuenta y, si 
+                                            persiste, en su baja definitiva.
+                                        </p>
+                                        <p>
+                                            No se realizarán reintegros proporcionales por cancelaciones anticipadas del servicio.
+                                        </p>
+                                        <p>
+                                            La Inmobiliaria es responsable de mantener actualizados sus datos de facturación y asegurar la 
+                                            disponibilidad de fondos en la cuenta asociada al débito.
+                                        </p>
+                                    </div>
+                                </section>
+
+                                <Separator className="my-8" />
+
+                                {/* 8. Suspensión y Baja */}
+                                <section className="mb-8">
+                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">8. Suspensión y Baja</h2>
+                                    <div className="space-y-4 text-gray-700">
+                                        <p>
+                                            La Empresa se reserva el derecho de suspender o eliminar una cuenta inmobiliaria por:
+                                        </p>
+                                        <ul className="list-disc pl-6 space-y-2">
+                                            <li>Incumplimiento de estos Términos.</li>
+                                            <li>Reportes reiterados de usuarios por mala atención o publicaciones fraudulentas.</li>
+                                            <li>Uso indebido del Portal o intento de manipulación del sistema.</li>
+                                            <li>Por alguna notificación de parte del Colegio de Martilleros y Corredores Publicos del Partido Judicial de Bahía Blanca.</li>
+                                        </ul>
+                                        <p>
+                                            En caso de suspensión, se notificará a la inmobiliaria mediante correo electrónico.
+                                        </p>
+                                    </div>
+                                </section>
+
+                                <Separator className="my-8" />
+
+                                {/* 9. Limitación de responsabilidades */}
+                                <section className="mb-8">
+                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">9. Limitación de responsabilidades</h2>
+                                    <div className="space-y-4 text-gray-700">
+                                        <p>
+                                            La Empresa no garantiza ventas, alquileres ni contactos efectivos. Su función es actuar como 
+                                            intermediario digital entre inmobiliarias y usuarios interesados. No se responsabiliza por acuerdos 
+                                            entre partes fuera del Portal.
+                                        </p>
+                                        <p>
+                                            Asimismo, Hernández & Asociados no será responsable por interrupciones técnicas, errores del 
+                                            sistema o caídas temporales del servicio, aunque se compromete a solucionarlas en el menor 
+                                            tiempo posible.
+                                        </p>
+                                    </div>
+                                </section>
+
+                                <Separator className="my-8" />
+
+                                {/* 10. Modificaciones */}
+                                <section className="mb-8">
+                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">10. Modificaciones</h2>
+                                    <div className="space-y-4 text-gray-700">
+                                        <p>
+                                            Estos Términos podrán ser actualizados en cualquier momento por la Empresa. Toda modificación 
+                                            será comunicada vía correo electrónico a los usuarios activos con al menos 7 días de antelación.
+                                        </p>
+                                    </div>
+                                </section>
+
+                                <Separator className="my-8" />
+
+                                {/* 11. Jurisdicción y Ley Aplicable */}
+                                <section className="mb-8">
+                                    <h2 className="text-xl font-semibold text-gray-900 mb-4">11. Jurisdicción y Ley Aplicable</h2>
+                                    <div className="space-y-4 text-gray-700">
+                                        <p>
+                                            Para cualquier controversia derivada del uso del Portal, las partes se someten a la jurisdicción de 
+                                            los tribunales ordinarios de la ciudad de Bahía Blanca, renunciando a cualquier otro fuero que 
+                                            pudiera corresponder.
                                         </p>
                                     </div>
                                 </section>
