@@ -67,6 +67,8 @@ export const agencies = pgTable("agencies", {
   propertyLimit: integer("property_limit").default(20), // NUEVO: Límite de propiedades según plan
   propertyCount: integer("property_count").default(0), // NUEVO: Contador de propiedades activas
   subscriptionUpdatedAt: timestamp("subscription_updated_at").defaultNow(), // NUEVO: Última actualización de suscripción
+  stripeCustomerId: varchar("stripe_customer_id"), // NUEVO: Para asociar con webhooks
+  stripeSubscriptionId: varchar("stripe_subscription_id"), // NUEVO: Para tracking de suscripción
   ownerId: varchar("owner_id").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

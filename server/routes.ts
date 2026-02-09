@@ -384,6 +384,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "You must own an agency to create properties" });
       }
 
+      // ✅ VALIDACIÓN DE LÍMITES DE PROPIEDADES
+      const currentCount = agency.propertyCount || 0;
+      const currentLimit = agency.propertyLimit || 20;
+      
+      if (currentCount >= currentLimit) {
+        return res.status(429).json({
+          message: `Has alcanzado tu límite de ${currentLimit} propiedades. Actualiza tu plan para continuar.`,
+          code: 'PROPERTY_LIMIT_EXCEEDED',
+          currentPlan: agency.subscriptionPlan,
+          currentCount: currentCount,
+          limit: currentLimit,
+          upgradeUrl: '/subscribe'
+        });
+      }
+
       const propertyData = insertPropertySchema.parse({ ...req.body, agencyId: agency.id });
 
       // Validation for Constructoras
@@ -570,6 +585,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       return res.status(400).send({ error: { message: error.message } });
     }
   });
+
+  // Stripe Webhook Handler
+  app.post('/api/stripe/webhook', 
+    require('express').raw({ type: 'application/json' }),
+    async (req, res) => {
+      try {
+        const { handleStripeWebhook } = await import('./stripe-webhook');
+        await handleStripeWebhook(req, res);
+      } catch (error: any) {
+        console.error('Webhook error:', error);
+        res.status(500).send('Webhook processing failed');
+      }
+    }
+  );
 
   const httpServer = createServer(app);
 

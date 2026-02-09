@@ -34,6 +34,7 @@ export interface IStorage {
   getAgencies(): Promise<Agency[]>;
   getAgency(id: string): Promise<Agency | undefined>;
   getAgencyByOwnerId(ownerId: string): Promise<Agency | undefined>;
+  getAgencyByCustomerId(customerId: string): Promise<Agency | undefined>;
   createAgency(agency: InsertAgency): Promise<Agency>;
   updateAgency(id: string, agency: Partial<InsertAgency>): Promise<Agency>;
   deleteAgency(id: string): Promise<void>;
@@ -170,6 +171,11 @@ export class DatabaseStorage implements IStorage {
 
   async getAgencyByOwnerId(ownerId: string): Promise<Agency | undefined> {
     const [agency] = await db.select().from(agencies).where(eq(agencies.ownerId, ownerId));
+    return agency;
+  }
+
+  async getAgencyByCustomerId(customerId: string): Promise<Agency | undefined> {
+    const [agency] = await db.select().from(agencies).where(eq(agencies.stripeCustomerId, customerId));
     return agency;
   }
 
@@ -325,6 +331,16 @@ export class DatabaseStorage implements IStorage {
     // Generate a unique code like "PROP-12345"
     const code = `PROP-${Math.floor(10000 + Math.random() * 90000)}`;
     const [newProperty] = await db.insert(properties).values({ ...property, code }).returning();
+    
+    // ✅ INCREMENTAR CONTADOR DE PROPIEDADES DE LA AGENCIA
+    await db
+      .update(agencies)
+      .set({ 
+        propertyCount: sql`${agencies.propertyCount} + 1`,
+        subscriptionUpdatedAt: new Date()
+      })
+      .where(eq(agencies.id, property.agencyId));
+    
     return newProperty;
   }
 
@@ -338,7 +354,21 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteProperty(id: string): Promise<void> {
+    // ✅ OBTENER PROPIEDAD ANTES DE ELIMINAR PARA ACTUALIZAR CONTADOR
+    const property = await this.getProperty(id);
+    
     await db.delete(properties).where(eq(properties.id, id));
+    
+    // ✅ DECREMENTAR CONTADOR DE PROPIEDADES DE LA AGENCIA
+    if (property?.agencyId) {
+      await db
+        .update(agencies)
+        .set({ 
+          propertyCount: sql`${agencies.propertyCount} - 1`,
+          subscriptionUpdatedAt: new Date()
+        })
+        .where(eq(agencies.id, property.agencyId));
+    }
   }
 
   async getFeaturedProperties(operationType?: string, limit: number = 6): Promise<Property[]> {

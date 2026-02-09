@@ -17,6 +17,7 @@ import DashboardNav from "@/components/dashboard/dashboard-nav";
 import StatsCards from "@/components/dashboard/stats-cards";
 import ActionBar from "@/components/dashboard/action-bar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -35,6 +36,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Plus, Edit, Trash2, Building2, Mail, AlertTriangle } from "lucide-react";
 import RequireCompletedRegistration from "@/components/ProtectedRoute";
+import { Property } from "@shared/schema";
 
 // Use shared schema but omit fields that will be set server-side
 const agencyFormSchema = insertAgencySchema.pick({
@@ -95,11 +97,11 @@ export default function AgencyDashboard() {
 
   const { data: agency } = useQuery({
     queryKey: ["/api/agencies"],
-    select: (agencies: any[]) => agencies.find((a: any) => a.ownerId === user?.id),
-    enabled: !!user?.id,
+    select: (agencies: any[]) => agencies.find((a: any) => a.ownerId === (user as any)?.id),
+    enabled: !!(user as any)?.id,
   });
 
-  const { data: properties = [] } = useQuery({
+  const { data: properties = [] } = useQuery<Property[]>({
     queryKey: ["/api/properties", { agencyId: agency?.id }],
     enabled: !!agency?.id,
   });
@@ -132,7 +134,7 @@ export default function AgencyDashboard() {
         title: "Error",
         description: "No se pudo eliminar la propiedad",
         variant: "destructive",
-        isClosable: true,
+        duration: 5000,
       });
     },
   });
@@ -215,6 +217,64 @@ export default function AgencyDashboard() {
             setEditingProperty(null);
             setIsPropertyDialogOpen(true);
           }} />
+
+          {/* Property Limits Display */}
+          {agency && (
+            <Card className="border-blue-200 bg-blue-50 mb-6">
+              <CardContent className="p-6">
+                <div className="flex justify-between items-center mb-3">
+                  <div>
+                    <h3 className="font-semibold text-blue-800 capitalize">
+                      Plan {agency.subscriptionPlan}
+                    </h3>
+                    <p className="text-sm text-blue-700">
+                      {properties.length} / {agency.propertyLimit || 20} propiedades usadas
+                    </p>
+                  </div>
+                  {properties.length >= (agency.propertyLimit || 20) * 0.8 && (
+                    <Button 
+                      onClick={() => setLocation("/subscribe")}
+                      variant="outline"
+                      className="border-orange-500 text-orange-600 hover:bg-orange-50"
+                    >
+                      Upgrade Plan
+                    </Button>
+                  )}
+                </div>
+                
+                {/* Progress Bar */}
+                <div className="space-y-1">
+                  <div className="flex justify-between text-xs text-blue-600">
+                    <span>Uso de propiedades</span>
+                    <span>{Math.round((properties.length / (agency.propertyLimit || 20)) * 100)}%</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className={`h-2 rounded-full transition-all ${
+                        properties.length >= (agency.propertyLimit || 20) 
+                          ? 'bg-red-500' 
+                          : properties.length >= (agency.propertyLimit || 20) * 0.8 
+                          ? 'bg-orange-500' 
+                          : 'bg-green-500'
+                      }`}
+                      style={{ width: `${Math.min((properties.length / (agency.propertyLimit || 20)) * 100, 100)}%` }}
+                    />
+                  </div>
+                </div>
+                
+                {properties.length >= (agency.propertyLimit || 20) && (
+                  <p className="text-sm text-red-600 mt-2">
+                    ⚠️ Has alcanzado tu límite. Elimina propiedades o actualiza tu plan.
+                  </p>
+                )}
+                {properties.length >= (agency.propertyLimit || 20) * 0.8 && properties.length < (agency.propertyLimit || 20) && (
+                  <p className="text-sm text-orange-600 mt-2">
+                    📊 Estás cerca del límite. Considera hacer upgrade para más espacio.
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          )}
 
           {/* Subscription Warning - moved to bottom of banner area or here as requested */}
           {agency?.subscriptionStatus !== 'active' && (
