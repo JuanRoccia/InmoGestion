@@ -68,6 +68,7 @@ export interface IStorage {
   getProperty(id: string): Promise<Property | undefined>;
   getPropertyByCode(code: string): Promise<Property | undefined>;
   createProperty(property: InsertProperty): Promise<Property>;
+  canCreateProperty(agencyId: string): Promise<boolean>;
   updateProperty(id: string, property: Partial<InsertProperty>): Promise<Property>;
   deleteProperty(id: string): Promise<void>;
   getFeaturedProperties(operationType?: string, limit?: number): Promise<Property[]>;
@@ -327,21 +328,41 @@ export class DatabaseStorage implements IStorage {
     return property;
   }
 
-  async createProperty(property: InsertProperty): Promise<Property> {
-    // Generate a unique code like "PROP-12345"
-    const code = `PROP-${Math.floor(10000 + Math.random() * 90000)}`;
-    const [newProperty] = await db.insert(properties).values({ ...property, code }).returning();
+async createProperty(property: InsertProperty): Promise<Property> {
+    const [newProperty] = await db.insert(properties).values(property).returning();
     
-    // ✅ INCREMENTAR CONTADOR DE PROPIEDADES DE LA AGENCIA
-    await db
-      .update(agencies)
-      .set({ 
-        propertyCount: sql`${agencies.propertyCount} + 1`,
-        subscriptionUpdatedAt: new Date()
-      })
-      .where(eq(agencies.id, property.agencyId));
+    // Update property count for the agency
+    if (property.agencyId) {
+      await db
+        .update(agencies)
+        .set({
+          propertyCount: sql`(
+            SELECT COUNT(*) 
+            FROM ${properties} 
+            WHERE ${properties.agencyId} = ${property.agencyId}
+          )`
+        })
+        .where(eq(agencies.id, property.agencyId));
+    }
     
     return newProperty;
+  }
+
+  async canCreateProperty(agencyId: string): Promise<boolean> {
+    try {
+      const agency = await this.getAgency(agencyId);
+      if (!agency || !agency.isActive) {
+        return false;
+      }
+      
+      const currentCount = agency.propertyCount || 0;
+      const limit = agency.propertyLimit || 0;
+      
+      return currentCount < limit;
+    } catch (error) {
+      console.error('Error checking if agency can create property:', error);
+      return false;
+    }
   }
 
   async updateProperty(id: string, property: Partial<InsertProperty>): Promise<Property> {

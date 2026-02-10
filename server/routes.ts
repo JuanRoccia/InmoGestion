@@ -1,4 +1,4 @@
-import type { Express } from "express";
+import express, { Express } from "express";
 import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
@@ -588,7 +588,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Stripe Webhook Handler
   app.post('/api/stripe/webhook', 
-    require('express').raw({ type: 'application/json' }),
+    express.raw({ type: 'application/json' }),
     async (req, res) => {
       try {
         const { handleStripeWebhook } = await import('./stripe-webhook');
