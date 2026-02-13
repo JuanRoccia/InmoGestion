@@ -20,24 +20,63 @@ BuscoInmueble.click es una plataforma SaaS multi-tenant inmobiliaria diseñada p
 ```
 /home/runner/workspace/
 ├── client/                    # Aplicación React frontend
-│   └── src/
-│       ├── components/        # Componentes React
-│       ├── pages/            # Componentes de página
-│       ├── hooks/            # Hooks personalizados React
-│       ├── lib/              # Librerías utilitarias
-│       └── styles/           # Hojas de estilo CSS
-├── server/                   # Backend API Node.js
+│   ├── src/
+│   │   ├── components/        # Componentes React (UI + pages)
+│   │   │   ├── ui/           # Componentes shadcn/ui (50+ componentes)
+│   │   │   ├── dashboard/    # Componentes de dashboard
+│   │   │   ├── header.tsx    # Navegación principal
+│   │   │   ├── footer-inmo.tsx # Footer
+│   │   │   ├── property-form.tsx # Formulario CRUD propiedades
+│   │   │   ├── property-card.tsx # Tarjeta de propiedad
+│   │   │   ├── search-filters.tsx # Filtros de búsqueda
+│   │   │   ├── auth-menu.tsx # Menú login/register
+│   │   │   ├── FeatureGate.tsx # Control de permisos
+│   │   │   ├── ProtectedRoute.tsx # Rutas protegidas
+│   │   │   └── admin-table.tsx # Tabla admin
+│   │   ├── pages/
+│   │   │   ├── home.tsx      # Landing page
+│   │   │   ├── properties.tsx # Listado propiedades
+│   │   │   ├── property-detail.tsx # Detalles propiedad
+│   │   │   ├── agency-dashboard.tsx # Dashboard agencia
+│   │   │   ├── admin-dashboard.tsx # Panel admin
+│   │   │   ├── subscribe.tsx # Página suscripciones
+│   │   │   └── agencies.tsx  # Listado agencias
+│   │   ├── hooks/
+│   │   │   ├── useAuth.ts    # Hook autenticación
+│   │   │   ├── useAccessPermissions.ts # Permisos
+│   │   │   └── use-toast.ts  # Notificaciones toast
+│   │   ├── lib/
+│   │   │   ├── queryClient.ts # TanStack Query client
+│   │   │   ├── authUtils.ts  # Utilidades auth
+│   │   │   └── utils.ts      # Utilidades generales
+│   │   ├── stores/
+│   │   │   └── auth-modal-store.ts # Estado modal auth
+│   │   └── styles/          # Estilos CSS
+│   ├── public/              # Assets estáticos
+│   └── test-limits.ts       # Tests de límites
+├── server/                  # Backend API Node.js
+│   ├── index.ts             # Entry point Express
 │   ├── routes.ts            # Definición de rutas API
-│   ├── storage.ts           # Operaciones de base de datos
-│   ├── middleware/          # Middleware Express
-│   └── db.ts               # Conexión a base de datos
-├── shared/                   # Definiciones TypeScript compartidas
-│   └── schema.ts           # Definiciones de esquema de DB
-├── migrations/              # Archivos de migración de DB
-├── scripts/                 # Scripts utilitarios y de seed
-├── attached_assets/         # Activos estáticos (imágenes)
-├── logs/                   # Logs de la aplicación
-└── dist/                   # Directorio de build de salida
+│   ├── storage.ts           # Operaciones DB (DatabaseStorage class)
+│   ├── db.ts                # Conexión Neon PostgreSQL
+│   ├── replitAuth.ts        # Auth OIDC + local (Passport.js)
+│   ├── stripe-webhook.ts    # Webhook handler Stripe
+│   ├── auth-utils.ts        # Password hashing (bcryptjs)
+│   ├── vite.ts              # Dev server Vite
+│   ├── middleware/
+│   │   ├── logger.ts        # Logging de requests
+│   │   └── registration-status.ts # Check registro
+│   └── (scripts de test/seed)
+├── shared/                  # Código compartido
+│   └── schema.ts            # Esquema Drizzle + tipos Zod
+├── migrations/              # Migraciones SQL
+│   ├── 0000_init.sql       # Schema inicial
+│   └── add_building_units.sql # Units de edificio
+├── scripts/                 # Scripts utilitarios
+├── docs/                    # Documentación (Stripe)
+├── attached_assets/        # Imágenes
+├── logs/                   # Logs aplicación
+└── dist/                   # Build output
 ```
 
 ---
@@ -53,18 +92,16 @@ BuscoInmueble.click es una plataforma SaaS multi-tenant inmobiliaria diseñada p
 - **Zustand**: Gestión de estado UI ligera
 - **shadcn/ui**: Librería de componentes moderna basada en Radix UI
 - **Tailwind CSS**: Framework CSS utility-first
-- **Leaflet**: Mapas interactivos
-- **Framer Motion**: Animaciones y transiciones
 
 ### Backend
 - **Express.js**: Framework web para APIs
 - **Drizzle ORM**: Operaciones de base de datos type-safe
 - **PostgreSQL**: Base de datos primaria (Neon serverless)
-- **Passport.js**: Middleware de autenticación
+- **Passport.js**: Middleware de autenticación (estrategias OIDC + local)
 - **bcryptjs**: Hashing de contraseñas
 - **Stripe**: Procesamiento de pagos
 - **express-session**: Gestión de sesiones
-- **Winston/Zod**: Logging y validación
+- **Zod**: Validación de datos
 
 ### Base de Datos
 - **PostgreSQL**: Base de datos relacional principal
@@ -73,8 +110,7 @@ BuscoInmueble.click es una plataforma SaaS multi-tenant inmobiliaria diseñada p
 
 ### Servicios Externos
 - **Stripe**: Procesamiento de pagos y suscripciones
-- **Replit Auth**: Proveedor de autenticación primario
-- **OpenStreetMap**: Tiles de mapa y datos de ubicación
+- **Replit Auth**: Proveedor de autenticación OIDC (Google)
 
 ---
 
@@ -82,29 +118,31 @@ BuscoInmueble.click es una plataforma SaaS multi-tenant inmobiliaria diseñada p
 
 ### Plataforma de Propiedades
 1. **Listados de Propiedades**: Navegación, búsqueda, filtrado de propiedades
-2. **Mapa Interactivo**: Descubrimiento de propiedades basado en ubicación
-3. **Detalles de Propiedades**: Información completa con imágenes
-4. **Búsqueda Avanzada**: Múltiples criterios de filtro (ubicación, precio, tipo, etc.)
-5. **Gestión de Propiedades**: Operaciones CRUD completas para agencias
+2. **Detalles de Propiedades**: Información completa con imágenes
+3. **Búsqueda Avanzada**: Múltiples criterios de filtro (ubicación, precio, tipo, etc.)
+4. **Gestión de Propiedades**: Operaciones CRUD completas para agencias
+5. **Building Units**: Soporte para unidades dentro de edificios (ej: "UF1108")
 
 ### Características Multi-Tenant
 1. **Registro de Agencias**: Onboarding para agencias inmobiliarias
 2. **Planes de Suscripción**: Tres niveles de precios (Basic $29, Professional $79, Enterprise $149)
 3. **Dashboard de Agencia**: Gestión de propiedades por agencia
 4. **Tipos de Agencia**: `inmobiliaria` (agencias estándar) vs `constructora` (empresas constructoras)
+5. **Límites por Plan**: Control de cantidad de propiedades según suscripción
+
+### Características de Constructoras
+1. **Development Status**: Propiedades pueden tener estado (pozo, construccion, terminado)
+2. **Edificios**: Permiten crear propiedades padre con múltiples unidades
 
 ### Experiencia de Usuario
 1. **Diseño Responsivo**: Enfoque mobile-first
-2. **Soporte Bilingüe**: Enfocado en español (Argentina)
-3. **Sistema de Tutoriales**: Overlays de onboarding para nuevos usuarios
-4. **Propiedades Destacadas**: Listados destacados
-5. **Calculadora de Créditos**: Cálculos de alquiler/inversión
+2. **Idioma**: Español (Argentina)
+3. **Propiedades Destacadas**: Listados destacados
 
 ### Administración
-1. **Dashboard Admin**: Gestión general de la plataforma
-2. **Gestión de Usuarios**: Administración de cuentas
-3. **Logging de Seguridad**: Monitoreo comprensivo de accesos
-4. **Gestión de Contenido**: Banners y contenido destacado
+1. **Dashboard Admin**: Panel de gestión (EN DESARROLLO - stats hardcodeados)
+2. **Gestión de Agencias**: Listado, edición, eliminación de agencias
+3. **Gestión de Contenido**: Banners publicitarios
 
 ---
 
@@ -119,23 +157,34 @@ Interfaz Usuario → Componentes React → Llamadas API → Rutas Express → Ca
                 Zustand (estado UI)
 ```
 
+### Flujo de Autenticación
+1. **Pre-registro** (`/api/register/pre`): Usuario crea cuenta con email/password, estado `pre-registered`
+2. **Login Local** (`/api/login/local`): Autenticación email/password
+3. **Login OIDC** (`/api/login`): OAuth via Google (Replit OIDC)
+4. **Sesiones**: express-session con PostgreSQL store (7 días TTL)
+
+### Flujo de Suscripción
+1. Pre-registro → acceso básico de browsing
+2. Crear agencia → modo preview (sin propiedades)
+3. Seleccionar plan → Stripe checkout
+4. Payment succeed → Webhook activa agencia
+5. Acceso completo a gestión de propiedades
+
 ### Módulos Principales y Relaciones
 
 #### Frontend:
 - **Sistema de Autenticación**: Replit OIDC + fallback local
-- **Gestión de Propiedades**: Listado, búsqueda, filtrado, detalles
+- **Gestión de Propiedades**: Listado, búsqueda, filtrado, detalles, CRUD
 - **Dashboard de Agencia**: Gestión de propiedades para agencias
-- **Dashboard Admin**: Administración de la plataforma
-- **Integración de Mapas**: Mapa interactivo de propiedades con Leaflet
-- **Sistema de Suscripciones**: Integración Stripe para procesamiento de pagos
+- **Dashboard Admin**: Tabla de agencias (funcional)
+- **Sistema de Suscripciones**: Integración Stripe Elements
 
 #### Backend:
 - **Gestión de Usuarios**: Registro, autenticación, perfiles
-- **Gestión de Agencias**: Cuentas multi-tenant de agencias
-- **CRUD de Propiedades**: Gestión completa del ciclo de vida de propiedades
-- **Búsqueda y Filtrado**: Capacidades avanzadas de búsqueda de propiedades
-- **Procesamiento de Pagos**: Manejo de suscripciones Stripe
-- **Logging de Seguridad**: Monitoreo comprensivo de accesos y seguridad
+- **Gestión de Agencias**: Cuentas multi-tenant
+- **CRUD de Propiedades**: Gestión completa del ciclo de vida
+- **Building Units**: Propiedades padre/hijo para edificios
+- **Procesamiento de Pagos**: Stripe con webhook handler
 
 ---
 
@@ -149,149 +198,232 @@ BuscoInmueble.click busca ser la plataforma inmobiliaria premier del mercado arg
 #### Usuarios Primarios:
 1. **Agencias Inmobiliarias** (`inmobiliaria`):
    - Listar y gestionar propiedades en venta/alquiler
-   - Generar leads e inquiries
-   - Construir presencia online
+   - Generar presencia online
 
 2. **Constructoras** (`constructora`):
    - Mostrar desarrollos (pozo, construcción, terminado)
    - Marketing de nuevos proyectos
-   - Gestionar pipeline de ventas
+   - Gestionar unidades de edificios
 
 3. **Buscadores de Propiedades**:
    - Buscar propiedades para comprar/alquilar
    - Comparar opciones entre agencias
-   - Contactar propietarios
 
 #### Usuarios Secundarios:
 1. **Administradores de Plataforma**:
-   - Gestionar agencias y usuarios
-   - Curar contenido y listados destacados
-   - Monitorear salud y seguridad de la plataforma
+   - Gestionar agencias
+   - Monitorear salud de la plataforma
 
 ### Modelo de Monetización
 
 #### Flujo de Ingresos:
 1. **Niveles de Suscripción** (Ingresos Recurrentes Mensuales):
-   - **Basic**: $29/mes - Funcionalidades esenciales
-   - **Professional**: $79/mes - Funcionalidades avanzadas y soporte
-   - **Enterprise**: $149/mes - Funcionalidad completa con soporte prioritario
+   - **Basic**: $29/mes - 20 propiedades máximo
+   - **Professional**: $79/mes - 50 propiedades máximo
+   - **Enterprise**: $149/mes - Ilimitado
 
 2. **Oportunidades Futuras**:
    - Listados de propiedades destacadas
    - Publicidad en banners
    - Colocación premium en resultados de búsqueda
-   - Servicios de generación de leads
 
 ---
 
 ## 🔐 Seguridad y Acceso
 
 ### Sistema de Autenticación
-- **Primario**: Replit OIDC
+- **Primario**: Replit OIDC (Google)
 - **Fallback**: Autenticación local con email/contraseña
 - **Hashing**: bcryptjs para contraseñas
-- **Sesiones**: express-session con almacenamiento seguro
+- **Sesiones**: express-session con PostgreSQL store
 
-### Logging y Monitoreo
-- **Access Logs**: Registro comprensivo de accesos
-- **Security Logs**: Monitoreo de eventos de seguridad
-- **Error Logs**: Captura y registro de errores
-- **Winston**: Sistema de logging estructurado
+### Niveles de Acceso
+- **Pre-registered**: Solo browsing (propiedades, agencias)
+- **Completed registration**: Acceso completo a dashboard de agencia
+- **Admin**: Dashboard admin (email hardcodeado: `test@inmogestion.com`)
 
 ### Validación y Sanitización
 - **Zod**: Validación de schemas de entrada
 - **TypeScript**: Seguridad de tipos en tiempo de compilación
-- **Middleware Express**: Validación y sanitización de requests
+- **Middleware Express**: Validación de requests
 
 ---
 
 ## 🗄️ Modelo de Datos
 
 ### Esquema Principal
-- **Users**: Usuarios de la plataforma
-- **Agencies**: Agencias inmobiliarias (multi-tenant)
-- **Properties**: Listados de propiedades
-- **Subscriptions**: Gestión de suscripciones Stripe
-- **AccessLogs**: Logs de seguridad y accesos
-- **FeaturedProperties**: Propiedades destacadas
-- **Banners**: Gestión de contenido publicitario
+```typescript
+// Tablas principales (shared/schema.ts)
+
+sessions         // Almacenamiento de sesiones (Replit Auth)
+users            // Usuarios de la plataforma
+agencies         // Agencias inmobiliarias (multi-tenant)
+properties       // Listados de propiedades
+locations        // Ubicaciones/Barrios
+property_categories // Categorías de propiedades
+banners          // Banners publicitarios
+```
+
+### Campos Relevantes
+
+#### Users
+- id, email, firstName, lastName, profileImageUrl
+- stripeCustomerId, stripeSubscriptionId
+- password (hash)
+- registrationStatus: 'pre-registered' | 'completed'
+
+#### Agencies
+- id, name, email, phone, address, website, description, logo
+- type: 'inmobiliaria' | 'constructora'
+- isActive, subscriptionPlan, subscriptionStatus
+- propertyLimit, propertyCount
+- stripeCustomerId, stripeSubscriptionId
+
+#### Properties
+- id, code (unique, ej: "PROP-12345")
+- title, description, price, currency
+- area, coveredArea
+- bedrooms, bathrooms, garages
+- address, latitude, longitude
+- videoUrl, images[], services[]
+- operationType: 'venta' | 'alquiler' | 'temporario'
+- rentPrice (para alquiler)
+- developmentStatus: 'pozo' | 'construccion' | 'terminado' (constructoras)
+- unitIdentifier (ej: "UF1108") - para building units
+- parentPropertyId - FK a propiedad padre (edificio)
+- isFeatured, isCreditSuitable, isActive
+- agencyId, locationId, categoryId
 
 ### Relaciones Clave
-- **Agency ↔ Users**: Relación uno-a-muchos
-- **Agency ↔ Properties**: Relación uno-a-muchos (multi-tenant)
-- **Users ↔ Subscriptions**: Relación uno-a-uno
-- **Properties ↔ FeaturedProperties**: Relación uno-a-muchos
+- **Users → Agencies**: Uno-a-uno (owner)
+- **Agencies → Properties**: Uno-a-muchos (multi-tenant)
+- **Properties → Properties**: Uno-a-muchos (building units)
+- **Locations → Properties**: Uno-a-muchos
+- **PropertyCategories → Properties**: Uno-a-muchos
+- **Agencies → Banners**: Uno-a-muchos
 
 ---
 
 ## 🚀 Workflows de Usuario
 
 ### Workflow de Agencia
-1. **Registro**: Crear cuenta con email/contraseña
-2. **Suscripción**: Seleccionar y pagar plan de suscripción
-3. **Gestión de Propiedades**: Agregar, editar, eliminar propiedades
-4. **Gestión de Leads**: Manejar inquiries de propiedades
+1. **Pre-registro**: Crear cuenta con email/contraseña
+2. **Registro completado**: Completar perfil
+3. **Crear agencia**: Registrar inmobiliaria/constructora
+4. **Suscripción**: Seleccionar y pagar plan Stripe
+5. **Gestión de Propiedades**: CRUD completo
+
+### Workflow de Constructoras
+1. Same as agency +:
+2. **Crear edificio**: Propiedad tipo "edificio"
+3. **Agregar unidades**: Propiedades con parentPropertyId
+4. **Gestionar desarrollo**: Estado pozo/construccion/terminado
 
 ### Workflow de Usuario Final
-1. **Descubrimiento de Propiedades**: Navegar/buscar propiedades
+1. **Descubrimiento de Propiedades**: Navegar/buscar
 2. **Filtrado**: Aplicar criterios de búsqueda
 3. **Detalles de Propiedad**: Ver información completa
-4. **Contacto**: Conectar con agencias para inquiries
+4. **Contacto**: Ver información de agencia
 
 ### Workflow Administrativo
-1. **Gestión de Usuarios**: Supervisar todos los usuarios de la plataforma
-2. **Aprobación de Agencias**: Revisar y activar agencias
-3. **Curación de Contenido**: Gestionar contenido destacado y banners
-4. **Monitoreo**: Seguimiento de uso y seguridad de la plataforma
+1. **Gestión de Agencias**: Supervisar listados
+2. **Edición/Eliminación**: Modificar agencias
+3. **Monitoreo**: Stats básicos (EN DESARROLLO)
+
+---
+
+## ⚠️ Limitaciones y Features Pendientes
+
+### Funcionalidades NO Implementadas
+1. **Mapa Interactivo**: No hay integración con Leaflet/map library
+2. **Calculadora de Créditos**: No existe
+3. **Sistema de Tutoriales/Onboarding**: No implementado
+4. **Password Reset Flow**: No existe
+5. **Email Verification**: No implementado
+6. **Favoritos/Wishlist**: No implementado
+7. **Property Inquiries/Contact Forms**: No se almacenan
+8. **Image Upload**: Solo URLs externas
+9. **Property Reports**: No existen
+10. **Multi-language**: Solo español
+
+### Admin Dashboard
+- Stats (agencias, usuarios, propiedades, ingresos) hardcodeados a 0
+- Solo tabla de agencias funciona correctamente
+
+### Sistema de Pagos
+- ⚠️ **Sin Retry Logic**: Si pago exitoso pero usuario cierra ventana, no hay reintento
+- ⚠️ **Sin Validación Server-side de Planes**: Precios definidos solo en frontend
+- ⚠️ **Sin Monitoring Dashboard**: No hay métricas en tiempo real
+- ✅ Webhook handler implementado
 
 ---
 
 ## 🔧 Configuración y Despliegue
 
 ### Archivos de Configuración Clave
-- `package.json`: Dependencias y scripts del proyecto
-- `drizzle.config.ts`: Configuración del ORM de base de datos
-- `shared/schema.ts`: Definiciones del esquema de base de datos
-- `vite.config.ts`: Configuración de build del frontend
-- `tailwind.config.ts`: Configuración de estilos
+- `package.json`: Dependencias y scripts
+- `drizzle.config.ts`: Configuración Drizzle ORM
+- `shared/schema.ts`: Esquema y tipos
+- `vite.config.ts`: Configuración Vite
+- `tailwind.config.ts`: Configuración Tailwind
+- `.env`: Variables de entorno
 
-### Variables de Entorno
-- Conexión a base de datos PostgreSQL
-- Claves API de Stripe
-- Configuración de Replit Auth
-- Settings de logging y seguridad
+### Variables de Entorno Requeridas
+- `DATABASE_URL`: Conexión PostgreSQL Neon
+- `STRIPE_SECRET_KEY`: API key Stripe
+- `STRIPE_WEBHOOK_SECRET`: Webhook signing
+- `VITE_STRIPE_PUBLIC_KEY`: Public key frontend
+- `STRIPE_BASIC/PRFESSIONAL/ENTERPRISE_PRICE_ID`: Price IDs
+- `SESSION_SECRET`: Secret para sesiones
 
 ---
 
-## 📈 Ventajas Técnicas y de Negocio
+## 📈 Estado del Proyecto
 
-### Ventajas Técnicas
-- **Arquitectura Multi-tenant**: Utilización eficiente de recursos y aislamiento de datos
-- **Stack Tecnológico Moderno**: Escalabilidad, mantenibilidad y productividad
-- **Enfoque en Seguridad**: Logging comprensivo y controles de acceso
-- **Integración de Pagos**: Gestión automatizada de suscripciones y recaudación
+### ✅ Completado
+- Arquitectura multi-tenant funcional
+- Autenticación híbrida (OIDC + local)
+- CRUD completo de propiedades
+- Building units para constructoras
+- Suscripciones Stripe con webhook
+- Dashboard de agencia funcional
+- Tabla admin de agencias
 
-### Ventajas de Negocio
-- **Para Agencias**: Presencia digital rentable con gestión avanzada de propiedades
-- **Para Usuarios**: Búsqueda comprensiva de propiedades con experiencia de usuario moderna
-- **Para Plataforma**: Modelo SaaS escalable con ingresos recurrentes predecibles
+### ⚠️ En Desarrollo
+- Admin dashboard stats
+- Sistema de pagos robusto (retry, validación)
+
+### ❌ Pendiente
+- Mapa interactivo
+- Calculadora de créditos
+- Sistema de tutoriales
+- Features de usuario final (favoritos, inquiries)
 
 ---
 
 ## 🎯 Conclusiones
 
-BuscoInmueble.click es una plataforma SaaS inmobiliaria bien arquitecturada y moderna, construida con tecnologías contemporáneas y mejores prácticas. Demuestra sólida comprensión de los requisitos del mercado inmobiliario argentino y proporciona una base escalable para el crecimiento.
+BuscoInmueble.click es una plataforma SaaS inmobiliaria con una **base sólida** para el mercado argentino. La arquitectura es moderna y escalable, con un sistema multi-tenant funcional y integración Stripe operativa.
 
-El codebase muestra estándares profesionales de desarrollo con adecuada separación de preocupaciones, seguridad de tipos, consideraciones de seguridad y patrones modernos de UI/UX. El modelo de negocio es claro y sostenible, con múltiples flujos de ingresos y una audiencia objetivo bien definida.
+**Puntos Fuertes:**
+- Stack tecnológico actualizado
+- Sistema de suscripciones con webhook
+- Building units para constructoras
+- Separación clara de responsabilidades
 
-La plataforma está posicionada estratégicamente para tener éxito en el mercado objetivo gracias a su arquitectura multi-tenant, conjunto de funcionalidades comprensivo y enfoque en la experiencia del usuario.
+**Areas de Mejora:**
+- Admin dashboard requiere implementación de stats reales
+- Sistema de pagos necesita retry logic y validación server-side
+- Faltan features de UX (mapa, calculator, tutoriales)
+- Documentación técnica para desarrolladores
 
 ---
 
 ## 📝 Metadatos del Análisis
 
-- **Fecha del Análisis**: 3 de Febrero de 2026
+- **Fecha del Análisis**: 13 de Febrero de 2026
 - **Versión del Codebase**: Current main branch
 - **Herramienta de Análisis**: opencode big-pickle
-- **Metodología**: Análisis exploratorio comprensivo con agente especializado
+- **Metodología**: Análisis exploratorio comprensivo
 - **Cobertura**: 100% del codebase y arquitectura del sistema
+- **Actualizado**: Corrections based on code review vs documentation
