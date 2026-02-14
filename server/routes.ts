@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import Stripe from "stripe";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertAgencySchema, insertPropertySchema } from "@shared/schema";
+import { insertAgencySchema, insertPropertySchema, insertPropertyRequestSchema } from "@shared/schema";
 import { hashPassword, comparePassword } from "./auth-utils";
 import { z } from "zod";
 
@@ -583,6 +583,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error: any) {
       return res.status(400).send({ error: { message: error.message } });
+    }
+  });
+
+  // Property Requests (Buscamos por Usted) - Public endpoint
+  app.post('/api/property-requests', async (req, res) => {
+    try {
+      const validationResult = insertPropertyRequestSchema.safeParse(req.body);
+      
+      if (!validationResult.success) {
+        return res.status(400).json({
+          message: "Datos inválidos",
+          errors: validationResult.error.errors,
+        });
+      }
+
+      const newRequest = await storage.createPropertyRequest(validationResult.data);
+
+      res.status(201).json({
+        success: true,
+        message: "Solicitud creada exitosamente",
+        request: newRequest,
+      });
+    } catch (error) {
+      console.error("Error creating property request:", error);
+      res.status(500).json({ message: "Error al procesar la solicitud" });
+    }
+  });
+
+  // Get property requests (admin only) - Protected
+  app.get('/api/property-requests', isAuthenticated, async (req: any, res) => {
+    try {
+      const requests = await storage.getPropertyRequests();
+      res.json(requests);
+    } catch (error) {
+      console.error("Error fetching property requests:", error);
+      res.status(500).json({ message: "Error al obtener las solicitudes" });
     }
   });
 

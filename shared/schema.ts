@@ -150,6 +150,23 @@ export const banners = pgTable("banners", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Property requests table (Buscamos por Usted)
+// Almacena solicitudes de usuarios que buscan un inmueble específico
+// Estas solicitudes se usan para enviar emails a las agencias suscriptas
+export const propertyRequests = pgTable("property_requests", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  firstName: varchar("first_name", { length: 100 }).notNull(),
+  lastName: varchar("last_name", { length: 100 }).notNull(),
+  email: varchar("email", { length: 255 }).notNull(),
+  phone: varchar("phone", { length: 50 }).notNull(),
+  operationType: varchar("operation_type", { length: 50 }).notNull(), // venta, alquiler, temporario, emprendimiento
+  propertyType: varchar("property_type", { length: 100 }).notNull(),
+  location: varchar("location", { length: 255 }).notNull(),
+  budget: varchar("budget", { length: 100 }).notNull(),
+  details: text("details"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ one, many }) => ({
   agency: one(agencies, {
@@ -197,6 +214,8 @@ export const bannersRelations = relations(banners, ({ one }) => ({
   }),
 }));
 
+// No relations needed - these are standalone requests from users
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).pick({
   email: true,
@@ -235,6 +254,11 @@ export const insertBannerSchema = createInsertSchema(banners).omit({
   createdAt: true,
 });
 
+export const insertPropertyRequestSchema = createInsertSchema(propertyRequests).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type UpsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -245,3 +269,5 @@ export type Property = typeof properties.$inferSelect;
 export type Location = typeof locations.$inferSelect;
 export type PropertyCategory = typeof propertyCategories.$inferSelect;
 export type Banner = typeof banners.$inferSelect;
+export type InsertPropertyRequest = z.infer<typeof insertPropertyRequestSchema>;
+export type PropertyRequest = typeof propertyRequests.$inferSelect;

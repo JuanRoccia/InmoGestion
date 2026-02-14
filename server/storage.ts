@@ -5,6 +5,7 @@ import {
   locations,
   propertyCategories,
   banners,
+  propertyRequests,
   type User,
   type UpsertUser,
   type Agency,
@@ -14,6 +15,8 @@ import {
   type Location,
   type PropertyCategory,
   type Banner,
+  type InsertPropertyRequest,
+  type PropertyRequest,
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, like, desc, asc, sql, or } from "drizzle-orm";
@@ -85,6 +88,11 @@ export interface IStorage {
 
   // Banner operations
   getActiveBanners(position?: string, size?: string): Promise<Banner[]>;
+
+  // Property Request operations (Buscamos por Usted)
+  createPropertyRequest(request: InsertPropertyRequest): Promise<PropertyRequest>;
+  getPropertyRequests(): Promise<PropertyRequest[]>;
+  getPropertyRequest(id: string): Promise<PropertyRequest | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -466,6 +474,21 @@ async createProperty(property: InsertProperty): Promise<Property> {
     }
 
     return await db.select().from(banners).where(and(...conditions));
+  }
+
+  // Property Request operations (Buscamos por Usted)
+  async createPropertyRequest(request: InsertPropertyRequest): Promise<PropertyRequest> {
+    const [newRequest] = await db.insert(propertyRequests).values(request).returning();
+    return newRequest;
+  }
+
+  async getPropertyRequests(): Promise<PropertyRequest[]> {
+    return await db.select().from(propertyRequests).orderBy(desc(propertyRequests.createdAt));
+  }
+
+  async getPropertyRequest(id: string): Promise<PropertyRequest | undefined> {
+    const [request] = await db.select().from(propertyRequests).where(eq(propertyRequests.id, id));
+    return request;
   }
 }
 

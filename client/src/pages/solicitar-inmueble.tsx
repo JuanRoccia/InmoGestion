@@ -9,32 +9,85 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Send } from "lucide-react";
+import { Send, Loader2 } from "lucide-react";
 import Header from "@/components/header";
 import Footer from "@/components/ui/footer";
 
 export default function SolicitarInmueble() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<{ success?: boolean; message?: string }>({});
+  
   const [formData, setFormData] = useState({
-    nombre: "",
-    apellido: "",
+    firstName: "",
+    lastName: "",
     email: "",
-    telefono: "",
-    tipoOperacion: "",
-    tipoInmueble: "",
-    ubicacion: "",
-    presupuesto: "",
-    detalles: ""
+    phone: "",
+    operationType: "",
+    propertyType: "",
+    location: "",
+    budget: "",
+    details: ""
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Formulario enviado:", formData);
-    // Aquí iría la lógica de envío del formulario
-    alert("Solicitud enviada con éxito. Nos pondremos en contacto pronto.");
+    setIsSubmitting(true);
+    setSubmitStatus({});
+
+    try {
+      const response = await fetch('/api/property-requests', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSubmitStatus({ success: true, message: 'Solicitud enviada con éxito. Nos pondremos en contacto pronto.' });
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phone: "",
+          operationType: "",
+          propertyType: "",
+          location: "",
+          budget: "",
+          details: ""
+        });
+      } else {
+        setSubmitStatus({ success: false, message: data.message || 'Error al enviar la solicitud' });
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      setSubmitStatus({ success: false, message: 'Error de conexión. Intenta nuevamente.' });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  // Mapping for Spanish field names to English
+  const fieldNameMap: Record<string, string> = {
+    'nombre': 'firstName',
+    'apellido': 'lastName',
+    'telefono': 'phone',
+    'tipoOperacion': 'operationType',
+    'tipoInmueble': 'propertyType',
+    'ubicacion': 'location',
+    'presupuesto': 'budget',
+    'detalles': 'details'
+  };
+
+  const handleFieldChange = (spanishField: string, value: string) => {
+    const englishField = fieldNameMap[spanishField] || spanishField;
+    setFormData(prev => ({ ...prev, [englishField]: value }));
   };
 
   return (
@@ -62,8 +115,8 @@ export default function SolicitarInmueble() {
                   <Input
                     type="text"
                     placeholder="Nombre"
-                    value={formData.nombre}
-                    onChange={(e) => handleChange("nombre", e.target.value)}
+                    value={formData.firstName}
+                    onChange={(e) => handleFieldChange("nombre", e.target.value)}
                     required
                     className="h-12"
                   />
@@ -77,8 +130,8 @@ export default function SolicitarInmueble() {
                   <Input
                     type="text"
                     placeholder="Apellido"
-                    value={formData.apellido}
-                    onChange={(e) => handleChange("apellido", e.target.value)}
+                    value={formData.lastName}
+                    onChange={(e) => handleFieldChange("apellido", e.target.value)}
                     required
                     className="h-12"
                   />
@@ -93,7 +146,7 @@ export default function SolicitarInmueble() {
                     type="email"
                     placeholder="Email"
                     value={formData.email}
-                    onChange={(e) => handleChange("email", e.target.value)}
+                    onChange={(e) => handleFieldChange("email", e.target.value)}
                     required
                     className="h-12"
                   />
@@ -107,8 +160,8 @@ export default function SolicitarInmueble() {
                   <Input
                     type="tel"
                     placeholder="Teléfono o Celular"
-                    value={formData.telefono}
-                    onChange={(e) => handleChange("telefono", e.target.value)}
+                    value={formData.phone}
+                    onChange={(e) => handleFieldChange("telefono", e.target.value)}
                     required
                     className="h-12"
                   />
@@ -127,8 +180,8 @@ export default function SolicitarInmueble() {
                     Tipo de Operación <span className="text-red-500">*</span>
                   </label>
                   <Select
-                    value={formData.tipoOperacion}
-                    onValueChange={(value) => handleChange("tipoOperacion", value)}
+                    value={formData.operationType}
+                    onValueChange={(value) => handleFieldChange("tipoOperacion", value)}
                     required
                   >
                     <SelectTrigger className="h-12">
@@ -151,8 +204,8 @@ export default function SolicitarInmueble() {
                   <Input
                     type="text"
                     placeholder="Casa, Departamento, Terreno, etc."
-                    value={formData.tipoInmueble}
-                    onChange={(e) => handleChange("tipoInmueble", e.target.value)}
+                    value={formData.propertyType}
+                    onChange={(e) => handleFieldChange("tipoInmueble", e.target.value)}
                     required
                     className="h-12"
                   />
@@ -166,8 +219,8 @@ export default function SolicitarInmueble() {
                   <Input
                     type="text"
                     placeholder="Barrio, Ciudad, etc."
-                    value={formData.ubicacion}
-                    onChange={(e) => handleChange("ubicacion", e.target.value)}
+                    value={formData.location}
+                    onChange={(e) => handleFieldChange("ubicacion", e.target.value)}
                     required
                     className="h-12"
                   />
@@ -181,8 +234,8 @@ export default function SolicitarInmueble() {
                   <Input
                     type="text"
                     placeholder="Presupuesto"
-                    value={formData.presupuesto}
-                    onChange={(e) => handleChange("presupuesto", e.target.value)}
+                    value={formData.budget}
+                    onChange={(e) => handleFieldChange("presupuesto", e.target.value)}
                     required
                     className="h-12"
                   />
@@ -196,22 +249,39 @@ export default function SolicitarInmueble() {
                 </label>
                 <Textarea
                   placeholder="Describa los detalles específicos que busca en el inmueble"
-                  value={formData.detalles}
-                  onChange={(e) => handleChange("detalles", e.target.value)}
+                    value={formData.details}
+                    onChange={(e) => handleFieldChange("detalles", e.target.value)}
                   required
                   className="min-h-32 resize-none"
                 />
               </div>
             </div>
 
+            {/* Mensaje de estado */}
+            {submitStatus.message && (
+              <div className={`mb-6 p-4 rounded-lg ${submitStatus.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+                {submitStatus.message}
+              </div>
+            )}
+
             {/* Botón de envío */}
             <div className="flex justify-end">
               <Button
                 type="submit"
-                className="bg-[#ff2e06] hover:bg-[#e62905] text-white h-12 px-8 font-semibold"
+                disabled={isSubmitting}
+                className="bg-[#ff2e06] hover:bg-[#e62905] text-white h-12 px-8 font-semibold disabled:opacity-50"
               >
-                <Send className="w-4 h-4 mr-2" />
-                Enviar solicitud
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Enviando...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4 mr-2" />
+                    Enviar solicitud
+                  </>
+                )}
               </Button>
             </div>
           </form>
