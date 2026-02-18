@@ -127,6 +127,10 @@ export const properties = pgTable("properties", {
   isFeatured: boolean("is_featured").default(false),
   isCreditSuitable: boolean("is_credit_suitable").default(false),
   isActive: boolean("is_active").default(true),
+  isClassified: boolean("is_classified").default(false), // Clasificado basado en property request
+  propertyRequestId: varchar("property_request_id").references(() => propertyRequests.id), // Referencia a solicitud original
+  contactName: varchar("contact_name"), // Nombre del solicitante (para clasificados)
+  contactPhone: varchar("contact_phone"), // Teléfono de contacto (para clasificados)
   agencyId: varchar("agency_id").references(() => agencies.id).notNull(),
   locationId: varchar("location_id").references(() => locations.id),
   categoryId: varchar("category_id").references(() => propertyCategories.id),

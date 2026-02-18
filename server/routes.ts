@@ -320,6 +320,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Classifieds route - for users to browse classified properties
+  app.get('/api/classifieds', async (req, res) => {
+    try {
+      const {
+        operationType,
+        locationId,
+        categoryId,
+        limit,
+        offset,
+      } = req.query;
+
+      const filters = {
+        operationType: operationType as string,
+        locationId: locationId as string,
+        categoryId: categoryId as string,
+        limit: limit ? parseInt(limit as string) : 12,
+        offset: offset ? parseInt(offset as string) : 0,
+      };
+
+      const [classifiedsData, total] = await Promise.all([
+        storage.getClassifieds(filters),
+        storage.countClassifieds(filters)
+      ]);
+
+      res.json({
+        data: classifiedsData,
+        total,
+        limit: filters.limit,
+        offset: filters.offset
+      });
+    } catch (error) {
+      console.error("Error fetching classifieds:", error);
+      res.status(500).json({ message: "Failed to fetch classifieds" });
+    }
+  });
+
   app.get('/api/properties/:id', async (req, res) => {
     try {
       const property = await storage.getProperty(req.params.id);
@@ -611,14 +647,128 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get property requests (admin only) - Protected
+  // Get property requests - Protected (for agencies)
   app.get('/api/property-requests', isAuthenticated, async (req: any, res) => {
     try {
-      const requests = await storage.getPropertyRequests();
-      res.json(requests);
+      const { status, limit, offset } = req.query;
+      
+      // Get all property requests
+      let requests = await storage.getPropertyRequests();
+      
+      // Get published request IDs
+      const publishedRequests = await storage.getPublishedPropertyRequests();
+      const publishedIds = new Set(publishedRequests.map((p: any) => p.propertyRequestId));
+      
+      // Add isPublished flag to each request
+      requests = requests.map((req: any) => ({
+        ...req,
+        isPublished: publishedIds.has(req.id)
+      }));
+      
+      // Filter by status if provided
+      if (status === 'published') {
+        requests = requests.filter((r: any) => r.isPublished);
+      } else if (status === 'requested') {
+        requests = requests.filter((r: any) => !r.isPublished);
+      }
+      
+      // Apply pagination
+      const limitNum = limit ? parseInt(limit as string) : 6;
+      const offsetNum = offset ? parseInt(offset as string) : 0;
+      const total = requests.length;
+      requests = requests.slice(offsetNum, offsetNum + limitNum);
+      
+      res.json({
+        data: requests,
+        total,
+        limit: limitNum,
+        offset: offsetNum
+      });
     } catch (error) {
       console.error("Error fetching property requests:", error);
       res.status(500).json({ message: "Error al obtener las solicitudes" });
+    }
+  });
+
+  // Publish a property request as classified - Protected
+  app.post('/api/property-requests/:id/publish', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const agency = await storage.getAgencyByOwnerId(userId);
+      
+      if (!agency) {
+        return res.status(403).json({ message: "No tienes una agencia asociada" });
+      }
+      
+      if (agency.subscriptionStatus !== 'active') {
+        return res.status(403).json({ message: "Necesitas una suscripción activa para publicar clasificados" });
+      }
+      
+      const request = await storage.getPropertyRequest(req.params.id);
+      if (!request) {
+        return res.status(404).json({ message: "Solicitud no encontrada" });
+      }
+      
+      // Check if already published
+      const existingPublished = await storage.getPropertyByPropertyRequestId(request.id);
+      if (existingPublished) {
+        return res.status(400).json({ message: "Esta solicitud ya ha sido publicada" });
+      }
+      
+      // Generate unique code
+      const code = `CLS-${Date.now().toString(36).toUpperCase()}`;
+      
+      // Find or create location
+      let locationId = null;
+      const locations = await storage.getLocations();
+      const foundLocation = locations.find((l: any) => 
+        l.name.toLowerCase() === request.location.toLowerCase()
+      );
+      if (foundLocation) {
+        locationId = foundLocation.id;
+      }
+      
+      // Create the property as classified
+      const propertyData = {
+        code,
+        title: `Busco ${request.propertyType} en ${request.operationType} - ${request.location}`,
+        description: request.details || `Solicitud de ${request.propertyType} en ${request.location}. Presupuesto: ${request.budget}. Contacto: ${request.firstName} ${request.lastName}`,
+        price: request.budget.replace(/[^0-9]/g, '') || '0',
+        currency: 'USD',
+        operationType: request.operationType,
+        agencyId: agency.id,
+        locationId,
+        isClassified: true,
+        propertyRequestId: request.id,
+        contactName: `${request.firstName} ${request.lastName}`,
+        contactPhone: request.phone,
+        isActive: true,
+      };
+      
+      const newProperty = await storage.createProperty(propertyData as any);
+      
+      res.json(newProperty);
+    } catch (error) {
+      console.error("Error publishing property request:", error);
+      res.status(500).json({ message: "Error al publicar la solicitud" });
+    }
+  });
+
+  // Get counts for stats
+  app.get('/api/property-requests/counts', isAuthenticated, async (req: any, res) => {
+    try {
+      const requests = await storage.getPropertyRequests();
+      const publishedRequests = await storage.getPublishedPropertyRequests();
+      const publishedIds = new Set(publishedRequests.map((p: any) => p.propertyRequestId));
+      
+      const total = requests.length;
+      const published = requests.filter((r: any) => publishedIds.has(r.id)).length;
+      const requested = total - published;
+      
+      res.json({ total, published, requested });
+    } catch (error) {
+      console.error("Error fetching property request counts:", error);
+      res.status(500).json({ message: "Error al obtener los conteos" });
     }
   });
 

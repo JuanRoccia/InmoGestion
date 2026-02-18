@@ -1,8 +1,6 @@
 {
-  "timestamp": "2026-02-10T13:32:06.379Z",
+  "timestamp": "2026-02-18T21:26:25.366Z",
   "filters": {
-    "isCreditSuitable": false,
-    "limit": 12,
-    "offset": 0
+    "operationType": "venta"
   }
 }

@@ -50,10 +50,7 @@ export interface IStorage {
     categoryId?: string;
     agencyId?: string;
     isFeatured?: boolean;
-    isCreditSuitable?: boolean;
-    minPrice?: number;
-    maxPrice?: number;
-    price?: number;
+    isClassified?: boolean;
     limit?: number;
     offset?: number;
   }): Promise<Property[]>;
@@ -63,10 +60,22 @@ export interface IStorage {
     categoryId?: string;
     agencyId?: string;
     isFeatured?: boolean;
-    isCreditSuitable?: boolean;
+    isClassified?: boolean;
     minPrice?: number;
     maxPrice?: number;
     price?: number;
+  }): Promise<number>;
+  getClassifieds(filters?: {
+    operationType?: string;
+    locationId?: string;
+    categoryId?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<Property[]>;
+  countClassifieds(filters?: {
+    operationType?: string;
+    locationId?: string;
+    categoryId?: string;
   }): Promise<number>;
   getProperty(id: string): Promise<Property | undefined>;
   getPropertyByCode(code: string): Promise<Property | undefined>;
@@ -93,6 +102,8 @@ export interface IStorage {
   createPropertyRequest(request: InsertPropertyRequest): Promise<PropertyRequest>;
   getPropertyRequests(): Promise<PropertyRequest[]>;
   getPropertyRequest(id: string): Promise<PropertyRequest | undefined>;
+  getPublishedPropertyRequests(): Promise<Property[]>;
+  getPropertyByPropertyRequestId(propertyRequestId: string): Promise<Property | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -251,6 +262,9 @@ export class DatabaseStorage implements IStorage {
     }
     if (filters?.isFeatured !== undefined) {
       conditions.push(eq(properties.isFeatured, filters.isFeatured));
+    }
+    if (filters?.isClassified !== undefined) {
+      conditions.push(eq(properties.isClassified, filters.isClassified));
     }
     if (filters?.isCreditSuitable) {
       conditions.push(eq(properties.isCreditSuitable, true));
@@ -462,6 +476,74 @@ async createProperty(property: InsertProperty): Promise<Property> {
     return result[0]?.count ?? 0;
   }
 
+  // Classifieds operations
+  async getClassifieds(filters?: {
+    operationType?: string;
+    locationId?: string;
+    categoryId?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<Property[]> {
+    const conditions = [
+      eq(properties.isActive, true),
+      eq(properties.isClassified, true),
+      sql`${properties.parentPropertyId} IS NULL`,
+    ];
+
+    if (filters?.operationType) {
+      conditions.push(eq(properties.operationType, filters.operationType as any));
+    }
+    if (filters?.locationId) {
+      conditions.push(eq(properties.locationId, filters.locationId));
+    }
+    if (filters?.categoryId) {
+      conditions.push(eq(properties.categoryId, filters.categoryId));
+    }
+
+    let query = db
+      .select()
+      .from(properties)
+      .where(and(...conditions))
+      .orderBy(desc(properties.createdAt));
+
+    if (filters?.limit) {
+      query = query.limit(filters.limit);
+    }
+    if (filters?.offset) {
+      query = query.offset(filters.offset);
+    }
+
+    return await query;
+  }
+
+  async countClassifieds(filters?: {
+    operationType?: string;
+    locationId?: string;
+    categoryId?: string;
+  }): Promise<number> {
+    const conditions = [
+      eq(properties.isActive, true),
+      eq(properties.isClassified, true),
+    ];
+
+    if (filters?.operationType) {
+      conditions.push(eq(properties.operationType, filters.operationType as any));
+    }
+    if (filters?.locationId) {
+      conditions.push(eq(properties.locationId, filters.locationId));
+    }
+    if (filters?.categoryId) {
+      conditions.push(eq(properties.categoryId, filters.categoryId));
+    }
+
+    const result = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(properties)
+      .where(and(...conditions));
+
+    return result[0]?.count ?? 0;
+  }
+
   // Banner operations
   async getActiveBanners(position?: string, size?: string): Promise<Banner[]> {
     const conditions = [eq(banners.isActive, true)];
@@ -489,6 +571,21 @@ async createProperty(property: InsertProperty): Promise<Property> {
   async getPropertyRequest(id: string): Promise<PropertyRequest | undefined> {
     const [request] = await db.select().from(propertyRequests).where(eq(propertyRequests.id, id));
     return request;
+  }
+
+  async getPublishedPropertyRequests(): Promise<Property[]> {
+    return await db
+      .select()
+      .from(properties)
+      .where(eq(properties.isClassified, true));
+  }
+
+  async getPropertyByPropertyRequestId(propertyRequestId: string): Promise<Property | undefined> {
+    const [property] = await db
+      .select()
+      .from(properties)
+      .where(eq(properties.propertyRequestId, propertyRequestId));
+    return property;
   }
 }
 

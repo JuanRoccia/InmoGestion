@@ -34,9 +34,11 @@ import {
   AlertDialogHeader,
   AlertDialogCancel
 } from "@/components/ui/alert-dialog";
-import { Plus, Edit, Trash2, Building2, Mail, AlertTriangle } from "lucide-react";
+import { Plus, Edit, Trash2, Building2, Mail, AlertTriangle, ClipboardList } from "lucide-react";
 import RequireCompletedRegistration from "@/components/ProtectedRoute";
 import { Property } from "@shared/schema";
+import RequestedPropertyCard from "@/components/requested-property-card";
+import PublishRequestDialog from "@/components/publish-request-dialog";
 
 // Use shared schema but omit fields that will be set server-side
 const agencyFormSchema = insertAgencySchema.pick({
@@ -57,6 +59,10 @@ export default function AgencyDashboard() {
   const [isPropertyDialogOpen, setIsPropertyDialogOpen] = useState(false);
   const [editingProperty, setEditingProperty] = useState<any>(null);
   const [showRestrictionAlert, setShowRestrictionAlert] = useState(false);
+  const [filterStatus, setFilterStatus] = useState<"all" | "requested" | "published">("all");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedRequest, setSelectedRequest] = useState<any>(null);
+  const [isPublishDialogOpen, setIsPublishDialogOpen] = useState(false);
 
   // Verify subscription if returning from payment
   useEffect(() => {
@@ -104,6 +110,26 @@ export default function AgencyDashboard() {
   const { data: properties = [] } = useQuery<Property[]>({
     queryKey: ["/api/properties", { agencyId: agency?.id }],
     enabled: !!agency?.id,
+  });
+
+  // Property Requests queries
+  const { data: requestCounts } = useQuery({
+    queryKey: ["/api/property-requests/counts"],
+    enabled: !!agency,
+  });
+
+  const { data: requestsResponse, isLoading: isLoadingRequests } = useQuery({
+    queryKey: ["/api/property-requests", { status: filterStatus, page: currentPage }],
+    queryFn: async () => {
+      const params = new URLSearchParams();
+      params.append("status", filterStatus);
+      params.append("limit", "6");
+      params.append("offset", ((currentPage - 1) * 6).toString());
+      const res = await fetch(`/api/property-requests?${params}`);
+      if (!res.ok) throw new Error("Failed to fetch requests");
+      return res.json();
+    },
+    enabled: !!agency,
   });
 
   const deletePropertyMutation = useMutation({
@@ -204,7 +230,7 @@ export default function AgencyDashboard() {
             totalProperties={properties.length}
             activeProperties={properties.filter((p: any) => p.isActive).length}
             featuredProperties={properties.filter((p: any) => p.isFeatured).length}
-            requestedProperties={0} // Mock data for now
+            requestedProperties={requestCounts?.requested || 0}
           />
 
           <ActionBar onAddProperty={() => {
@@ -386,6 +412,132 @@ export default function AgencyDashboard() {
               )}
             </CardContent>
           </Card>
+
+          {/* Property Requests Section */}
+          {agency && agency.subscriptionStatus === 'active' && (
+            <Card className="border-none shadow-md overflow-hidden mt-8">
+              <CardHeader className="bg-white border-b border-gray-100 pb-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <ClipboardList className="h-5 w-5 text-primary" />
+                    <CardTitle className="text-xl font-semibold text-gray-800">Propiedades Solicitadas</CardTitle>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant={filterStatus === "all" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => { setFilterStatus("all"); setCurrentPage(1); }}
+                      className={filterStatus === "all" ? "bg-primary" : ""}
+                    >
+                      Todas ({requestCounts?.total || 0})
+                    </Button>
+                    <Button
+                      variant={filterStatus === "requested" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => { setFilterStatus("requested"); setCurrentPage(1); }}
+                      className={filterStatus === "requested" ? "bg-primary" : ""}
+                    >
+                      Pendientes ({requestCounts?.requested || 0})
+                    </Button>
+                    <Button
+                      variant={filterStatus === "published" ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => { setFilterStatus("published"); setCurrentPage(1); }}
+                      className={filterStatus === "published" ? "bg-primary" : ""}
+                    >
+                      Publicadas ({requestCounts?.published || 0})
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-6">
+                {isLoadingRequests ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {[...Array(6)].map((_, i) => (
+                      <div key={i} className="bg-gray-100 rounded-lg h-48 animate-pulse" />
+                    ))}
+                  </div>
+                ) : requestsResponse?.data?.length > 0 ? (
+                  <>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {requestsResponse.data.map((request: any) => (
+                        <RequestedPropertyCard
+                          key={request.id}
+                          request={request}
+                          onPublish={(req) => {
+                            setSelectedRequest(req);
+                            setIsPublishDialogOpen(true);
+                          }}
+                          onViewDetails={(req) => {
+                            setSelectedRequest(req);
+                            setIsPublishDialogOpen(true);
+                          }}
+                          isSubscribed={agency?.subscriptionStatus === 'active'}
+                        />
+                      ))}
+                    </div>
+                    
+                    {/* Pagination */}
+                    {requestsResponse.total > 6 && (
+                      <div className="flex justify-center gap-2 mt-6">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                          disabled={currentPage === 1}
+                        >
+                          Anterior
+                        </Button>
+                        <span className="flex items-center px-4 text-sm">
+                          Página {currentPage} de {Math.ceil(requestsResponse.total / 6)}
+                        </span>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setCurrentPage(p => p + 1)}
+                          disabled={currentPage >= Math.ceil(requestsResponse.total / 6)}
+                        >
+                          Siguiente
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="text-center py-12">
+                    <ClipboardList className="h-12 w-12 text-gray-200 mx-auto mb-4" />
+                    <p className="text-gray-500">
+                      {filterStatus === "all" 
+                        ? "No hay solicitudes de propiedades disponibles" 
+                        : filterStatus === "requested"
+                        ? "No hay solicitudes pendientes"
+                        : "No hay solicitudes publicadas"}
+                    </p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Restricted access message for non-subscribed agencies */}
+          {agency && agency.subscriptionStatus !== 'active' && (
+            <Card className="border-none shadow-md overflow-hidden mt-8 bg-amber-50">
+              <CardContent className="p-6 text-center">
+                <ClipboardList className="h-12 w-12 text-amber-300 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold text-amber-800 mb-2">
+                  Acceso a Propiedades Solicitadas
+                </h3>
+                <p className="text-amber-700 mb-4">
+                  Suscríbete para acceder a las propiedades buscadas por usuarios y publicarlas en clasificados.
+                </p>
+                <Button
+                  onClick={() => setLocation("/subscribe")}
+                  className="bg-[#ff2e06] hover:bg-[#e62905]"
+                >
+                  Ver Planes de Suscripción
+                </Button>
+              </CardContent>
+            </Card>
+          )}
         </main>
       </div>
 
@@ -410,6 +562,17 @@ export default function AgencyDashboard() {
           />
         </DialogContent>
       </Dialog>
+
+      {/* Publish Request Dialog */}
+      <PublishRequestDialog
+        open={isPublishDialogOpen}
+        onOpenChange={setIsPublishDialogOpen}
+        request={selectedRequest}
+        onSuccess={() => {
+          queryClient.invalidateQueries({ queryKey: ["/api/property-requests/counts"] });
+          queryClient.invalidateQueries({ queryKey: ["/api/property-requests"] });
+        }}
+      />
     </div>
   );
 }

@@ -22,6 +22,7 @@ import Terms from "@/pages/terms";
 import Privacy from "@/pages/privacy";
 import Cookies from "@/pages/cookies";
 import Accessibility from "@/pages/accessibility";
+import Clasificados from "@/pages/clasificados";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -31,6 +32,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Landing} />
       <Route path="/solicitar-inmueble" component={SolicitarInmueble} />
+      <Route path="/clasificados" component={Clasificados} />
       <Route path="/properties" component={Properties} />
       <Route path="/property/preview" component={PropertyPreviewPage} />
       <Route path="/properties/:id" component={PropertyDetail} />

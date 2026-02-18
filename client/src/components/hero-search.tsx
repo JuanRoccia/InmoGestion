@@ -38,7 +38,7 @@ export default function HeroSearch() {
   };
 
   return (
-    <section className="relative min-h-[100%] bg-cover bg-center pt-28" style={{
+    <section id="hero-search" className="relative min-h-[100%] bg-cover bg-center pt-28" style={{
       backgroundImage: `url('/assets/banner_back_complete.jpg')`,
       backgroundPosition: 'top center'
     }}>
@@ -250,7 +250,7 @@ export default function HeroSearch() {
         <section className="py-10 px-0">
           <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Formulario para Usuarios */}
-            <div className="bg-[#ff2e06] text-white rounded-lg shadow-lg p-6 border-2 border-white/100">
+            <div className="bg-[#ff2e06]/90 text-white rounded-lg shadow-lg p-6 border-2 border-white/20">
               <div className="text-center mb-4">
                 {/* ¿Buscás propiedades? */}
                 <h3 className="text-lg font-bold mb-2">Buscamos por Usted</h3>
@@ -275,14 +275,14 @@ export default function HeroSearch() {
             </div>
 
             {/* Formulario para Inmobiliarias */}
-            <div className="bg-[#ff2e06] text-white rounded-lg shadow-lg p-6 border-2 border-white/100">
+            <div className="bg-[#ff2e06]/90 text-white rounded-lg shadow-lg p-6 border-2 border-white/20">
               <div className="text-center mb-4">
                 <h3 className="text-lg font-bold mb-2">Propiedades Solicitadas</h3>
                 <p className="text-sm leading-relaxed">Oportunidades reales de compra y alquiler que surgen de pedidos vigentes. Descubra la propiedades buscadas y participe de una operación directa con el respaldo profesional de <b>Buscoinmuebles</b>.</p>
               </div>
 
               <div className="space-y-3">
-                <Link href="/inmobiliarias">
+                <Link href="/clasificados">
                   <Button className="w-full h-11 bg-white text-[#ff2e06] hover:bg-red-50 font-semibold text-sm transition-colors">
                     Ingresar
                   </Button>
