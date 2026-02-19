@@ -53,7 +53,7 @@ const developmentStatuses = [
 ];
 
 export default function FeaturedDevelopmentsFilter({ properties }: FeaturedDevelopmentsFilterProps) {
-  const [activeCategory, setActiveCategory] = useState('venta');
+  const [activeCategory, setActiveCategory] = useState('emprendimientos');
   const [activeSubCategory, setActiveSubCategory] = useState('all');
   const [startIndex, setStartIndex] = useState(0);
   const itemsPerPage = 6;
