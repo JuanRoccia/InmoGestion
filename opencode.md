@@ -34,13 +34,24 @@ BuscoInmueble.click es una plataforma SaaS multi-tenant inmobiliaria diseñada p
 │   │   │   ├── ProtectedRoute.tsx # Rutas protegidas
 │   │   │   └── admin-table.tsx # Tabla admin
 │   │   ├── pages/
-│   │   │   ├── home.tsx      # Landing page
+│   │   │   ├── landing.tsx    # Landing page principal (/)
+│   │   │   ├── home.tsx      # Página "Coming Soon" (/home)
 │   │   │   ├── properties.tsx # Listado propiedades
 │   │   │   ├── property-detail.tsx # Detalles propiedad
+│   │   │   ├── property-preview-page.tsx # Vista previa propiedad
 │   │   │   ├── agency-dashboard.tsx # Dashboard agencia
 │   │   │   ├── admin-dashboard.tsx # Panel admin
 │   │   │   ├── subscribe.tsx # Página suscripciones
-│   │   │   └── agencies.tsx  # Listado agencias
+│   │   │   ├── agencies.tsx  # Listado agencias (/agencies, /inmobiliarias)
+│   │   │   ├── clasificados.tsx # Clasificados (/clasificados)
+│   │   │   ├── solicitar-inmueble.tsx # Solicitar inmueble
+│   │   │   ├── map-search.tsx # Búsqueda en mapa (/mapa)
+│   │   │   ├── contact.tsx   # Contacto (/contacto, /contact)
+│   │   │   ├── terms.tsx     # Términos (/terms)
+│   │   │   ├── privacy.tsx   # Privacidad (/privacy)
+│   │   │   ├── cookies.tsx   # Cookies (/cookies)
+│   │   │   ├── accessibility.tsx # Accesibilidad (/accessibility)
+│   │   │   └── not-found.tsx # Página 404
 │   │   ├── hooks/
 │   │   │   ├── useAuth.ts    # Hook autenticación
 │   │   │   ├── useAccessPermissions.ts # Permisos
@@ -255,13 +266,14 @@ BuscoInmueble.click busca ser la plataforma inmobiliaria premier del mercado arg
 ```typescript
 // Tablas principales (shared/schema.ts)
 
-sessions         // Almacenamiento de sesiones (Replit Auth)
-users            // Usuarios de la plataforma
-agencies         // Agencias inmobiliarias (multi-tenant)
-properties       // Listados de propiedades
-locations        // Ubicaciones/Barrios
-property_categories // Categorías de propiedades
-banners          // Banners publicitarios
+sessions              // Almacenamiento de sesiones (Replit Auth)
+users                 // Usuarios de la plataforma
+agencies              // Agencias inmobiliarias (multi-tenant)
+properties            // Listados de propiedades
+locations             // Ubicaciones/Barrios
+property_categories   // Categorías de propiedades
+banners               // Banners publicitarios
+propertyRequests      // Solicitudes "Buscamos por Usted"
 ```
 
 ### Campos Relevantes
@@ -334,17 +346,25 @@ banners          // Banners publicitarios
 
 ## ⚠️ Limitaciones y Features Pendientes
 
+### Funcionalidades Implementadas (PARCIALMENTE - Requieren Completarse)
+> **IMPORTANTE**: Las siguientes funcionalidades existen en el código pero requieren implementación completa para estar totalmente operativas:
+
+| Feature | Estado Actual | Notas |
+|---------|--------------|-------|
+| **Mapa Interactivo** | ⚠️ Parcial | Componente `properties-map.tsx` existe en `/mapa`, pero integración con datos puede mejorarse |
+| **Calculadora de Alquiler** | ⚠️ Parcial | Componente `rental-calculator.tsx` existe, funcional para estimaciones básicas |
+| **Calculadora de Créditos** | ⚠️ Parcial | Componente `credit-search-dialog.tsx` existe, requiere integración completa |
+| **Sistema de Tutoriales** | ⚠️ Parcial | Componente `tutorial-overlay.tsx` existe, flujo de tutorial completo por implementar |
+| **Property Inquiries** | ⚠️ Parcial | Tabla `propertyRequests` existe en schema + API, sistema de notificaciones por implementar |
+| **Clasificados** | ✅ Funcional | Página `/clasificados` + tabla `propertyRequests` operativa |
+
 ### Funcionalidades NO Implementadas
-1. **Mapa Interactivo**: No hay integración con Leaflet/map library
-2. **Calculadora de Créditos**: No existe
-3. **Sistema de Tutoriales/Onboarding**: No implementado
-4. **Password Reset Flow**: No existe
-5. **Email Verification**: No implementado
-6. **Favoritos/Wishlist**: No implementado
-7. **Property Inquiries/Contact Forms**: No se almacenan
-8. **Image Upload**: Solo URLs externas
-9. **Property Reports**: No existen
-10. **Multi-language**: Solo español
+1. **Password Reset Flow**: No existe
+2. **Email Verification**: No implementado
+3. **Favoritos/Wishlist**: No implementado
+4. **Image Upload**: Solo URLs externas (sin integración con Cloudinary/S3)
+5. **Property Reports**: No existen
+6. **Multi-language**: Solo español
 
 ### Admin Dashboard
 - Stats (agencias, usuarios, propiedades, ingresos) hardcodeados a 0
@@ -355,6 +375,10 @@ banners          // Banners publicitarios
 - ⚠️ **Sin Validación Server-side de Planes**: Precios definidos solo en frontend
 - ⚠️ **Sin Monitoring Dashboard**: No hay métricas en tiempo real
 - ✅ Webhook handler implementado
+
+### Imagenes
+- **Image Upload**: ❌ NO implementado - Solo URLs externas
+- Las imágenes se agregan mediante URL en el formulario de propiedad
 
 ---
 
@@ -388,16 +412,25 @@ banners          // Banners publicitarios
 - Suscripciones Stripe con webhook
 - Dashboard de agencia funcional
 - Tabla admin de agencias
+- Sistema de Clasificados ("Buscamos por Usted")
+- Página Coming Soon (/home)
+- Landing page optimizada (/)
 
-### ⚠️ En Desarrollo
+### ⚠️ En Desarrollo (Parcialmente Implementado)
 - Admin dashboard stats
 - Sistema de pagos robusto (retry, validación)
+- Mapa interactivo (componente existe, integración parcial)
+- Calculadora de alquiler (funcional básica)
+- Sistema de tutoriales (componente existe)
+- Property Requests (API existe, notificaciones pendientes)
 
 ### ❌ Pendiente
-- Mapa interactivo
-- Calculadora de créditos
-- Sistema de tutoriales
-- Features de usuario final (favoritos, inquiries)
+- Password Reset Flow
+- Email Verification
+- Favoritos/Wishlist
+- Image Upload (solo URLs)
+- Property Reports
+- Multi-language
 
 ---
 
