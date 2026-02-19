@@ -31,6 +31,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Landing} />
+      <Route path="/home" component={Home} />
       <Route path="/solicitar-inmueble" component={SolicitarInmueble} />
       <Route path="/clasificados" component={Clasificados} />
       <Route path="/properties" component={Properties} />
